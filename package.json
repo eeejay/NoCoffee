@@ -4,12 +4,15 @@
   "description": "NoCoffee vision simulator",
   "main": "background.js",
   "scripts": {
-    "test": "eslint *.js"
+    "test": "eslint *.js",
+    "start:firefox": "web-ext run",
+    "start:chrome": "./launch_chrome.sh"
   },
   "author": "Aaron Leventhal",
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "eslint": "^4.8.0"
+    "eslint": "^4.8.0",
+    "web-ext": "^2.2.0"
   }
 }
