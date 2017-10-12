@@ -10,26 +10,26 @@
 // - Stargardt's add brightness, some good holes in it, loss of contrast sensitivity
 
 var oldViewData = {};
-
-var kSvgDocClassName = 'noCoffeeSvgFilterDoc';
-var kSvgBodyClassName = 'noCoffeeSvgFilterBody';
-var kSvgOverlayClassName = 'noCoffeeSvgOverlay';
-var kBlockerClassName = 'noCoffeeVisionBlockingDiv';
-var kCloudyClassName = 'noCoffeeVisionCloudyDiv';
-var kMaxFloaters = 15;
-var kMaxFloaterTravel = 10; // Percent of screen
-var kMinFloaterTravelTime = 3; // Seconds
-var kMaxFloaterTravelTime = 20; // Seconds
-var kMaxFloaterTravelDelayTime = 20; // Seconds
-var kMaxFloaterRotation = 40;
-var kMinFloaterWidth = 10;
-var kMinFloaterOpacity = 0.1;
-var kMaxFloaterOpacity = 0.4;
-var kFlutterDist = 15;
 var flutterCount = 0;
 
+const kSvgDocClassName = 'noCoffeeSvgFilterDoc';
+const kSvgBodyClassName = 'noCoffeeSvgFilterBody';
+const kSvgOverlayClassName = 'noCoffeeSvgOverlay';
+const kBlockerClassName = 'noCoffeeVisionBlockingDiv';
+const kCloudyClassName = 'noCoffeeVisionCloudyDiv';
+const kMaxFloaters = 15;
+const kMaxFloaterTravel = 10; // Percent of screen
+const kMinFloaterTravelTime = 3; // Seconds
+const kMaxFloaterTravelTime = 20; // Seconds
+const kMaxFloaterTravelDelayTime = 20; // Seconds
+const kMaxFloaterRotation = 40;
+const kMinFloaterWidth = 10;
+const kMinFloaterOpacity = 0.1;
+const kMaxFloaterOpacity = 0.4;
+const kFlutterDist = 15;
+
 function createSvgFilter(filterMarkup, className) {
-  var svgMarkup =
+  let svgMarkup =
 '<svg xmlns="http://www.w3.org/2000/svg" version="1.1">' +
   '<defs>' +
  '<filter id="' + className + window.uniqueNumber + '" >' +
@@ -38,7 +38,7 @@ function createSvgFilter(filterMarkup, className) {
    '</defs>' +
 '</svg>';
 
-  var containerElt = document.createElement('div');
+  let containerElt = document.createElement('div');
   containerElt.style.visibility = 'hidden';
   containerElt.className = className;
   containerElt.innerHTML = svgMarkup;
@@ -49,7 +49,7 @@ function getSvgColorMatrixFilter(colorMatrixValues) {
   if (!colorMatrixValues) {
     return '';
   }
-  var str = '<feColorMatrix type="matrix" values="' + colorMatrixValues + '" />';
+  let str = '<feColorMatrix type="matrix" values="' + colorMatrixValues + '" />';
   return str;
 }
 
@@ -57,7 +57,7 @@ function getSvgGhostingFilter(ghostingLevel) {
   if (!ghostingLevel) {
     return '';
   }
-  var str =
+  let str =
         '<feOffset result="offOut" in="SourceGraphic" dx="' + ghostingLevel + '" dy="0" />' +
         '<feBlend in="SourceGraphic" in2="offOut" mode="multiply" />';
   return str;
@@ -67,8 +67,8 @@ function getSvgFlutterFilter(flutter) {
   if (!flutter || !flutter.flutterLevel) {
     return '';
   }
-  var horizMovement = kFlutterDist / flutter.zoom;
-  var str =
+  let horizMovement = kFlutterDist / flutter.zoom;
+  let str =
         '<feOffset result="offOut" in="SourceGraphic" dx="' + horizMovement + '" dy="0" />';
   return str;
 }
@@ -94,7 +94,7 @@ function startFluttering(flutter, bodyCssFilter) {
 }
 
 function maybeStartFluttering(flutter, bodyCssFilter) {
-  var randomized = Math.random() * 1000;
+  let randomized = Math.random() * 1000;
   if (randomized < flutter.flutterLevel) {
     startFluttering(flutter, bodyCssFilter);
   }
@@ -108,7 +108,7 @@ function initFlutter(flutter, bodyCssFilter) {
 }
 
 function createFloater(floater) {
-  var floaterImg = document.createElement('img');
+  let floaterImg = document.createElement('img');
   floaterImg.style.position = 'fixed';
   floaterImg.style.width = floater.width;
   floaterImg.style.left = floater.x + '%';
@@ -124,16 +124,16 @@ function createFloater(floater) {
 }
 
 function resetFloaters(blockerDiv, floaters) {
-  var floaterMix = [];
-  var count;
+  let floaterMix = [];
+  let count;
   for (count = 0; count < kMaxFloaters; count++) {
     floaterMix[count] = count + 1;
   }
   for (count = 0; count < floaters.numFloaters; count++) {
-    var nextItemIndex = Math.floor(Math.random() * (kMaxFloaters - count));
-    var nextItem = floaterMix[nextItemIndex];
+    let nextItemIndex = Math.floor(Math.random() * (kMaxFloaters - count));
+    let nextItem = floaterMix[nextItemIndex];
     floaterMix[nextItemIndex] = floaterMix[kMaxFloaters - count - 1]; // Don't use same floater twice
-    var floater = {
+    let floater = {
       imageNum: nextItem,
       opacity: Math.random() * (kMaxFloaterOpacity - kMinFloaterOpacity) + kMinFloaterOpacity,
       width: (Math.max(kMinFloaterWidth, Math.random() * floaters.maxWidth)) / getZoom(),
@@ -141,33 +141,33 @@ function resetFloaters(blockerDiv, floaters) {
       y: Math.random() * 100,
       rotation: Math.random() * 360
     };
-    var floaterImg = createFloater(floater);
+    let floaterImg = createFloater(floater);
     blockerDiv.appendChild(floaterImg);
     animateFloater(floater, floaterImg);
   }
 }
 
 function animateFloater(floater, floaterImg) {
-  var delay = Math.random() * kMaxFloaterTravelDelayTime;
+  let delay = Math.random() * kMaxFloaterTravelDelayTime;
   setTimeout(function() {
     let id = 'noCoffeeFloaterAnimationStyle-' + floater.imageNum;
-    var lastAnimation = document.getElementById(id);
+    let lastAnimation = document.getElementById(id);
     if (lastAnimation) {
       // Stabilize the coordinates to the new location so it doesn't jump back when we remove the old style
-      var rect = floaterImg.getBoundingClientRect();
+      let rect = floaterImg.getBoundingClientRect();
       floaterImg.left = rect.left + 'px';
       floaterImg.top = rect.top + 'px';
       // Remove the old style
       deleteNodeIfExists(lastAnimation);
     }
-    var floaterStyleElt = document.createElement('style');
+    let floaterStyleElt = document.createElement('style');
     floaterStyleElt.id = id;
-    var direction = Math.random() * 360;
-    var newRotation = floater.rotation + Math.random() * kMaxFloaterRotation * 2 - kMaxFloaterRotation;
-    var distance = Math.random() * kMaxFloaterTravel;
-    var left = floater.x + Math.sin(direction) * distance;
-    var top = floater.y + Math.cos(direction) * distance;
-    var seconds = Math.random() * (kMaxFloaterTravelTime - kMinFloaterTravelTime) + kMinFloaterTravelTime;
+    let direction = Math.random() * 360;
+    let newRotation = floater.rotation + Math.random() * kMaxFloaterRotation * 2 - kMaxFloaterRotation;
+    let distance = Math.random() * kMaxFloaterTravel;
+    let left = floater.x + Math.sin(direction) * distance;
+    let top = floater.y + Math.cos(direction) * distance;
+    let seconds = Math.random() * (kMaxFloaterTravelTime - kMinFloaterTravelTime) + kMinFloaterTravelTime;
     floaterStyleElt.innerText = '#' + floaterImg.id + ' { ' +
    'top: ' + top + '% !important; ' +
    'left: ' + left + '% !important; ' +
@@ -183,11 +183,11 @@ function createCloudyDiv(cloudy) {
   if (!cloudy || !cloudy.cloudyLevel) {
     return null;
   }
-  var cloudyDiv = document.createElement('div');
+  let cloudyDiv = document.createElement('div');
   cloudyDiv.className = kCloudyClassName;
-  var size = 100 * cloudy.zoom;
+  let size = 100 * cloudy.zoom;
 
-  var style =
+  let style =
   'z-index:2147483646 !important; ' +
   '-webkit-transform: scale(' + (1 / cloudy.zoom) + '); ' +
   '-webkit-transform-origin: 0 0;' +
@@ -205,9 +205,9 @@ function createBlockerDiv(block) {
   if (!block) {
     return null;
   }
-  var blockerDiv = document.createElement('div');
+  let blockerDiv = document.createElement('div');
   blockerDiv.className = kBlockerClassName;
-  var style =
+  let style =
   'z-index:2147483646 !important; ' +
   'pointer-events: none; ' +
   'position: fixed; ';
@@ -247,7 +247,7 @@ function createBlockerDiv(block) {
   }
 
   if (block.zoom) {
-    var size = 100 * block.zoom;
+    let size = 100 * block.zoom;
     style += '-webkit-transform: scale(' + 1 / block.zoom + '); -webkit-transform-origin: 0 0; ' +
  'width: ' + size + '%; height: ' + size + '%; left: 0; top: 0;';
   }
@@ -261,10 +261,10 @@ function createSvgSnowOverlay(snow) {
   if (!snow || !snow.amount) {
     return null;
   }
-  var svgOverlay = document.createElement('div');
+  let svgOverlay = document.createElement('div');
   svgOverlay.className = kSvgOverlayClassName;
-  var size = 100 * snow.zoom;
-  var startPos = (100 - size) / 2;
+  let size = 100 * snow.zoom;
+  let startPos = (100 - size) / 2;
   svgOverlay.setAttribute('style',
     '-webkit-transform: scale(' + (1 / snow.zoom) + '); ' +
   'z-index:2147483645 !important; ' +
@@ -291,7 +291,7 @@ function createSvgSnowOverlay(snow) {
 
 // Return style object
 function getView(viewData) {
-  var view = {
+  let view = {
     doc: {
       cssFilter: '',
       svgFilterElt: undefined
@@ -306,7 +306,7 @@ function getView(viewData) {
 
   // Create new svg color filter -- old one will be removed
   // Needs to go on doc element so that background of page is always affected
-  var svgColorFilterMarkup = getSvgColorMatrixFilter(viewData.colorMatrixValues);
+  let svgColorFilterMarkup = getSvgColorMatrixFilter(viewData.colorMatrixValues);
   if (svgColorFilterMarkup) {
     view.doc.svgFilterElt = createSvgFilter(svgColorFilterMarkup, kSvgDocClassName);
     let id = view.doc.svgFilterElt.querySelector('filter').id;
@@ -315,8 +315,8 @@ function getView(viewData) {
 
   // Create new svg ghosting filter -- old one will be removed
   // Ghosting filter needs to go on body -- learned through trial and error. Seems to be a bug in Chrome.
-  var svgGhostingFilterMarkup = getSvgGhostingFilter(viewData.ghosting);
-  var svgFlutterFilterMarkup = getSvgFlutterFilter(viewData.flutter);
+  let svgGhostingFilterMarkup = getSvgGhostingFilter(viewData.ghosting);
+  let svgFlutterFilterMarkup = getSvgFlutterFilter(viewData.flutter);
   stopFluttering();
   if (svgGhostingFilterMarkup || svgFlutterFilterMarkup) {
     view.body.svgFilterElt = createSvgFilter(svgFlutterFilterMarkup || svgGhostingFilterMarkup, kSvgBodyClassName);
@@ -361,12 +361,12 @@ function getZoom() {
 
 // Computed values based on user settings
 function getViewData(settings) {
-  var zoom = getZoom();
+  let zoom = getZoom();
 
   // When there is any ghosting, add a little blur
-  var blurPlusExtra = settings.blurLevel + (settings.ghostingLevel > 0 ? 3 : 0) + (settings.cloudyLevel / 2.5);
+  let blurPlusExtra = settings.blurLevel + (settings.ghostingLevel > 0 ? 3 : 0) + (settings.cloudyLevel / 2.5);
 
-  var viewData = {
+  let viewData = {
     blur: (blurPlusExtra / zoom) / 2,
     contrast: settings.contrastLevel ? 60 - settings.contrastLevel : 100,
     colorMatrixValues: settings.colorDeficiencyMatrixValues,
@@ -466,7 +466,7 @@ function deepEquals(obj1, obj2) {
   }
 
   if (typeof obj1 === 'object') {
-    var item;
+    let item;
     for (item in obj1) {
       if (!deepEquals(obj1[item], obj2[item])) {
         return false; // Recurse for sub-sobjects
@@ -484,7 +484,7 @@ function deepEquals(obj1, obj2) {
 }
 
 function refresh(viewData) {
-  var view = getView(viewData);
+  let view = getView(viewData);
 
   if (typeof view.doc.svgFilterElt !== 'undefined') {
     deleteNodeIfExists(document.querySelector('.' + kSvgDocClassName)); // Delete old one
@@ -529,10 +529,10 @@ chrome.extension.onMessage.addListener(
   function(request) {
     if (request.type === 'refresh') {
       ++window.uniqueNumber;
-      var viewData = getViewData(request.settings);
-      if (!deepEquals(viewData, window.oldViewData)) {
+      let viewData = getViewData(request.settings);
+      if (!deepEquals(viewData, oldViewData)) {
         refresh(viewData); // View data has changed -- re-render
-        window.oldViewData = viewData;
+        oldViewData = viewData;
       }
     }
   });
