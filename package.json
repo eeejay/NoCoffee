@@ -4,13 +4,16 @@
   "description": "NoCoffee vision simulator",
   "main": "background.js",
   "scripts": {
-    "test": "eslint *.js",
+    "postinstall": "cp node_modules/webextension-polyfill/dist/browser-polyfill.js .",
+    "test": "eslint .",
     "start:firefox": "web-ext run",
     "start:chrome": "./launch_chrome.sh"
   },
-  "author": "Aaron Leventhal",
-  "license": "MIT",
-  "dependencies": {},
+"author": "Aaron Leventhal",
+"license": "MIT",
+  "dependencies": {
+    "webextension-polyfill": "^0.2.1"
+  },
   "devDependencies": {
     "eslint": "^4.8.0",
     "web-ext": "^2.2.0"
