@@ -16,15 +16,15 @@
 		input[type="range"] {
 			position: relative;
 			border: 2px solid rgba(200,200,200,.8);
-			border-radius: 2px; 
-			display: inline-block; 
-			top: 2px; 
+			border-radius: 2px;
+			display: inline-block;
+			top: 2px;
 			-webkit-appearance: none;
-			background-color: rgb(40, 40, 40); 
-			height: 13px; 
+			background-color: rgb(40, 40, 40);
+			height: 13px;
 		}
 		input[type="range"]:focus {
-			border: 2px solid rgba(40, 120, 255, 1);			
+			border: 2px solid rgba(40, 120, 255, 1);
 			z-index: 0 !important;
 		}
 		input[type="range"]::-webkit-slider-thumb {
@@ -32,7 +32,7 @@
 		    z-index: 999 !important;
 		    width: 11px;
 		    height: 16px;
-		 
+
 		    -webkit-border-radius: 40px;
 		    border-radius: 40px;
 		    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ebf1f6), color-stop(50%,#abd3ee), color-stop(51%,#89c3eb), color-stop(100%,#d5ebfb));
@@ -47,20 +47,20 @@
 			border: 2px solid black;
 			border-radius: 6px;
 		}
-		input[type="number"] { 
+		input[type="number"] {
 			display: inline-block;
-			width: 3.7em; 
+			width: 3.7em;
 			font-size: normal;
-			color: white; 
-			background-color: rgb(40, 40, 40); 
+			color: white;
+			background-color: rgb(40, 40, 40);
 			border: 2px solid rgba(160,160,220,.6);
 			border-radius: 6px;
 			position: relative;
 			top: -1px;
 		}
-		select { 
-			color: white; 
-			background-color: rgb(60, 40, 60); 
+		select {
+			color: white;
+			background-color: rgb(60, 40, 60);
 			border: 2px solid rgba(160,160,220,.6);
 			border-radius: 6px;
 			font-weight:bold;
@@ -72,7 +72,7 @@
 		}
 		a { padding: 2px;}
 		input[type="radio"] + label { border: 2px solid transparent;}
-		a:focus, select:focus, button:focus, input[type="number"]:focus, input[type="radio"]:focus + label { 
+		a:focus, select:focus, button:focus, input[type="number"]:focus, input[type="radio"]:focus + label {
 			border-color: rgba(60, 140, 255, 1) !important;
 			border-radius: 6px;
 			outline: 0;
@@ -88,7 +88,7 @@
 	   		<legend>Pervasive issues</legend>
 	   		<div class="lineup">
 				<div class="line">
-					<label for="blurValueText">Blur (low acuity): </label> 
+					<label for="blurValueText">Blur (low acuity): </label>
 					<span class="blur">
 						<input id="blur" type="range" tabindex="-1" min="0" max="20" step="1" value="0">
 						<input type="number" id="blurValueText" min="0" max="20" step="1" value="0"/>
@@ -101,35 +101,35 @@
 						<input type="number" id="contrastValueText"  min="0" max="50" step="1" value="0"/>
 					</span>
 				</div>
-				<div class="line">			
+				<div class="line">
 					<label for "brightnessValueText">Glare: </label>
 					<span class="brightness">
 						<input id="brightness" type="range" tabindex="-1" min="0" max="50" step="1" value="0">
 						<input type="number" id="brightnessValueText" min="0" max="50" step="1" value="0"/>
 					</span>
 				</div>
-				<div class="line">			
+				<div class="line">
 					<label for "ghostingValueText">Ghosting: </label>
 					<span class="ghosting">
 						<input id="ghosting" type="range" tabindex="-1" min="0" max="50" step="1" value="0">
 						<input type="number" id="ghostingValueText" min="0" max="50" step="1" value="0"/>
 					</span>
 				</div>
-				<div class="line">			
+				<div class="line">
 					<label for "snowValueText">Snow: </label>
 					<span class="snow">
 						<input id="snow" type="range" tabindex="-1" min="0" max="10" step="1" value="0">
 						<input type="number" id="snowValueText" min="0" max="10" step="1" value="0"/>
 					</span>
 				</div>
-				<div class="line">			
+				<div class="line">
 					<label for "cloudyValueText">Cloudiness (cataracts): </label>
 					<span class="cloudy">
 						<input id="cloudy" type="range" tabindex="-1" min="0" max="20" step="1" value="0">
 						<input type="number" id="cloudyValueText" min="0" max="20" step="1" value="0"/>
 					</span>
 				</div>
-				<div class="line">			
+				<div class="line">
 					<label for "flutterValueText">Flutter (nystagmus): </label>
 					<span class="flutter">
 						<input id="flutter" type="range" tabindex="-1" min="0" max="100" step="1" value="0">
@@ -164,7 +164,7 @@
 			</div>
 		</fieldset>
 		<br>
-		<table class="footer" role="presentation"> 
+		<table class="footer" role="presentation">
 			<td class="footerItem"><a href="http://accessgarage.wordpress.com/2013/02/09/458/">More info</a></td>
 			<td class="footerItem footerItemRight"><a href="https://chrome.google.com/webstore/support/jjeeggmbnhckmgdhmgdckeigabjfbddl?hl=en&gl=US#bug" id="feedback">Feedback</a></td>
 		</div>
