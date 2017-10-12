@@ -1,0 +1,173 @@
+<html>
+<head>
+	<script src="popup.js"></script>
+	<style>
+		body { background-color: #151515; color: #f2f2f2; font-family: sans-serif; padding-left: 12px; padding-right: 12px;}
+		.line { white-space: nowrap; margin-top: 0px;}
+		.blocks .line { margin-top: 2px;}
+		.lineup label { display: inline-block; width: 10.5em; }
+		h1 { text-align:left ; font-size: 1.4em; margin-bottom: 0px; }
+		.footer { width: 101%;}
+		.footer td { border: 0; padding: 0; margin: 0;}
+		.footerItem { font-family: Arial; font-size: 1em; }
+		.footerItem a { color: #f4f4e0 !important; }
+		.footerItemRight { text-align: right; }
+
+		input[type="range"] {
+			position: relative;
+			border: 2px solid rgba(200,200,200,.8);
+			border-radius: 2px; 
+			display: inline-block; 
+			top: 2px; 
+			-webkit-appearance: none;
+			background-color: rgb(40, 40, 40); 
+			height: 13px; 
+		}
+		input[type="range"]:focus {
+			border: 2px solid rgba(40, 120, 255, 1);			
+			z-index: 0 !important;
+		}
+		input[type="range"]::-webkit-slider-thumb {
+		    -webkit-appearance: none;
+		    z-index: 999 !important;
+		    width: 11px;
+		    height: 16px;
+		 
+		    -webkit-border-radius: 40px;
+		    border-radius: 40px;
+		    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ebf1f6), color-stop(50%,#abd3ee), color-stop(51%,#89c3eb), color-stop(100%,#d5ebfb));
+		}
+		#reset {
+			float: right;
+			font-size: .6em;
+			position: relative;
+			top: -3px;
+			background-color: #226622;
+			color: #eeeeee;
+			border: 2px solid black;
+			border-radius: 6px;
+		}
+		input[type="number"] { 
+			display: inline-block;
+			width: 3.7em; 
+			font-size: normal;
+			color: white; 
+			background-color: rgb(40, 40, 40); 
+			border: 2px solid rgba(160,160,220,.6);
+			border-radius: 6px;
+			position: relative;
+			top: -1px;
+		}
+		select { 
+			color: white; 
+			background-color: rgb(60, 40, 60); 
+			border: 2px solid rgba(160,160,220,.6);
+			border-radius: 6px;
+			font-weight:bold;
+		}
+		fieldset > legend { background-color: #203040; border; 2px solid white; }
+		a, select {
+			border: 2px solid black;
+			border-radius: 6px;
+		}
+		a { padding: 2px;}
+		input[type="radio"] + label { border: 2px solid transparent;}
+		a:focus, select:focus, button:focus, input[type="number"]:focus, input[type="radio"]:focus + label { 
+			border-color: rgba(60, 140, 255, 1) !important;
+			border-radius: 6px;
+			outline: 0;
+			z-index: 999;
+		}
+	</style>
+</head>
+<body>
+	<form name="visionSettings">
+		<h1>NoCoffee Vision Simulator<button id="reset" type="reset">Reset all</button></h1>
+		<br>
+		<fieldset class="pervasive">
+	   		<legend>Pervasive issues</legend>
+	   		<div class="lineup">
+				<div class="line">
+					<label for="blurValueText">Blur (low acuity): </label> 
+					<span class="blur">
+						<input id="blur" type="range" tabindex="-1" min="0" max="20" step="1" value="0">
+						<input type="number" id="blurValueText" min="0" max="20" step="1" value="0"/>
+					</span>
+				</div>
+				<div class="line">
+					<label for "contrastValueText">Contrast loss: </label>
+					<span class="contrast">
+						<input id="contrast" type="range" tabindex="-1" min="0" max="50" step="1" value="0">
+						<input type="number" id="contrastValueText"  min="0" max="50" step="1" value="0"/>
+					</span>
+				</div>
+				<div class="line">			
+					<label for "brightnessValueText">Glare: </label>
+					<span class="brightness">
+						<input id="brightness" type="range" tabindex="-1" min="0" max="50" step="1" value="0">
+						<input type="number" id="brightnessValueText" min="0" max="50" step="1" value="0"/>
+					</span>
+				</div>
+				<div class="line">			
+					<label for "ghostingValueText">Ghosting: </label>
+					<span class="ghosting">
+						<input id="ghosting" type="range" tabindex="-1" min="0" max="50" step="1" value="0">
+						<input type="number" id="ghostingValueText" min="0" max="50" step="1" value="0"/>
+					</span>
+				</div>
+				<div class="line">			
+					<label for "snowValueText">Snow: </label>
+					<span class="snow">
+						<input id="snow" type="range" tabindex="-1" min="0" max="10" step="1" value="0">
+						<input type="number" id="snowValueText" min="0" max="10" step="1" value="0"/>
+					</span>
+				</div>
+				<div class="line">			
+					<label for "cloudyValueText">Cloudiness (cataracts): </label>
+					<span class="cloudy">
+						<input id="cloudy" type="range" tabindex="-1" min="0" max="20" step="1" value="0">
+						<input type="number" id="cloudyValueText" min="0" max="20" step="1" value="0"/>
+					</span>
+				</div>
+				<div class="line">			
+					<label for "flutterValueText">Flutter (nystagmus): </label>
+					<span class="flutter">
+						<input id="flutter" type="range" tabindex="-1" min="0" max="100" step="1" value="0">
+						<input type="number" id="flutterValueText" min="0" max="100" step="1" value="0"/>
+					</span>
+				</div>
+				<br>
+				<div class="line">
+					<label for="color">Color deficiency:</label> <select size="1" id="color"></select>
+				</div>
+			</div>
+		</fieldset>
+
+		<fieldset style="margin-top: 20px;" class="blocks">
+			<legend>Blocked visual field</legend>
+			<div class="line"><input id="noBlock" type="radio" name="blockType" checked><label for="noBlock">Normal</label> </div>
+			<div class="line"><input id="centralBlock" type="radio" name="blockType"><label for="centralBlock">Central (macular degeneration)</label> </div>
+			<div class="line"><input id="peripheralBlock" type="radio" name="blockType"><label for="peripheralBlock">Peripheral (glaucoma, retinitis pigmentosa)</label> </div>
+			<div class="line"><input id="cornerBlock" type="radio" name="blockType"><label for="cornerBlock">Corner (retinal detachment)</label> </div>
+			<div class="line"><input id="sideBlock" type="radio" name="blockType"><label for="sideBlock">Side (hemianopia)</label> </div>
+			<div class="line"><input id="spotBlock" type="radio" name="blockType"><label for="spotBlock">Large spots (diabetic retinopathy)</label> </div>
+			<div class="line"><input id="floaterBlock" type="radio" name="blockType"><label for="floaterBlock">Floaters</label></div>
+			<br>
+			<div class="lineup">
+				<div class="line">
+					<label for="blockStrengthValueText">Strength and size: </label>
+					<span class="blockStrength">
+						<input id="blockStrength" type="range" tabindex="-1" min="0" max="100" step="1" value="40">
+						<input type="number" id="blockStrengthValueText" min="0" max="100" step="1" value="40"/>
+					</span>
+				</div>
+			</div>
+		</fieldset>
+		<br>
+		<table class="footer" role="presentation"> 
+			<td class="footerItem"><a href="http://accessgarage.wordpress.com/2013/02/09/458/">More info</a></td>
+			<td class="footerItem footerItemRight"><a href="https://chrome.google.com/webstore/support/jjeeggmbnhckmgdhmgdckeigabjfbddl?hl=en&gl=US#bug" id="feedback">Feedback</a></td>
+		</div>
+	</form>
+</body>
+</html>
