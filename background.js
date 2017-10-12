@@ -1,7 +1,7 @@
 // In background.js:
 // React when a browser action's icon is clicked.
 
-/* exported updateSettings */
+/* exported updateSettings getSettings */
 
 var gSettings = {};
 
@@ -16,8 +16,12 @@ function updateAllTabs() {
 }
 
 function updateSettings(settings) {
-  gSettings = settings;
+  Object.assign(gSettings, settings);
   updateAllTabs();
+}
+
+function getSettings() {
+  return gSettings;
 }
 
 browser.runtime.onMessage.addListener(

@@ -60,7 +60,7 @@ function createColorDeficiencyOptions(settings) {
     option.innerText = kColorDeficiencyTable[index].name;
     colorSelect.add(option);
   }
-  colorSelect.selectedIndex = settings ? settings.colorDeficiencyTypeIndex : 0;
+  colorSelect.selectedIndex = settings.colorDeficiencyTypeIndex || 0;
 }
 
 function focusEventTarget(evt) {
@@ -68,23 +68,22 @@ function focusEventTarget(evt) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  let settings = browser.extension.getBackgroundPage().settings;
-
+  let settings = browser.extension.getBackgroundPage().getSettings();
   document.getElementById('blur').focus();
-  updateValue('blur', settings ? settings.blurLevel : 0);
-  updateValue('contrast', settings ? settings.contrastLevel : 0);
-  updateValue('brightness', settings ? settings.brightnessLevel : 0);
-  updateValue('ghosting', settings ? settings.ghostingLevel : 0);
-  updateValue('snow', settings ? settings.snowLevel : 0);
-  updateValue('cloudy', settings ? settings.cloudyLevel : 0);
-  updateValue('flutter', settings ? settings.flutterLevel : 0);
-  updateValue('blockStrength', settings ? settings.blockStrength : kDefaultBlockStrength);
+  updateValue('blur', settings.blurLevel || 0);
+  updateValue('contrast', settings.contrastLevel || 0);
+  updateValue('brightness', settings.brightnessLevel || 0);
+  updateValue('ghosting', settings.ghostingLevel || 0);
+  updateValue('snow', settings.snowLevel || 0);
+  updateValue('cloudy', settings.cloudyLevel || 0);
+  updateValue('flutter', settings.flutterLevel || 0);
+  updateValue('blockStrength', settings.blockStrength || kDefaultBlockStrength);
 
   createColorDeficiencyOptions(settings);
 
   // ----------------------------------------------------------------------
   // Block type radio
-  let blockType = (settings ? settings.blockType : 'noBlock') || 'noBlock';
+  let blockType = settings.blockType || 'noBlock';
   document.visionSettings[blockType].checked = 'checked';
   // ----------------------------------------------------------------------
 
