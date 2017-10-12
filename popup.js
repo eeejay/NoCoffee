@@ -16,7 +16,7 @@ function updateSettingsImpl() {
   let blockTypeRadio = document.querySelector('input[type="radio"][name="blockType"]:checked');
   let blockType = blockTypeRadio ? blockTypeRadio.id : 'noBlock';
   let colorDeficiencyTypeIndex = document.getElementById('color').selectedIndex;
-  chrome.extension.getBackgroundPage().updateSettings({
+  browser.extension.getBackgroundPage().updateSettings({
     blurLevel: parseInt(document.getElementById('blur').value),
     contrastLevel: parseInt(document.getElementById('contrast').value),
     brightnessLevel: parseInt(document.getElementById('brightness').value),
@@ -68,7 +68,7 @@ function focusEventTarget(evt) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  let settings = chrome.extension.getBackgroundPage().settings;
+  let settings = browser.extension.getBackgroundPage().settings;
 
   document.getElementById('blur').focus();
   updateValue('blur', settings ? settings.blurLevel : 0);

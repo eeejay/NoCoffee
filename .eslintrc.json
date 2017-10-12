@@ -11,6 +11,7 @@
       "semi": [2, "always"],
       "space-before-function-paren": ["error", "never"],
       "no-constant-condition": ["off"],
-      "no-fallthrough": ["off"]
+      "no-fallthrough": ["off"],
+      "no-console": ["error", { "allow": ["warn"] }]
     }
 }

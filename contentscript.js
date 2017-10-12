@@ -32,7 +32,7 @@ function createSvgFilter(filterMarkup, className) {
   let svgMarkup =
 '<svg xmlns="http://www.w3.org/2000/svg" version="1.1">' +
   '<defs>' +
- '<filter id="' + className + window.uniqueNumber + '" >' +
+ '<filter id="' + className + Date.now() + '" >' +
    filterMarkup +
  '</filter>' +
    '</defs>' +
@@ -116,7 +116,7 @@ function createFloater(floater) {
   floaterImg.style.opacity = floater.opacity.toString();
   floaterImg.style.webkitTransform = 'rotate(' + floater.rotation + 'deg)';
   floaterImg.style.zIndex = '999999';
-  floaterImg.src = chrome.extension.getURL('overlays/floater-' + floater.imageNum + '.png');
+  floaterImg.src = browser.runtime.getURL('overlays/floater-' + floater.imageNum + '.png');
   floaterImg.id = 'noCoffeeFloater-' + floater.imageNum;
   floaterImg.addEventListener('webkitTransitionEnd', // Start new animation some time after last finished
     function() { animateFloater(floater, floaterImg); }, false);
@@ -193,7 +193,7 @@ function createCloudyDiv(cloudy) {
   '-webkit-transform-origin: 0 0;' +
   'pointer-events: none; ' +
   'position: fixed; left: 0; top: 0; height: ' + size + '%; width: ' + size + '%; ' +
-    'background-image: url(' + chrome.extension.getURL('overlays/cataracts.png') + '); ' +
+    'background-image: url(' + browser.runtime.getURL('overlays/cataracts.png') + '); ' +
   'background-repeat: no-repeat; background-size: 100% 100%; ' +
   'background-position: 0 0; -webkit-filter: opacity(' + cloudy.cloudyLevel + '%);';
 
@@ -414,7 +414,7 @@ function getViewData(settings) {
           outerHeight: window.top.outerHeight,
           xPosition: '0px',
           yPosition: '0px',
-          image: chrome.extension.getURL('overlays/diabetic-retinopathy.png'),
+          image: browser.runtime.getURL('overlays/diabetic-retinopathy.png'),
           opacity: settings.blockStrength,
           extraOpacity: settings.blockStrength * 2,
           displacement: false,
@@ -427,7 +427,7 @@ function getViewData(settings) {
           outerHeight: window.top.outerHeight,
           xPosition: (settings.blockStrength / 2.5 - 40) + '%',
           yPosition: (settings.blockStrength / 2.5 - 40) + '%',
-          image: chrome.extension.getURL('overlays/retinal-detachment.png'),
+          image: browser.runtime.getURL('overlays/retinal-detachment.png'),
           opacity: 100,
           displacement: true,
           zoom: zoom
@@ -525,10 +525,9 @@ function refresh(viewData) {
 }
 
 // Setup refresh listener
-chrome.extension.onMessage.addListener(
+browser.runtime.onMessage.addListener(
   function(request) {
     if (request.type === 'refresh') {
-      ++window.uniqueNumber;
       let viewData = getViewData(request.settings);
       if (!deepEquals(viewData, oldViewData)) {
         refresh(viewData); // View data has changed -- re-render
@@ -539,7 +538,7 @@ chrome.extension.onMessage.addListener(
 
 function initIfStillNecessaryAndBodyExists() {
   if (document.body && !isInitialized) {
-    chrome.extension.sendMessage({type: 'getSettings'}, function() {});
+    browser.runtime.sendMessage({type: 'getSettings'}, function() {});
     isInitialized = true;
   }
 }

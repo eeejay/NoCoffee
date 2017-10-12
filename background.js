@@ -3,27 +3,27 @@
 
 /* exported updateSettings */
 
+var gSettings = {};
+
 function updateAllTabs() {
   chrome.tabs.query({}, function(tabs) {
     for (var index = 0; index < tabs.length; index++) {
       let tab = tabs[index];
-      chrome.tabs.sendMessage(tab.id, { type: 'refresh', settings: window.settings }, function() {});
+      browser.tabs.sendMessage(tab.id,
+        { type: 'refresh', settings: gSettings }).catch(e => console.warn(e));
     }
   });
 }
 
 function updateSettings(settings) {
-  window.settings = settings;
+  gSettings = settings;
   updateAllTabs();
-
-  if (!window.intervalId) {
-    window.intervalId = setInterval(updateAllTabs, 500); // In case zoom changes
-  }
 }
 
-chrome.extension.onMessage.addListener(
+browser.runtime.onMessage.addListener(
   function(request, sender) {
     if (request.type === 'getSettings' && window.settings) {
-      chrome.tabs.sendMessage(sender.tab.id, { type: 'refresh', settings: window.settings }, function() {});
+      browser.tabs.sendMessage(sender.tab.id,
+        { type: 'refresh', settings: gSettings }).catch(e => console.warn(e));
     }
   });
