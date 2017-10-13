@@ -7,7 +7,8 @@
     "postinstall": "cp node_modules/webextension-polyfill/dist/browser-polyfill.js .",
     "test": "eslint .",
     "start:firefox": "web-ext run",
-    "start:chrome": "./launch_chrome.sh"
+    "start:chrome": "./launch_chrome.sh",
+    "build": "web-ext build --ignore-files package\\* launch_chrome.sh --overwrite-dest"
   },
 "author": "Aaron Leventhal",
 "license": "MIT",
