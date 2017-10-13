@@ -1,6 +1,6 @@
 {
   "name": "nocoffee",
-  "version": "0.4.9",
+  "version": "0.5.0",
   "description": "NoCoffee vision simulator",
   "main": "background.js",
   "scripts": {
