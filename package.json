@@ -10,13 +10,13 @@
     "start:chrome": "./launch_chrome.sh",
     "build": "web-ext build --ignore-files package\\* launch_chrome.sh --overwrite-dest"
   },
-"author": "Aaron Leventhal",
-"license": "MIT",
+  "author": "Aaron Leventhal",
+  "license": "MIT",
   "dependencies": {
-    "webextension-polyfill": "^0.2.1"
+    "webextension-polyfill": "^0.12.0"
   },
   "devDependencies": {
-    "eslint": "^4.8.0",
-    "web-ext": "^2.2.0"
+    "eslint": "^9.19.0",
+    "web-ext": "^8.3.0"
   }
 }
