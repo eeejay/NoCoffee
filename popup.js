@@ -16,18 +16,21 @@ function updateSettingsImpl() {
   let blockTypeRadio = document.querySelector('input[type="radio"][name="blockType"]:checked');
   let blockType = blockTypeRadio ? blockTypeRadio.id : 'noBlock';
   let colorDeficiencyTypeIndex = document.getElementById('color').selectedIndex;
-  browser.extension.getBackgroundPage().updateSettings({
-    blurLevel: parseInt(document.getElementById('blur').value),
-    contrastLevel: parseInt(document.getElementById('contrast').value),
-    brightnessLevel: parseInt(document.getElementById('brightness').value),
-    ghostingLevel: parseInt(document.getElementById('ghosting').value),
-    snowLevel: parseInt(document.getElementById('snow').value),
-    cloudyLevel: parseInt(document.getElementById('cloudy').value),
-    flutterLevel: parseInt(document.getElementById('flutter').value),
-    colorDeficiencyTypeIndex: colorDeficiencyTypeIndex,
-    colorDeficiencyMatrixValues: kColorDeficiencyTable[colorDeficiencyTypeIndex].values,
-    blockType: blockType,
-    blockStrength: parseInt(document.getElementById('blockStrength').value)
+  chrome.runtime.sendMessage({
+    type: 'updateSettings',
+    settings: {
+      blurLevel: parseInt(document.getElementById('blur').value),
+      contrastLevel: parseInt(document.getElementById('contrast').value),
+      brightnessLevel: parseInt(document.getElementById('brightness').value),
+      ghostingLevel: parseInt(document.getElementById('ghosting').value),
+      snowLevel: parseInt(document.getElementById('snow').value),
+      cloudyLevel: parseInt(document.getElementById('cloudy').value),
+      flutterLevel: parseInt(document.getElementById('flutter').value),
+      colorDeficiencyTypeIndex: colorDeficiencyTypeIndex,
+      colorDeficiencyMatrixValues: kColorDeficiencyTable[colorDeficiencyTypeIndex].values,
+      blockType: blockType,
+      blockStrength: parseInt(document.getElementById('blockStrength').value)
+    }
   });
 }
 
@@ -67,8 +70,8 @@ function focusEventTarget(evt) {
   setTimeout(function() { evt.target.focus(); }, 0);
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  let settings = browser.extension.getBackgroundPage().getSettings();
+document.addEventListener('DOMContentLoaded', async function() { 
+  let settings = await chrome.runtime.sendMessage({ type: 'getSettings' }) || {};
   document.getElementById('blur').focus();
   updateValue('blur', settings.blurLevel || 0);
   updateValue('contrast', settings.contrastLevel || 0);

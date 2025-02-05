@@ -1,33 +1,36 @@
-// In background.js:
-// React when a browser action's icon is clicked.
+// Store settings in memory
+let gSettings = {};
 
-/* exported updateSettings getSettings */
+// Load initial settings when service worker starts
+chrome.storage.local.get('settings', (result) => {
+  gSettings = result.settings || {};
+});
 
-var gSettings = {};
-
-function updateAllTabs() {
-  chrome.tabs.query({}, function(tabs) {
-    for (var index = 0; index < tabs.length; index++) {
-      let tab = tabs[index];
-      browser.tabs.sendMessage(tab.id,
-        { type: 'refresh', settings: gSettings }).catch(e => console.warn(e));
-    }
-  });
+async function updateActiveTab() {
+  const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  try {
+    await chrome.tabs.sendMessage(activeTab.id, { 
+      type: 'refresh', 
+      settings: gSettings 
+    });
+  } catch (e) {
+    console.warn('Error updating tab:', e);
+  }
 }
 
-function updateSettings(settings) {
-  Object.assign(gSettings, settings);
-  updateAllTabs();
+async function updateSettings(settings) {
+  gSettings = {...gSettings, ...settings};
+  await chrome.storage.local.set({ settings: gSettings });
+  await updateActiveTab();
 }
 
-function getSettings() {
-  return gSettings;
-}
-
-browser.runtime.onMessage.addListener(
-  function(request, sender) {
-    if (request.type === 'getSettings' && window.settings) {
-      browser.tabs.sendMessage(sender.tab.id,
-        { type: 'refresh', settings: gSettings }).catch(e => console.warn(e));
-    }
-  });
+// Listen for messages
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.type === 'getSettings') {
+    sendResponse(gSettings);
+  } else if (request.type === 'updateSettings') {
+    updateSettings(request.settings);
+    sendResponse({ success: true });
+  }
+  return true;
+});
