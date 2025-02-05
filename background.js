@@ -1,10 +1,5 @@
-// Store settings in memory
-let gSettings = {};
 
-// Load initial settings when service worker starts
-chrome.storage.local.get('settings', (result) => {
-  gSettings = result.settings || {};
-});
+let gSettings = {};
 
 async function updateActiveTab() {
   const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -20,7 +15,6 @@ async function updateActiveTab() {
 
 async function updateSettings(settings) {
   gSettings = {...gSettings, ...settings};
-  await chrome.storage.local.set({ settings: gSettings });
   await updateActiveTab();
 }
 
