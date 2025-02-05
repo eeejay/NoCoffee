@@ -1,64 +1,56 @@
 {
-  "manifest_version": 2,
-
+  "manifest_version": 3,
   "name": "NoCoffee",
   "description": "NoCoffee vision simulator",
   "version": "0.5.0",
   "homepage_url":"http://accessgarage.wordpress.com/2013/02/09/458/",
 
-  "applications": {
-    "gecko": {
-      "id": "nocoffee@accessgarage.wordpress.com",
-      "strict_min_version": "42.0"
-    }
+  "icons": {
+    "16": "./icons/icon16.png",
+    "48": "./icons/icon48.png",
+    "128": "./icons/icon128.png"
   },
 
-  "browser_action": {
-    "default_icon": "icon48.png",
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "action": {
+    "default_icon": {
+      "16": "./icons/icon16.png",
+      "48": "./icons/icon48.png",
+      "128": "./icons/icon128.png"
+    },
     "default_popup": "popup.html",
     "default_title": "NoCoffee vision simulator"
-  },
-
-  "icons": {
-  	"16": "icon16.png",
-    "48": "icon48.png",
-    "128": "icon128.png"
   },
 
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
       "js": ["browser-polyfill.js", "contentscript.js"],
-      "run_at": "document_start"
+      "run_at": "document_start",
+      "all_frames": true
     }
   ],
 
- "background": {
-    "scripts": ["browser-polyfill.js", "background.js"]
-  },
-
   "permissions": [
-    "tabs", "<all_urls>"
+    "activeTab",
+    "scripting",
+    "storage",
+    "tabs"
+  ],
+
+  "host_permissions": [
+    "<all_urls>"
   ],
 
   "web_accessible_resources": [
-    "overlays/cataracts.png",
-    "overlays/diabetic-retinopathy.png",
-    "overlays/retinal-detachment.png",
-    "overlays/floater-1.png",
-    "overlays/floater-2.png",
-    "overlays/floater-3.png",
-    "overlays/floater-4.png",
-    "overlays/floater-5.png",
-    "overlays/floater-6.png",
-    "overlays/floater-7.png",
-    "overlays/floater-8.png",
-    "overlays/floater-9.png",
-    "overlays/floater-10.png",
-    "overlays/floater-11.png",
-    "overlays/floater-12.png",
-    "overlays/floater-13.png",
-    "overlays/floater-14.png",
-    "overlays/floater-15.png"
+    {
+      "resources": [
+        "overlays/*.png"
+      ],
+      "matches": ["<all_urls>"]
+    }
   ]
 }
