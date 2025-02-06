@@ -7,7 +7,7 @@
     "postinstall": "cp node_modules/webextension-polyfill/dist/browser-polyfill.js .",
     "test": "eslint . && web-ext lint --ignore-files package\\* launch_chrome.sh",
     "start:firefox": "cp manifests/manifest_firefox.json ./manifest.json && web-ext run",
-    "start:chrome": "cp manifests/manifest_chrome.json ./manifest.json && bash launch_chrome.sh",
+    "start:chrome": "cp manifests/manifest_chrome.json ./manifest.json && bash ./launch_chrome.sh",
     "build:firefox": "cp manifests/manifest_firefox.json ./manifest.json && web-ext build",
     "build:chrome": "cp manifests/manifest_chrome.json ./manifest.json && web-ext build --ignore-files package\\* launch_chrome.sh --overwrite-dest",
     "build": "npm run build:chrome && npm run build:firefox"
