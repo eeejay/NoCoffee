@@ -16,7 +16,7 @@ function updateSettingsImpl() {
   let blockTypeRadio = document.querySelector('input[type="radio"][name="blockType"]:checked');
   let blockType = blockTypeRadio ? blockTypeRadio.id : 'noBlock';
   let colorDeficiencyTypeIndex = document.getElementById('color').selectedIndex;
-  chrome.runtime.sendMessage({
+  browser.runtime.sendMessage({
     type: 'updateSettings',
     settings: {
       blurLevel: parseInt(document.getElementById('blur').value),
@@ -52,8 +52,9 @@ function updateOneSetting(evt) {
   updateSettings();
 }
 
+// original code used chrome instead of browser??????????????
 function visitLink() {
-  chrome.tabs.create({url: this.getAttribute('href')});
+  browser.tabs.create({url: this.getAttribute('href')});
 }
 
 function createColorDeficiencyOptions(settings) {
@@ -71,7 +72,7 @@ function focusEventTarget(evt) {
 }
 
 document.addEventListener('DOMContentLoaded', async function() { 
-  let settings = await chrome.runtime.sendMessage({ type: 'getSettings' }) || {};
+  let settings = await browser.runtime.sendMessage({ type: 'getSettings' }) || {};
   document.getElementById('blur').focus();
   updateValue('blur', settings.blurLevel || 0);
   updateValue('contrast', settings.contrastLevel || 0);

@@ -4,6 +4,11 @@ let gSettings = {};
 async function updateActiveTab() {
   const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
   // if (!activeTab) return;
+  // await chrome.scripting.executeScript({
+  //   target: { tabId: activeTab.id },
+  //   files: ['browser-polyfill.js', 'contentscript.js']
+  // });
+
   try {
     await chrome.tabs.sendMessage(activeTab.id, { 
       type: 'refresh', 
