@@ -3,6 +3,7 @@ let gSettings = {};
 
 async function updateActiveTab() {
   const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  // if (!activeTab) return;
   try {
     await chrome.tabs.sendMessage(activeTab.id, { 
       type: 'refresh', 
@@ -19,7 +20,7 @@ async function updateSettings(settings) {
 }
 
 // Listen for messages
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
   if (request.type === 'getSettings') {
     sendResponse(gSettings);
   } else if (request.type === 'updateSettings') {
