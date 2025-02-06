@@ -1,8 +1,8 @@
-
 let gSettings = {};
 
 async function updateActiveTab() {
   const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!activeTab) return;
   try {
     await chrome.tabs.sendMessage(activeTab.id, { 
       type: 'refresh', 
@@ -19,12 +19,20 @@ async function updateSettings(settings) {
 }
 
 // Listen for messages
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
   if (request.type === 'getSettings') {
     sendResponse(gSettings);
+    return true;
   } else if (request.type === 'updateSettings') {
-    updateSettings(request.settings);
-    sendResponse({ success: true });
+      (async () => {
+        try {
+          await updateSettings(request.settings);
+          sendResponse({ success: true });
+        } catch (error) {
+          console.error('Failed to update settings in background:', error);
+          sendResponse({ success: false });
+        }
+      })();
+    return true;
   }
-  return true;
 });
