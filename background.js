@@ -34,3 +34,12 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
   }
   return true;
 });
+
+// chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
+//   if (request.type === 'getSettings') {
+//     return Promise.resolve(gSettings);
+//   } else if (request.type === 'updateSettings') {
+//     updateSettings(request.settings);
+//     return Promise.resolve({ success: true });
+//   }
+// });
