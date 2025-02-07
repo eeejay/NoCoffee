@@ -73,7 +73,7 @@ function focusEventTarget(evt) {
 
 document.addEventListener('DOMContentLoaded', async function() { 
   let settings = await browser.runtime.sendMessage({ type: 'getSettings' }) || {};
-  document.getElementById('blur').focus();
+  document.getElementById('blurValueText').focus();
   updateValue('blur', settings.blurLevel || 0);
   updateValue('contrast', settings.contrastLevel || 0);
   updateValue('brightness', settings.brightnessLevel || 0);
