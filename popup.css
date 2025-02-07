@@ -1,5 +1,15 @@
+/* 
+add root values forcolors???
+rem vs em, 
+contrast, 
+transparent border for high contrast, 
+font size 
+increse reset width???
+add body width???
+*/
 body { 
     background-color: #151515; 
+    border-radius: 6px;
     color: #f2f2f2; 
     font-family: sans-serif; 
     font-size: 1rem;
@@ -14,7 +24,6 @@ h1 {
 }
 
 #reset {
-    /* float: right; */
     font-size: 1rem;
     padding: 3px 10px;
     background-color: #226622;
@@ -24,7 +33,6 @@ h1 {
 }
 
 /* **** form **** */
-
 form { 
     margin-block: 10px;
 }
