@@ -1,12 +1,37 @@
 body { 
     background-color: #151515; 
     color: #f2f2f2; 
-    /* display: flex;
-    flex-direction: column; */
     font-family: sans-serif; 
     font-size: 1rem;
-    /* gap: 15px; */
     padding-inline: 12px; 
+}
+
+/* **** header **** */
+h1 { 
+    text-align:left; 
+    font-size: 1.3rem; 
+    margin-block: 0;
+}
+
+#reset {
+    /* float: right; */
+    font-size: 1rem;
+    padding: 3px 10px;
+    background-color: #226622;
+    color: #eeeeee;
+    border: 2px solid black;
+    border-radius: 6px;
+}
+
+/* **** form **** */
+
+form { 
+    margin-block: 10px;
+}
+
+fieldset > legend { 
+    background-color: #203040; 
+    border: 2px solid white; 
 }
 
 .line {
@@ -17,102 +42,50 @@ body {
 .blocks .lineup .line {
     display: flex;
     align-items: center;
-    /* justify-content: space-between; */
+    gap: 10px;
+    justify-content: space-between;
     width: 100%;
-    
 }
 
 .pervasive .line span, 
 .blocks .lineup .line span {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 0.5rem;
 }
 
-.margin-top-10 { margin-top: 10px; }
-
-.margin-top-15 { margin-top: 15px; }
-
-/* .line { 
-    white-space: nowrap; 
-    margin-top: 0px;
-} */
-
-/* .pervasive .line {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-} */
-
-/* .blocks .line { margin-top: 2px;} */
-
-.lineup label { display: inline-block; width: 10.5em; }
-
-h1 { 
-    text-align:left; 
-    font-size: 1.3rem; 
-    margin-block: 0;
+.lineup label { 
+    display: inline-block; 
+    width: 10.5rem; 
 }
 
-#reset {
-    float: right;
-    font-size: .9rem;
-    padding: 3px 10px;
-    background-color: #226622;
-    color: #eeeeee;
-    border: 2px solid black;
-    border-radius: 6px;
-}
-
-a.footerItem { color: #f4f4e0 !important; }
-
-.flex {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-form { 
-    margin-block: 10px;
+input[type="radio"] + label { 
+    border: 2px solid transparent;
 }
 
 input[type="range"] {
-    /* position: relative; */
     border: 2px solid rgba(200,200,200,.8);
     border-radius: 2px;
     display: inline-block;
-    /* top: 2px; */
-    /* -webkit-appearance: none; */
     background-color: rgb(40, 40, 40);
     height: 13px;
+    width: 128px;
 }
 input[type="range"]:focus {
     border: 2px solid rgba(40, 120, 255, 1);
     z-index: 0 !important;
 }
 
-/* input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    z-index: 999 !important;
-    width: 11px;
-    height: 16px;
-
-    -webkit-border-radius: 40px;
-    border-radius: 40px;
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ebf1f6), color-stop(50%,#abd3ee), color-stop(51%,#89c3eb), color-stop(100%,#d5ebfb));
-} */
-
 input[type="number"] {
     display: inline-block;
-    width: 2.5rem;
+    width: 3rem;
     font-size: 0.9rem;
     color: white;
     background-color: rgb(40, 40, 40);
     border: 2px solid rgba(160,160,220,.6);
     border-radius: 6px;
-    padding-inline: 2px;
-    /* position: relative;
-    top: -1px; */
+    padding: 1px 2px 0;
+    height: auto;
 }
 
 select {
@@ -120,11 +93,20 @@ select {
     background-color: rgb(60, 40, 60);
     border: 2px solid rgba(160,160,220,.6);
     border-radius: 6px;
-    font-weight:bold;
+    font-weight: 300;
+    font-size: 0.9rem;
+    padding: 2px;
+    width: 12rem;
 }
-fieldset > legend { 
-    background-color: #203040; 
-    border: 2px solid white; 
+
+/* **** footer **** */
+
+a.footerItem { 
+    color: #f4f4e0;
+}
+
+a { 
+    padding: 2px;
 }
 
 /* a, select {
@@ -132,11 +114,24 @@ fieldset > legend {
     border-radius: 6px;
 } */
 
-a { padding: 2px;}
-input[type="radio"] + label { border: 2px solid transparent;}
+
+/* **** focus **** */
 a:focus, select:focus, button:focus, input[type="number"]:focus, input[type="radio"]:focus + label {
     border-color: rgba(60, 140, 255, 1) !important;
     border-radius: 6px;
     outline: 0;
     z-index: 999;
+}
+
+
+/* **** utilities **** */
+
+.margin-top-10 { margin-top: 10px; }
+
+.margin-top-15 { margin-top: 15px; }
+
+.flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
