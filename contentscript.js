@@ -215,7 +215,7 @@ function createBlockerDiv(block) {
     style += "background-image: url('" + block.image + "'); " +
  'background-repeat: no-repeat; background-size: 100% 100%; ' +
  'left: ' + block.xPosition + '; top: ' + block.yPosition + '; filter: opacity(' + block.opacity + '%);';
-    // "-webkit-filter: url(#noCoffeeDisplacementFilter);
+    // "filter: url(#noCoffeeDisplacementFilter);
     if (block.displacement && false) { // Don't try to do this yet
       blockerDiv.innerHTML =
     '<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">' +
@@ -236,7 +236,8 @@ function createBlockerDiv(block) {
      block.innerColor + ' ' + block.innerStrength + '%, ' +
  block.outerColor + ' ' + block.outerStrength + '%);';
     } else {
-      style += 'background-image: linear-gradient(left, ' +
+      // side filter not working without -webkit in linear-gradient
+      style += 'background-image: -webkit-linear-gradient(left, ' +
      block.innerColor + ' ' + block.innerStrength + '%, ' +
  block.outerColor + ' ' + block.outerStrength + '%);';
     }
@@ -542,7 +543,7 @@ browser.runtime.onMessage.addListener(
         () => isInitialized = true
       )
     }
-  }  
+  } 
 
 var isInitialized = false;
 setTimeout(initIfStillNecessaryAndBodyExists, 0);
