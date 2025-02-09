@@ -536,12 +536,13 @@ browser.runtime.onMessage.addListener(
     }
   });
 
-function initIfStillNecessaryAndBodyExists() {
-  if (document.body && !isInitialized) {
-    browser.runtime.sendMessage({type: 'getSettings'}, function() {});
-    isInitialized = true;
-  }
-}
+  function initIfStillNecessaryAndBodyExists() {
+    if (document.body && !isInitialized) {
+      browser.runtime.sendMessage({type: 'getSettings'}).then(
+        () => isInitialized = true
+      )
+    }
+  }  
 
 var isInitialized = false;
 setTimeout(initIfStillNecessaryAndBodyExists, 0);
