@@ -1,14 +1,8 @@
-
 let gSettings = {};
 
 async function updateActiveTab() {
   const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  // if (!activeTab) return;
-  // await chrome.scripting.executeScript({
-  //   target: { tabId: activeTab.id },
-  //   files: ['browser-polyfill.js', 'contentscript.js']
-  // });
-
+  if (!activeTab) return;
   try {
     await chrome.tabs.sendMessage(activeTab.id, { 
       type: 'refresh', 
@@ -34,12 +28,3 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
   }
   return true;
 });
-
-// chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
-//   if (request.type === 'getSettings') {
-//     return Promise.resolve(gSettings);
-//   } else if (request.type === 'updateSettings') {
-//     updateSettings(request.settings);
-//     return Promise.resolve({ success: true });
-//   }
-// });
