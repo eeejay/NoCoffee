@@ -536,14 +536,17 @@ browser.runtime.onMessage.addListener(
     }
   });
 
-  function initIfStillNecessaryAndBodyExists() {
-    if (document.body && !isInitialized) {
-      browser.runtime.sendMessage({type: 'getSettings'}).then(
-        () => isInitialized = true
-      )
+async function initIfStillNecessaryAndBodyExists() {
+  if (document.body && !isInitialized) {
+    try {
+      await browser.runtime.sendMessage({type: 'getSettings'});
+      isInitialized = true;
+    } catch (error) {
+      console.error('Failed to initialize:', error);
     }
-  }  
-
+  }
+}
+  
 var isInitialized = false;
 setTimeout(initIfStillNecessaryAndBodyExists, 0);
 
