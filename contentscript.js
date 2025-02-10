@@ -81,7 +81,7 @@ function oneFlutter(bodyCssFilter) {
 }
 
 function stopFluttering() {
-  document.body.filter = '';
+  document.body.style.filter = '';
   clearInterval(window.flutterInterval);
   window.flutterInterval = 0;
 }
