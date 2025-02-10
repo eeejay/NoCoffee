@@ -52,7 +52,6 @@ function updateOneSetting(evt) {
   updateSettings();
 }
 
-// original code used chrome instead of browser??????????????
 function visitLink() {
   browser.tabs.create({url: this.getAttribute('href')});
 }
