@@ -309,9 +309,9 @@ function getView(viewData) {
   // Needs to go on doc element so that background of page is always affected
   let svgColorFilterMarkup = getSvgColorMatrixFilter(viewData.colorMatrixValues);
   if (svgColorFilterMarkup) {
-    view.doc.svgFilterElt = createSvgFilter(svgColorFilterMarkup, kSvgDocClassName);
-    let id = view.doc.svgFilterElt.querySelector('filter').id;
-    view.doc.cssFilter += 'url(#' + id + ') ';
+    view.body.svgFilterElt = createSvgFilter(svgColorFilterMarkup, kSvgBodyClassName);
+    let id = view.body.svgFilterElt.querySelector('filter').id;
+    view.body.cssFilter += 'url(#' + id + ') ';
   }
 
   // Create new svg ghosting filter -- old one will be removed
