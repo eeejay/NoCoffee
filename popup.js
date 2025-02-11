@@ -12,26 +12,30 @@ const kColorDeficiencyTable = [
   {name: 'Achromatomaly', values: '0.618 0.320 0.062 0 0  0.163 0.775 0.062 0 0    0.163 0.320 0.516 0 0    0 0 0 1 0'}
 ];
 
-function updateSettingsImpl() {
-  let blockTypeRadio = document.querySelector('input[type="radio"][name="blockType"]:checked');
-  let blockType = blockTypeRadio ? blockTypeRadio.id : 'noBlock';
-  let colorDeficiencyTypeIndex = document.getElementById('color').selectedIndex;
-  browser.runtime.sendMessage({
-    type: 'updateSettings',
-    settings: {
-      blurLevel: parseInt(document.getElementById('blur').value),
-      contrastLevel: parseInt(document.getElementById('contrast').value),
-      brightnessLevel: parseInt(document.getElementById('brightness').value),
-      ghostingLevel: parseInt(document.getElementById('ghosting').value),
-      snowLevel: parseInt(document.getElementById('snow').value),
-      cloudyLevel: parseInt(document.getElementById('cloudy').value),
-      flutterLevel: parseInt(document.getElementById('flutter').value),
-      colorDeficiencyTypeIndex: colorDeficiencyTypeIndex,
-      colorDeficiencyMatrixValues: kColorDeficiencyTable[colorDeficiencyTypeIndex].values,
-      blockType: blockType,
-      blockStrength: parseInt(document.getElementById('blockStrength').value)
-    }
-  });
+async function updateSettingsImpl() {
+  try {
+    let blockTypeRadio = document.querySelector('input[type="radio"][name="blockType"]:checked');
+    let blockType = blockTypeRadio ? blockTypeRadio.id : 'noBlock';
+    let colorDeficiencyTypeIndex = document.getElementById('color').selectedIndex;
+    await browser.runtime.sendMessage({
+      type: 'updateSettings',
+      settings: {
+        blurLevel: parseInt(document.getElementById('blur').value),
+        contrastLevel: parseInt(document.getElementById('contrast').value),
+        brightnessLevel: parseInt(document.getElementById('brightness').value),
+        ghostingLevel: parseInt(document.getElementById('ghosting').value),
+        snowLevel: parseInt(document.getElementById('snow').value),
+        cloudyLevel: parseInt(document.getElementById('cloudy').value),
+        flutterLevel: parseInt(document.getElementById('flutter').value),
+        colorDeficiencyTypeIndex: colorDeficiencyTypeIndex,
+        colorDeficiencyMatrixValues: kColorDeficiencyTable[colorDeficiencyTypeIndex].values,
+        blockType: blockType,
+        blockStrength: parseInt(document.getElementById('blockStrength').value)
+        }
+    });
+  } catch (error) {
+    console.error('Failed to update settings in popup:', error);
+  }
 }
 
 function updateSettings() {
@@ -52,8 +56,12 @@ function updateOneSetting(evt) {
   updateSettings();
 }
 
-function visitLink() {
-  browser.tabs.create({url: this.getAttribute('href')});
+async function visitLink() {
+  try {
+    await browser.tabs.create({url: this.getAttribute('href')});
+  } catch (error) {
+    console.error('Failed to open link:', error);
+  }
 }
 
 function createColorDeficiencyOptions(settings) {
