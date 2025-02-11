@@ -236,7 +236,7 @@ function createBlockerDiv(block) {
      block.innerColor + ' ' + block.innerStrength + '%, ' +
  block.outerColor + ' ' + block.outerStrength + '%);';
     } else {
-      // side filter not working without -webkit in linear-gradient
+      // (feb-2025-refactor) side filter not working without -webkit in linear-gradient
       style += 'background-image: -webkit-linear-gradient(left, ' +
      block.innerColor + ' ' + block.innerStrength + '%, ' +
  block.outerColor + ' ' + block.outerStrength + '%);';
@@ -539,6 +539,7 @@ browser.runtime.onMessage.addListener(
 
 let isInitialized = false;
 
+// (feb-2025-refactor) it has to be a promise to avoid a no-matching-signature error on the extensions page
 async function initIfStillNecessaryAndBodyExists() {
   if (document.body && !isInitialized) {
     try {
