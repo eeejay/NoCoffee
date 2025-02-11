@@ -22,9 +22,17 @@ async function updateSettings(settings) {
 chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
   if (request.type === 'getSettings') {
     sendResponse(gSettings);
+    return true;
   } else if (request.type === 'updateSettings') {
-    updateSettings(request.settings);
-    sendResponse({ success: true });
+      (async () => {
+        try {
+          await updateSettings(request.settings);
+          sendResponse({ success: true });
+        } catch (error) {
+          console.error('Failed to update settings in background:', error);
+          sendResponse({ success: false });
+        }
+      })();
+    return true;
   }
-  return true;
 });
