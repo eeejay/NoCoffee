@@ -4,6 +4,7 @@
   "description": "NoCoffee vision simulator",
   "main": "background.js",
   "scripts": {
+    "_comment": "for Linux/macOS: remove 'bash' from 'start:chrome' script, and uncomment corresponding script in launch_chrome.sh",
     "postinstall": "cp node_modules/webextension-polyfill/dist/browser-polyfill.js .",
     "test": "eslint . && web-ext lint --ignore-files package\\* launch_chrome.sh",
     "start:firefox": "cp manifests/manifest_firefox.json ./manifest.json && web-ext run",
