@@ -128,10 +128,7 @@ select {
 a.footerItem { 
     color: var(--color-light);
     font-family: Arial, Helvetica, sans-serif;
-}
-
-a {
-    padding: 1px;
+    padding: 2px;
 }
 
 /* **** FOCUS MODE **** */
@@ -144,7 +141,7 @@ input[type="radio"]:focus {
 input[type="radio"]:focus + label {
     border-radius: 4px;
     outline: 2px solid var(--focus-color);
-    outline-offset: 1px;
+    outline-offset: 2px;
 }
 
 /* to explore further: maybe a better solution for radio focus??? */
