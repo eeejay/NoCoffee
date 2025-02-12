@@ -42,10 +42,7 @@
   ],
 
   "permissions": [
-    "activeTab",
-    "scripting",
-    "storage",
-    "tabs"
+    "activeTab"
   ],
 
   "host_permissions": [
@@ -55,7 +52,8 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "overlays/*.png"
+        "overlays/*.png",
+        "popup.css"
       ],
       "matches": ["https://*/*"]
     }
