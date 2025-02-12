@@ -1,66 +1,81 @@
 /* 
 (feb-2025-refactor)
-add root values forcolors???
-rem vs em, 
-contrast, 
-transparent border for high contrast, 
-font size 
-increse reset width???
-add body width???
+to fix: contrast for number input & select when in focus
+
 */
+:root {
+	--color-dark: #151515; 
+    --color-light: #f2f2f2; 
+	--color-blue-light: rgba(60, 140, 255, 1);
+    --color-green: #226622;
+    --color-purple: rgb(60, 40, 60);
+    --color-gray: rgb(40, 40, 40);
+    --color-blue-gray: #203040; 
+    --color-purple-gray: rgba(160,160,220,.6);
+    
+	--focus-color: var(--color-blue-light);
+}
+
+* {
+    box-sizing: border-box;
+}
+
 body { 
-    background-color: #151515; 
-    border-radius: 6px;
-    color: #f2f2f2; 
+    background-color: var(--color-dark);
+    color: var(--color-light);
     font-family: sans-serif; 
     font-size: 1rem;
     padding-inline: 12px; 
 }
 
-/* **** header **** */
+/* **** HEADER **** */
 h1 { 
-    text-align:left; 
-    font-size: 1.3rem; 
+    font-size: 1.4rem; 
     margin-block: 0;
 }
 
 #reset {
-    font-size: 1rem;
-    padding: 3px 10px;
-    background-color: #226622;
-    color: #eeeeee;
-    border: 2px solid black;
+    background-color: var(--color-green);
+    border: 2px solid var(--color-dark);
     border-radius: 6px;
+    color: var(--color-light);
+    font-size: 1rem;
+    margin-block: 0;
+    padding: 3px 11px;
 }
 
-/* **** form **** */
+/* **** FORM **** */
 form { 
     margin-block: 10px;
 }
 
 fieldset > legend { 
-    background-color: #203040; 
-    border: 2px solid white; 
+    background-color: var(--color-blue-gray);
+    border: 2px solid var(--color-light);
 }
 
 .line {
     padding-block: 1px;
 }
 
+.line:has(input[type="radio"]) {
+    padding-block: 1.5px;
+}
+
 .pervasive .line, 
 .blocks .lineup .line {
-    display: flex;
     align-items: center;
+    display: flex;
     gap: 10px;
     justify-content: space-between;
     width: 100%;
 }
 
-.pervasive .line span, 
-.blocks .lineup .line span {
-    display: flex;
+.line span {
     align-items: center;
-    gap: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    width: 12rem;
 }
 
 .lineup label { 
@@ -68,70 +83,96 @@ fieldset > legend {
     width: 10.5rem; 
 }
 
-input[type="radio"] + label { 
-    border: 2px solid transparent;
+input[type="number"] {
+    background-color: var(--color-gray);
+    border: 2px solid var(--color-purple-gray);
+    border-radius: 6px;
+    color: var(--color-light);
+    display: inline-block;
+    font-size: 0.9rem;
+    height: auto;
+    padding: 1px 2px 0px;
+    width: 3rem;
 }
 
 input[type="range"] {
-    border: 2px solid rgba(200,200,200,.8);
-    border-radius: 2px;
     display: inline-block;
-    background-color: rgb(40, 40, 40);
     height: 13px;
-    width: 128px;
-}
-input[type="range"]:focus {
-    border: 2px solid rgba(40, 120, 255, 1);
-    z-index: 0 !important;
+    /* -webkit-appearance: none; */
+    width: 8rem;
 }
 
-input[type="number"] {
-    display: inline-block;
-    width: 3rem;
-    font-size: 0.9rem;
-    color: white;
-    background-color: rgb(40, 40, 40);
-    border: 2px solid rgba(160,160,220,.6);
-    border-radius: 6px;
-    padding: 1px 2px 0;
-    height: auto;
-}
+/* check if necessary */
+/* input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    z-index: 999 !important;
+    width: 11px;
+    height: 16px;
+
+    -webkit-border-radius: 40px;
+    border-radius: 40px;
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ebf1f6), color-stop(50%,#abd3ee), color-stop(51%,#89c3eb), color-stop(100%,#d5ebfb));
+} */
 
 select {
-    color: white;
-    background-color: rgb(60, 40, 60);
-    border: 2px solid rgba(160,160,220,.6);
+    color: var(--color-light);
+    background-color: var(--color-purple);
+    border: 2px solid var(--color-purple-gray);
     border-radius: 6px;
-    font-weight: 300;
     font-size: 0.9rem;
     padding: 2px;
     width: 12rem;
 }
 
-/* **** footer **** */
-
+/* **** FOOTER **** */
 a.footerItem { 
-    color: #f4f4e0;
+    color: var(--color-light);
+    font-family: Arial, Helvetica, sans-serif;
 }
 
-a { 
-    padding: 2px;
+a {
+    padding: 1px;
 }
 
-/* a, select {
-    border: 2px solid black;
-    border-radius: 6px;
+/* **** FOCUS MODE **** */
+
+/* the label already has an outline */
+input[type="radio"]:focus {
+    outline: none;
+}
+
+input[type="radio"]:focus + label {
+    border-radius: 4px;
+    outline: 2px solid var(--focus-color);
+    outline-offset: 1px;
+}
+
+/* to explore further: maybe a better solution for radio focus??? */
+/* .line:has(input[type="radio"]:focus-visible) {
+    border-radius: 4px;
+    outline: 2px solid rgba(60, 140, 255, 1);
+    outline-offset: 4px;
 } */
 
-
-/* **** focus **** */
-a:focus, select:focus, button:focus, input[type="number"]:focus, input[type="radio"]:focus + label {
-    border-color: rgba(60, 140, 255, 1) !important;
+select:focus, 
+input[type="number"]:focus {
+    border-color: var(--focus-color);
     border-radius: 6px;
-    outline: 0;
-    z-index: 999;
+    outline: none;
 }
 
+button:focus, 
+a:focus-visible {
+    border-radius: 6px;
+    outline: 2px solid var(--focus-color);
+    outline-offset: 1px;
+}
+
+/* not necessary since it does not receive focus */
+/* input[type="range"]:focus {
+    border: 2px solid rgba(40, 120, 255, 1);
+    z-index: 0 !important;
+} */
 
 /* **** utilities **** */
 
@@ -142,5 +183,6 @@ a:focus, select:focus, button:focus, input[type="number"]:focus, input[type="rad
 .flex {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items:self-start;
+    width: 100%;
 }
