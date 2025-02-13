@@ -97,35 +97,6 @@ input[type="number"] {
     width: 3rem;
 }
 
-/* input[type="range"] {
-    display: inline-block;
-    height: 13px;
-    width: 8rem;
-} */
-
-/* input[type="range"] {
-    position: relative;
-    border: 2px solid rgba(200,200,200,.8);
-    border-radius: 2px;
-    display: inline-block;
-    top: 2px;
-    appearance: none;
-    background-color: rgb(40, 40, 40);
-    height: 13px;
-    width: 8rem;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    z-index: 999 !important;
-    width: 11px;
-    height: 16px;
-
-    -webkit-border-radius: 40px;
-    border-radius: 40px;
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ebf1f6), color-stop(50%,#abd3ee), color-stop(51%,#89c3eb), color-stop(100%,#d5ebfb));
-} */
-
 input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
@@ -153,8 +124,8 @@ input[type="range"]::-webkit-slider-thumb {
     );
     -webkit-border-radius: 40px;
     border-radius: 40px;
-    margin-top: -3px;
-    height: 16px;
+    margin-top: -4px;
+    height: 18px;
     width: 11px;
 }
 
@@ -168,8 +139,8 @@ input[type="range"]::-moz-range-thumb {
     );
     border: none; 
     border-radius: 40px;
-    margin-top: -3px;
-    height: 16px;
+    margin-top: -4px;
+    height: 18px;
     width: 11px;
 }
  
