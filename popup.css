@@ -6,14 +6,16 @@ to fix: contrast for number input & select when in focus
 :root {
 	--color-dark: #151515; 
     --color-light: #f2f2f2; 
-	--color-blue-light: rgba(60, 140, 255, 1);
+	--color-blue-lighter: rgba(60, 140, 255, 1);
+    --color-blue-darker: rgba(40, 120, 255, 1);
     --color-green: #226622;
     --color-purple: rgb(60, 40, 60);
     --color-gray: rgb(40, 40, 40);
+    --color-light-gray: rgba(200,200,200,.8);
     --color-blue-gray: #203040; 
     --color-purple-gray: rgba(160,160,220,.6);
     
-	--focus-color: var(--color-blue-light);
+	/* --focus-color: var(--color-blue-lighter); */
 }
 
 * {
@@ -95,15 +97,25 @@ input[type="number"] {
     width: 3rem;
 }
 
-input[type="range"] {
+/* input[type="range"] {
     display: inline-block;
     height: 13px;
-    /* -webkit-appearance: none; */
+    width: 8rem;
+} */
+
+/* input[type="range"] {
+    position: relative;
+    border: 2px solid rgba(200,200,200,.8);
+    border-radius: 2px;
+    display: inline-block;
+    top: 2px;
+    appearance: none;
+    background-color: rgb(40, 40, 40);
+    height: 13px;
     width: 8rem;
 }
 
-/* check if necessary */
-/* input[type="range"]::-webkit-slider-thumb {
+input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     z-index: 999 !important;
     width: 11px;
@@ -114,6 +126,53 @@ input[type="range"] {
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ebf1f6), color-stop(50%,#abd3ee), color-stop(51%,#89c3eb), color-stop(100%,#d5ebfb));
 } */
 
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: var(--color-gray);
+    border: 2px solid var(--color-light-gray);
+    cursor: pointer;
+    /* for Firefox */
+    height: 13px;
+    width: 8rem;
+}
+ 
+input[type="range"]::-webkit-slider-runnable-track {
+    height: 10px;  
+}
+ 
+input[type="range"]::-webkit-slider-thumb {
+   -webkit-appearance: none; 
+    appearance: none;
+    background-image: linear-gradient(
+        to bottom,
+        #ebf1f6 0%,
+        #abd3ee 50%,
+        #89c3eb 51%,
+        #d5ebfb 100%
+    );
+    -webkit-border-radius: 40px;
+    border-radius: 40px;
+    margin-top: -3px;
+    height: 16px;
+    width: 11px;
+}
+
+input[type="range"]::-moz-range-thumb {
+    background-image: linear-gradient(
+        to bottom,
+        #ebf1f6 0%,
+        #abd3ee 50%,
+        #89c3eb 51%,
+        #d5ebfb 100%
+    );
+    border: none; 
+    border-radius: 40px;
+    margin-top: -3px;
+    height: 16px;
+    width: 11px;
+}
+ 
 select {
     color: var(--color-light);
     background-color: var(--color-purple);
@@ -133,6 +192,11 @@ a.footerItem {
 
 /* **** FOCUS MODE **** */
 
+input[type="range"]:focus {
+    outline: none;
+    border-color: var(--color-blue-darker);
+ }
+
 /* the label already has an outline */
 input[type="radio"]:focus {
     outline: none;
@@ -140,7 +204,7 @@ input[type="radio"]:focus {
 
 input[type="radio"]:focus + label {
     border-radius: 4px;
-    outline: 2px solid var(--focus-color);
+    outline: 2px solid var(--color-blue-lighter);
     outline-offset: 2px;
 }
 
@@ -153,7 +217,7 @@ input[type="radio"]:focus + label {
 
 select:focus, 
 input[type="number"]:focus {
-    border-color: var(--focus-color);
+    border-color:var(--color-blue-lighter);
     border-radius: 6px;
     outline: none;
 }
@@ -161,17 +225,11 @@ input[type="number"]:focus {
 button:focus, 
 a:focus-visible {
     border-radius: 6px;
-    outline: 2px solid var(--focus-color);
+    outline: 2px solid var(--color-blue-lighter);
     outline-offset: 1px;
 }
 
-/* not necessary since it does not receive focus */
-/* input[type="range"]:focus {
-    border: 2px solid rgba(40, 120, 255, 1);
-    z-index: 0 !important;
-} */
-
-/* **** utilities **** */
+/* **** UTILITIES **** */
 
 .margin-top-10 { margin-top: 10px; }
 
