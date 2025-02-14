@@ -536,6 +536,7 @@ browser.runtime.onMessage.addListener(
     }
   });
 
+// (feb-2025-refactor) it has to be a promise to avoid a no-matching-signature error on the extensions page
 async function initIfStillNecessaryAndBodyExists() {
   if (document.body && !isInitialized) {
     try {
