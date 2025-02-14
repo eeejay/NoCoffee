@@ -305,7 +305,7 @@ function getView(viewData) {
   };
 
   // Create new svg color filter -- old one will be removed
-  // Needs to go on body element otherwise the filter does not work in Firefox
+  // Needs to go on doc element so that background of page is always affected
   let svgColorFilterMarkup = getSvgColorMatrixFilter(viewData.colorMatrixValues);
   if (svgColorFilterMarkup) {
     view.doc.svgFilterElt = createSvgFilter(svgColorFilterMarkup, kSvgDocClassName);
