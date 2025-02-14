@@ -19,6 +19,7 @@ async function updateSettings(settings) {
 }
 
 // Listen for messages
+// Must use chrome.runtime (not browser.runtime) to avoid undefined error 
 chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
   if (request.type === 'getSettings') {
     sendResponse(gSettings);
