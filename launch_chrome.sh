@@ -1,5 +1,5 @@
 # #!/bin/sh
-
+# uncomment for Linux/macOS; in package.json remove 'bash' from 'start:chrome' script
 # DATA_DIR=`mktemp -d` &&
 # echo 'Temporary dir:' $DATA_DIR &&
 # touch $DATA_DIR/First\ Run &&
