@@ -4,19 +4,19 @@
   "description": "NoCoffee vision simulator",
   "main": "background.js",
   "scripts": {
+    "_comment": "for Linux/macOS: remove 'bash' from 'start:chrome' script, and uncomment corresponding script in launch_chrome.sh",
     "postinstall": "cp node_modules/webextension-polyfill/dist/browser-polyfill.js .",
     "test": "eslint . && web-ext lint --ignore-files package\\* launch_chrome.sh",
-    "start:firefox": "web-ext run",
-    "start:chrome": "./launch_chrome.sh",
-    "build": "web-ext build --ignore-files package\\* launch_chrome.sh --overwrite-dest"
+    "start:firefox": "cp manifests/manifest_firefox.json ./manifest.json && web-ext run",
+    "start:chrome": "cp manifests/manifest_chrome.json ./manifest.json && bash ./launch_chrome.sh",
+    "build:firefox": "cp manifests/manifest_firefox.json ./manifest.json && web-ext build --ignore-files package\\* launch_chrome.sh --overwrite-dest",
+    "build:chrome": "cp manifests/manifest_chrome.json ./manifest.json && web-ext build --ignore-files package\\* launch_chrome.sh --overwrite-dest"
   },
-"author": "Aaron Leventhal",
-"license": "MIT",
-  "dependencies": {
-    "webextension-polyfill": "^0.2.1"
-  },
+  "author": "Aaron Leventhal",
+  "license": "MIT",
   "devDependencies": {
-    "eslint": "^4.8.0",
-    "web-ext": "^2.2.0"
+    "eslint": "^9.19.0",
+    "web-ext": "^8.3.0",
+    "webextension-polyfill": "^0.12.0"
   }
 }

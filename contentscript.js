@@ -536,13 +536,18 @@ browser.runtime.onMessage.addListener(
     }
   });
 
-function initIfStillNecessaryAndBodyExists() {
+// (feb-2025-refactor) it has to be a promise to avoid a no-matching-signature error on the extensions page
+async function initIfStillNecessaryAndBodyExists() {
   if (document.body && !isInitialized) {
-    browser.runtime.sendMessage({type: 'getSettings'}, function() {});
-    isInitialized = true;
+    try {
+      await browser.runtime.sendMessage({type: 'getSettings'});
+      isInitialized = true;
+    } catch (error) {
+      console.error('Failed to initialize:', error);
+    }
   }
 }
-
+  
 var isInitialized = false;
 setTimeout(initIfStillNecessaryAndBodyExists, 0);
 

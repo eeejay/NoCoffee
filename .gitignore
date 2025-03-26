@@ -1,3 +1,4 @@
 node_modules
 browser-polyfill.js
 web-ext-artifacts
+manifest.json

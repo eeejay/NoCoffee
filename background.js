@@ -1,33 +1,39 @@
-// In background.js:
-// React when a browser action's icon is clicked.
+let gSettings = {};
 
-/* exported updateSettings getSettings */
-
-var gSettings = {};
-
-function updateAllTabs() {
-  chrome.tabs.query({}, function(tabs) {
-    for (var index = 0; index < tabs.length; index++) {
-      let tab = tabs[index];
-      browser.tabs.sendMessage(tab.id,
-        { type: 'refresh', settings: gSettings }).catch(e => console.warn(e));
-    }
-  });
+async function updateActiveTab() {
+  const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!activeTab) return;
+  try {
+    await chrome.tabs.sendMessage(activeTab.id, { 
+      type: 'refresh', 
+      settings: gSettings 
+    });
+  } catch (e) {
+    console.warn('Error updating tab:', e);
+  }
 }
 
-function updateSettings(settings) {
-  Object.assign(gSettings, settings);
-  updateAllTabs();
+async function updateSettings(settings) {
+  gSettings = {...gSettings, ...settings};
+  await updateActiveTab();
 }
 
-function getSettings() {
-  return gSettings;
-}
-
-browser.runtime.onMessage.addListener(
-  function(request, sender) {
-    if (request.type === 'getSettings' && window.settings) {
-      browser.tabs.sendMessage(sender.tab.id,
-        { type: 'refresh', settings: gSettings }).catch(e => console.warn(e));
-    }
-  });
+// Listen for messages
+// Must use chrome.runtime (not browser.runtime) to avoid undefined error 
+chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
+  if (request.type === 'getSettings') {
+    sendResponse(gSettings);
+    return true;
+  } else if (request.type === 'updateSettings') {
+      (async () => {
+        try {
+          await updateSettings(request.settings);
+          sendResponse({ success: true });
+        } catch (error) {
+          console.error('Failed to update settings in background:', error);
+          sendResponse({ success: false });
+        }
+      })();
+    return true;
+  }
+});
