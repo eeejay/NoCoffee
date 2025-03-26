@@ -53,11 +53,7 @@ function updateOneSetting(evt) {
 }
 
 async function visitLink() {
-  try {
-    await browser.tabs.create({url: this.getAttribute('href')});
-  } catch (error) {
-    console.error('Failed to open link:', error);
-  }
+  await browser.tabs.create({url: this.getAttribute('href')});
 }
 
 function createColorDeficiencyOptions(settings) {
