@@ -13,29 +13,25 @@ const kColorDeficiencyTable = [
 ];
 
 async function updateSettingsImpl() {
-  try {
-    let blockTypeRadio = document.querySelector('input[type="radio"][name="blockType"]:checked');
-    let blockType = blockTypeRadio ? blockTypeRadio.id : 'noBlock';
-    let colorDeficiencyTypeIndex = document.getElementById('color').selectedIndex;
-    await browser.runtime.sendMessage({
-      type: 'updateSettings',
-      settings: {
-        blurLevel: parseInt(document.getElementById('blur').value),
-        contrastLevel: parseInt(document.getElementById('contrast').value),
-        brightnessLevel: parseInt(document.getElementById('brightness').value),
-        ghostingLevel: parseInt(document.getElementById('ghosting').value),
-        snowLevel: parseInt(document.getElementById('snow').value),
-        cloudyLevel: parseInt(document.getElementById('cloudy').value),
-        flutterLevel: parseInt(document.getElementById('flutter').value),
-        colorDeficiencyTypeIndex: colorDeficiencyTypeIndex,
-        colorDeficiencyMatrixValues: kColorDeficiencyTable[colorDeficiencyTypeIndex].values,
-        blockType: blockType,
-        blockStrength: parseInt(document.getElementById('blockStrength').value)
-        }
-    });
-  } catch (error) {
-    console.error('Failed to update settings in popup:', error);
-  }
+  let blockTypeRadio = document.querySelector('input[type="radio"][name="blockType"]:checked');
+  let blockType = blockTypeRadio ? blockTypeRadio.id : 'noBlock';
+  let colorDeficiencyTypeIndex = document.getElementById('color').selectedIndex;
+  await browser.runtime.sendMessage({
+    type: 'updateSettings',
+    settings: {
+      blurLevel: parseInt(document.getElementById('blur').value),
+      contrastLevel: parseInt(document.getElementById('contrast').value),
+      brightnessLevel: parseInt(document.getElementById('brightness').value),
+      ghostingLevel: parseInt(document.getElementById('ghosting').value),
+      snowLevel: parseInt(document.getElementById('snow').value),
+      cloudyLevel: parseInt(document.getElementById('cloudy').value),
+      flutterLevel: parseInt(document.getElementById('flutter').value),
+      colorDeficiencyTypeIndex: colorDeficiencyTypeIndex,
+      colorDeficiencyMatrixValues: kColorDeficiencyTable[colorDeficiencyTypeIndex].values,
+      blockType: blockType,
+      blockStrength: parseInt(document.getElementById('blockStrength').value)
+      }
+  });
 }
 
 function updateSettings() {
