@@ -61,7 +61,7 @@ select {
   border-radius: 6px;
   font-weight:bold;
 }
-fieldset > legend { background-color: #203040; border; 2px solid white; }
+fieldset > legend { background-color: #203040; border: 2px solid white; }
 a, select {
   border: 2px solid black;
   border-radius: 6px;
