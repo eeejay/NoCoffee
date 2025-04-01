@@ -1,76 +1,220 @@
-body { background-color: #151515; color: #f2f2f2; font-family: sans-serif; padding-left: 12px; padding-right: 12px;}
-.line { white-space: nowrap; margin-top: 0px;}
-.blocks .line { margin-top: 2px;}
-.lineup label { display: inline-block; width: 10.5em; }
-h1 { text-align:left ; font-size: 1.4em; margin-bottom: 0px; }
-.footer { width: 101%;}
-.footer td { border: 0; padding: 0; margin: 0;}
-.footerItem { font-family: Arial; font-size: 1em; }
-.footerItem a { color: #f4f4e0 !important; }
-.footerItemRight { text-align: right; }
+/*
+(feb-2025-refactor)
+to fix: contrast for number input & select when in focus
+check voice control for input type=number
+*/
+
+:root {
+  --color-dark: #151515;
+  --color-light: #f2f2f2;
+  --color-blue-lighter: #3c8cff;
+  --color-blue-darker: #2878ff;
+  --color-green: #226622;
+  --color-purple: #3c283c;
+  --color-gray: #282828;
+  --color-light-gray: rgba(200,200,200,.8);
+  --color-blue-gray: #203040;
+  --color-purple-gray: rgba(160,160,220,.6);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--color-dark);
+  color: var(--color-light);
+  font-family: sans-serif;
+  font-size: 1rem;
+  padding-inline: 12px;
+}
+
+
+/* **** HEADER **** */
+h1 {
+  font-size: 1.4rem;
+  margin-block: 0;
+}
+
+#reset {
+  background-color: var(--color-green);
+  border: 2px solid var(--color-dark);
+  border-radius: 6px;
+  color: var(--color-light);
+  font-size: 1rem;
+  margin-block: 0;
+  padding: 3px 11px;
+}
+
+
+/* **** FORM **** */
+form {
+  margin-block: 10px;
+}
+
+fieldset > legend {
+  background-color: var(--color-blue-gray);
+  border: 2px solid var(--color-light);
+}
+
+.line {
+  padding-block: 1px;
+}
+
+.line:has(input[type="radio"]) {
+  padding-block: 1.5px;
+}
+
+.pervasive .line,
+.blocks .lineup .line {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.line span {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  width: 12rem;
+}
+
+.lineup label {
+  display: inline-block;
+  width: 10.5rem;
+}
+
+input[type="number"] {
+  background-color: var(--color-gray);
+  border: 2px solid var(--color-purple-gray);
+  border-radius: 6px;
+  color: var(--color-light);
+  display: inline-block;
+  font-size: 0.9rem;
+  height: auto;
+  padding: 1px 2px 0px;
+  width: 3rem;
+}
 
 input[type="range"] {
-  position: relative;
-  border: 2px solid rgba(200,200,200,.8);
-  border-radius: 2px;
-  display: inline-block;
-  top: 2px;
   -webkit-appearance: none;
-  background-color: rgb(40, 40, 40);
+  appearance: none;
+  background-color: var(--color-gray);
+  border: 2px solid var(--color-light-gray);
+  cursor: pointer;
+  /* for Firefox */
   height: 13px;
+  width: 8rem;
 }
-input[type="range"]:focus {
-  border: 2px solid rgba(40, 120, 255, 1);
-  z-index: 0 !important;
+ 
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 10px;  
 }
+ 
 input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    z-index: 999 !important;
-    width: 11px;
-    height: 16px;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: linear-gradient(
+      to bottom,
+      #ebf1f6 0%,
+      #abd3ee 50%,
+      #89c3eb 51%,
+      #d5ebfb 100%
+  );
+  -webkit-border-radius: 40px;
+  border-radius: 40px;
+  margin-top: -4px;
+  height: 18px;
+  width: 11px;
+}
 
-    -webkit-border-radius: 40px;
-    border-radius: 40px;
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ebf1f6), color-stop(50%,#abd3ee), color-stop(51%,#89c3eb), color-stop(100%,#d5ebfb));
+input[type="range"]::-moz-range-thumb {
+  background-image: linear-gradient(
+      to bottom,
+      #ebf1f6 0%,
+      #abd3ee 50%,
+      #89c3eb 51%,
+      #d5ebfb 100%
+  );
+  border: none;
+  border-radius: 40px;
+  margin-top: -4px;
+  height: 18px;
+  width: 11px;
 }
-#reset {
-  float: right;
-  font-size: .6em;
-  position: relative;
-  top: -3px;
-  background-color: #226622;
-  color: #eeeeee;
-  border: 2px solid black;
-  border-radius: 6px;
-}
-input[type="number"] {
-  display: inline-block;
-  width: 3.7em;
-  font-size: normal;
-  color: white;
-  background-color: rgb(40, 40, 40);
-  border: 2px solid rgba(160,160,220,.6);
-  border-radius: 6px;
-  position: relative;
-  top: -1px;
-}
+ 
 select {
-  color: white;
-  background-color: rgb(60, 40, 60);
-  border: 2px solid rgba(160,160,220,.6);
-  border-radius: 6px;
-  font-weight:bold;
+    color: var(--color-light);
+    background-color: var(--color-purple);
+    border: 2px solid var(--color-purple-gray);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    padding: 2px;
+    width: 12rem;
 }
-fieldset > legend { background-color: #203040; border: 2px solid white; }
-a, select {
-  border: 2px solid black;
-  border-radius: 6px;
+
+
+/* **** FOOTER **** */
+a.footerItem {
+  color: var(--color-light);
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 2px;
 }
-a { padding: 2px;}
-input[type="radio"] + label { border: 2px solid transparent;}
-a:focus, select:focus, button:focus, input[type="number"]:focus, input[type="radio"]:focus + label {
-  border-color: rgba(60, 140, 255, 1) !important;
-  border-radius: 6px;
-  outline: 0;
-  z-index: 999;
+
+
+/* **** FOCUS MODE **** */
+
+
+input[type="range"]:focus {
+  outline: none;
+  border-color: var(--color-blue-darker);
 }
+
+
+/* the label already has an outline */
+input[type="radio"]:focus {
+  outline: none;
+}
+
+input[type="radio"]:focus + label {
+  border-radius: 4px;
+  outline: 2px solid var(--color-blue-lighter);
+  outline-offset: 2px;
+}
+
+/* to explore further: maybe a better solution for radio focus??? */
+/* .line:has(input[type="radio"]:focus-visible) {
+    border-radius: 4px;
+    outline: 2px solid rgba(60, 140, 255, 1);
+    outline-offset: 4px;
+} */
+
+select:focus,
+input[type="number"]:focus {
+  border-color:var(--color-blue-lighter);
+  border-radius: 6px;
+  outline: none;
+}
+
+button:focus,
+a:focus-visible {
+  border-radius: 6px;
+  outline: 2px solid var(--color-blue-lighter);
+  outline-offset: 1px;
+}
+
+
+/* **** UTILITIES **** */
+.margin-top-10 { margin-top: 10px; }
+
+.margin-top-15 { margin-top: 15px; }
+
+.flex {
+  display: flex;
+  justify-content: space-between;
+  align-items:self-start;
+  width: 100%;
+}
+
