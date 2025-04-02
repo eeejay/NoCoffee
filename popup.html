@@ -7,11 +7,13 @@
 	</head>
 	<body>
 		<form name="visionSettings">
-			<h1>NoCoffee Vision Simulator<button id="reset" type="reset">Reset all</button></h1>
-			<br>
-			<fieldset class="pervasive">
-					<legend>Pervasive issues</legend>
-					<div class="lineup">
+			<div class="flex">
+				<h1>NoCoffee Vision Simulator</h1>
+				<button id="reset" type="reset">Reset all</button>
+			</div>
+			<fieldset class="pervasive margin-top-10">
+				<legend>Pervasive issues</legend>
+				<div class="lineup">
 					<div class="line">
 						<label for="blurValueText">Blur (low acuity): </label>
 						<span class="blur">
@@ -61,14 +63,14 @@
 							<input type="number" id="flutterValueText" min="0" max="100" step="1" value="0"/>
 						</span>
 					</div>
-					<br>
-					<div class="line">
+					
+					<div class="line margin-top-10">
 						<label for="color">Color deficiency:</label> <select size="1" id="color"></select>
 					</div>
 				</div>
 			</fieldset>
 
-			<fieldset style="margin-top: 20px;" class="blocks">
+			<fieldset class="blocks margin-top-15">
 				<legend>Blocked visual field</legend>
 				<div class="line"><input id="noBlock" type="radio" name="blockType" checked><label for="noBlock">Normal</label> </div>
 				<div class="line"><input id="centralBlock" type="radio" name="blockType"><label for="centralBlock">Central (macular degeneration)</label> </div>
@@ -77,8 +79,8 @@
 				<div class="line"><input id="sideBlock" type="radio" name="blockType"><label for="sideBlock">Side (hemianopia)</label> </div>
 				<div class="line"><input id="spotBlock" type="radio" name="blockType"><label for="spotBlock">Large spots (diabetic retinopathy)</label> </div>
 				<div class="line"><input id="floaterBlock" type="radio" name="blockType"><label for="floaterBlock">Floaters</label></div>
-				<br>
-				<div class="lineup">
+				
+				<div class="lineup margin-top-10">
 					<div class="line">
 						<label for="blockStrengthValueText">Strength and size: </label>
 						<span class="blockStrength">
@@ -88,11 +90,10 @@
 					</div>
 				</div>
 			</fieldset>
-			<br>
-			<table class="footer" role="presentation">
-				<td class="footerItem"><a href="http://accessgarage.wordpress.com/2013/02/09/458/">More info</a></td>
-				<td class="footerItem footerItemRight"><a href="https://chrome.google.com/webstore/support/jjeeggmbnhckmgdhmgdckeigabjfbddl?hl=en&gl=US#bug" id="feedback">Feedback</a></td>
-			</div>
 		</form>
+		<div class="flex footer">
+			<a class="footerItem" href="http://accessgarage.wordpress.com/2013/02/09/458/">More info</a>
+			<a class="footerItem" href="https://chrome.google.com/webstore/support/jjeeggmbnhckmgdhmgdckeigabjfbddl?hl=en&gl=US#bug" id="feedback">Feedback</a>
+		</div>
 	</body>
 </html>
