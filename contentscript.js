@@ -306,12 +306,12 @@ function getView(viewData) {
   };
 
   // Create new svg color filter -- old one will be removed
-  // Needs to go on doc element so that background of page is always affected
+  // (feb-2025 refactor: Needs to go on body element, otherwise color filters won't work in Firefox)
   let svgColorFilterMarkup = getSvgColorMatrixFilter(viewData.colorMatrixValues);
   if (svgColorFilterMarkup) {
-    view.doc.svgFilterElt = createSvgFilter(svgColorFilterMarkup, kSvgDocClassName);
-    let id = view.doc.svgFilterElt.querySelector('filter').id;
-    view.doc.cssFilter += 'url(#' + id + ') ';
+    view.body.svgFilterElt = createSvgFilter(svgColorFilterMarkup, kSvgBodyClassName);
+    let id = view.body.svgFilterElt.querySelector('filter').id;
+    view.body.cssFilter += 'url(#' + id + ') ';
   }
 
   // Create new svg ghosting filter -- old one will be removed
