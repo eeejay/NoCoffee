@@ -9,8 +9,8 @@
 // - Misshapen macular degenation blob, add blur to outside
 // - Stargardt's add brightness, some good holes in it, loss of contrast sensitivity
 
-var oldViewData = {};
-var flutterCount = 0;
+let oldViewData = {};
+let flutterCount = 0;
 
 const kSvgDocClassName = 'noCoffeeSvgFilterDoc';
 const kSvgBodyClassName = 'noCoffeeSvgFilterBody';
@@ -537,6 +537,8 @@ browser.runtime.onMessage.addListener(
     }
   });
 
+let isInitialized = false;
+
 // (feb-2025-refactor) it has to be a promise to avoid a no-matching-signature error on the extensions page
 async function initIfStillNecessaryAndBodyExists() {
   if (document.body && !isInitialized) {
@@ -548,8 +550,7 @@ async function initIfStillNecessaryAndBodyExists() {
     }
   }
 }
-  
-var isInitialized = false;
+
 setTimeout(initIfStillNecessaryAndBodyExists, 0);
 
 // Refresh once on first load

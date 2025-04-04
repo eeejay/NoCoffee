@@ -99,9 +99,9 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   // Make links work
   let links = document.querySelectorAll('a[href]');
-  for (var linkNum = 0; linkNum < links.length; linkNum++) { links[linkNum].addEventListener('click', visitLink); }
+  for (let linkNum = 0; linkNum < links.length; linkNum++) { links[linkNum].addEventListener('click', visitLink); }
 
   // Make sliders focus on click
   let sliders = document.querySelectorAll('input[type="range"]');
-  for (var sliderNum = 0; sliderNum < sliders.length; sliderNum++) { sliders[sliderNum].addEventListener('mousedown', focusEventTarget); }
+  for (let sliderNum = 0; sliderNum < sliders.length; sliderNum++) { sliders[sliderNum].addEventListener('mousedown', focusEventTarget); }
 });
