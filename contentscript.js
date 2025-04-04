@@ -77,11 +77,11 @@ function oneFlutter(bodyCssFilter) {
   if (--flutterCount <= 0) {
     stopFluttering();
   }
-  document.body.style.webkitFilter = document.body.style.webkitFilter ? '' : bodyCssFilter;
+  document.body.style.filter = document.body.style.filter ? '' : bodyCssFilter;
 }
 
 function stopFluttering() {
-  document.body.webkitFilter = '';
+  document.body.filter = '';
   clearInterval(window.flutterInterval);
   window.flutterInterval = 0;
 }
@@ -114,11 +114,11 @@ function createFloater(floater) {
   floaterImg.style.left = floater.x + '%';
   floaterImg.style.top = floater.y + '%';
   floaterImg.style.opacity = floater.opacity.toString();
-  floaterImg.style.webkitTransform = 'rotate(' + floater.rotation + 'deg)';
+  floaterImg.style.transform = 'rotate(' + floater.rotation + 'deg)';
   floaterImg.style.zIndex = '999999';
   floaterImg.src = browser.runtime.getURL('overlays/floater-' + floater.imageNum + '.png');
   floaterImg.id = 'noCoffeeFloater-' + floater.imageNum;
-  floaterImg.addEventListener('webkitTransitionEnd', // Start new animation some time after last finished
+  floaterImg.addEventListener('transitionend', // Start new animation some time after last finished
     function() { animateFloater(floater, floaterImg); }, false);
   return floaterImg;
 }
@@ -171,8 +171,8 @@ function animateFloater(floater, floaterImg) {
     floaterStyleElt.innerText = '#' + floaterImg.id + ' { ' +
    'top: ' + top + '% !important; ' +
    'left: ' + left + '% !important; ' +
-   '-webkit-transform: rotate(' + newRotation + 'deg) !important;' +
-   '-webkit-transition: all ' + seconds + 's;' +
+   'transform: rotate(' + newRotation + 'deg) !important;' +
+   'transition: all ' + seconds + 's;' +
   '}';
 
     floaterImg.parentNode.appendChild(floaterStyleElt);
@@ -189,13 +189,13 @@ function createCloudyDiv(cloudy) {
 
   let style =
   'z-index:2147483646 !important; ' +
-  '-webkit-transform: scale(' + (1 / cloudy.zoom) + '); ' +
-  '-webkit-transform-origin: 0 0;' +
+  'transform: scale(' + (1 / cloudy.zoom) + '); ' +
+  'transform-origin: 0 0;' +
   'pointer-events: none; ' +
   'position: fixed; left: 0; top: 0; height: ' + size + '%; width: ' + size + '%; ' +
     'background-image: url(' + browser.runtime.getURL('overlays/cataracts.png') + '); ' +
   'background-repeat: no-repeat; background-size: 100% 100%; ' +
-  'background-position: 0 0; -webkit-filter: opacity(' + cloudy.cloudyLevel + '%);';
+  'background-position: 0 0; filter: opacity(' + cloudy.cloudyLevel + '%);';
 
   cloudyDiv.setAttribute('style', style);
   return cloudyDiv;
@@ -208,13 +208,13 @@ function createBlockerDiv(block) {
   let blockerDiv = document.createElement('div');
   blockerDiv.className = kBlockerClassName;
   let style =
-  'z-index:2147483646 !important; ' +
-  'pointer-events: none; ' +
-  'position: fixed; ';
+    'z-index:2147483646 !important; ' +
+    'pointer-events: none; ' +
+    'position: fixed; ';
   if (block.image) {
     style += "background-image: url('" + block.image + "'); " +
- 'background-repeat: no-repeat; background-size: 100% 100%; ' +
- 'left: ' + block.xPosition + '; top: ' + block.yPosition + '; -webkit-filter: opacity(' + block.opacity + '%);';
+      'background-repeat: no-repeat; background-size: 100% 100%; ' +
+      'left: ' + block.xPosition + '; top: ' + block.yPosition + '; filter: opacity(' + block.opacity + '%);';
     // "-webkit-filter: url(#noCoffeeDisplacementFilter);
     if (block.displacement && false) { // Don't try to do this yet
       blockerDiv.innerHTML =
@@ -232,13 +232,14 @@ function createBlockerDiv(block) {
   } else if (block.innerStrength) {
     style += 'left: 0; top: 0; height: 100%; width: 100%;';
     if (block.type === 'radial') {
-      style += 'background-image: -webkit-radial-gradient(circle, ' +
-     block.innerColor + ' ' + block.innerStrength + '%, ' +
- block.outerColor + ' ' + block.outerStrength + '%);';
+      style += 'background-image: radial-gradient(circle, ' +
+        block.innerColor + ' ' + block.innerStrength + '%, ' +
+        block.outerColor + ' ' + block.outerStrength + '%);';
     } else {
+      // side filter not working without -webkit in linear-gradient
       style += 'background-image: -webkit-linear-gradient(left, ' +
-     block.innerColor + ' ' + block.innerStrength + '%, ' +
- block.outerColor + ' ' + block.outerStrength + '%);';
+        block.innerColor + ' ' + block.innerStrength + '%, ' +
+        block.outerColor + ' ' + block.outerStrength + '%);';
     }
   }
 
@@ -248,8 +249,8 @@ function createBlockerDiv(block) {
 
   if (block.zoom) {
     let size = 100 * block.zoom;
-    style += '-webkit-transform: scale(' + 1 / block.zoom + '); -webkit-transform-origin: 0 0; ' +
- 'width: ' + size + '%; height: ' + size + '%; left: 0; top: 0;';
+    style += 'transform: scale(' + 1 / block.zoom + '); transform-origin: 0 0; ' +
+      'width: ' + size + '%; height: ' + size + '%; left: 0; top: 0;';
   }
 
   blockerDiv.setAttribute('style', style);
@@ -266,7 +267,7 @@ function createSvgSnowOverlay(snow) {
   let size = 100 * snow.zoom;
   let startPos = (100 - size) / 2;
   svgOverlay.setAttribute('style',
-    '-webkit-transform: scale(' + (1 / snow.zoom) + '); ' +
+    'transform: scale(' + (1 / snow.zoom) + '); ' +
   'z-index:2147483645 !important; ' +
   'pointer-events: none; ' +
   'position: fixed; left: ' + startPos + '%; top: ' + startPos + '%; height: ' + size + '%; width: ' + size + '%; ');
@@ -520,8 +521,8 @@ function refresh(viewData) {
     }
   }
 
-  document.documentElement.style.webkitFilter = view.doc.cssFilter;
-  document.body.style.webkitFilter = view.body.cssFilter;
+  document.documentElement.style.filter = view.doc.cssFilter;
+  document.body.style.filter = view.body.cssFilter;
 }
 
 // Setup refresh listener
