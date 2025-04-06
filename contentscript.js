@@ -6,25 +6,14 @@
 // - Option to follow mouse cursor
 
 
-
-
 // - Might be more starfish shaped:
 // - Misshapen macular degenation blob, add blur to outside
 // - Stargardt's add brightness, some good holes in it, loss of contrast sensitivity
 
 
-
-
-let oldViewData = {
-  blur: 0,
-  contrast: 100,
-  brightness: 100,
-  applyCursorEffects: false
-};
+let oldViewData = {};
 let flutterCount = 0;
 // let currentCursorStyle = 'default';
-
-
 
 
 const kSvgDocClassName = 'noCoffeeSvgFilterDoc';
@@ -73,8 +62,6 @@ const cursorSVGs = {
     </svg>
   `
 };
-
-
 
 
 // https://stackoverflow.com/questions/10389459/is-there-a-way-to-detect-if-im-hovering-over-text
@@ -126,10 +113,9 @@ function detectCursorType(event) {
    
     // Hide cursor on the element. Not working for scrollbars and shadow roots
     element.style.cursor = 'none';
+   
   }
 }
-
-
 
 
 function updateCustomCursor(event) {
@@ -166,14 +152,13 @@ function updateCustomCursor(event) {
 
 function updateCursorEffects(view, viewData) {
   const existingCursor = document.querySelector('.' + kCustomCursorClassName);
-
-
+ 
   if (existingCursor) {
     existingCursor.remove();
   }
  
   if (!viewData.applyCursorEffects) {
-    document.body.style.cursor = 'default';
+    document.body.style.cursor = '';
     return;
   }
  
@@ -202,10 +187,6 @@ function updateCursorEffects(view, viewData) {
  
   cursor.style.filter = cursorFilters.join(' ');
   document.body.appendChild(cursor);
-
-
-  // Set initial cursor content
-  // cursor.innerHTML = cursorSVGs.default;
  
   let lastX = 0;
   let lastY = 0;
@@ -241,13 +222,13 @@ function updateCursorEffects(view, viewData) {
 
 function createSvgFilter(filterMarkup, className) {
   let svgMarkup =
-    '<svg xmlns="http://www.w3.org/2000/svg" version="1.1">' +
-      '<defs>' +
-      '<filter id="' + className + Date.now() + '" >' +
-        filterMarkup +
-      '</filter>' +
-      '</defs>' +
-    '</svg>';
+'<svg xmlns="http://www.w3.org/2000/svg" version="1.1">' +
+  '<defs>' +
+ '<filter id="' + className + Date.now() + '" >' +
+   filterMarkup +
+ '</filter>' +
+   '</defs>' +
+'</svg>';
 
 
   let containerElt = document.createElement('div');
@@ -473,13 +454,9 @@ function createBlockerDiv(block) {
   }
 
 
-
-
   if (block.floaters) {
     resetFloaters(blockerDiv, block.floaters);
   }
-
-
 
 
   if (block.zoom) {
@@ -489,17 +466,11 @@ function createBlockerDiv(block) {
   }
 
 
-
-
   blockerDiv.setAttribute('style', style);
-
-
 
 
   return blockerDiv;
 }
-
-
 
 
 function createSvgSnowOverlay(snow) {
@@ -532,12 +503,8 @@ function createSvgSnowOverlay(snow) {
   '</svg>';
 
 
-
-
   return svgOverlay;
 }
-
-
 
 
 // Return style object
@@ -581,14 +548,10 @@ function getView(viewData) {
   }
 
 
-
-
   // Create new svg overlay div -- old one will be removed
   if (!deepEquals(oldViewData.snow, viewData.snow)) {
     view.svgOverlayElt = createSvgSnowOverlay(viewData.snow);
   }
-
-
 
 
   // Create new cloudy div -- old one will be removed
@@ -597,14 +560,10 @@ function getView(viewData) {
   }
 
 
-
-
   // Create new blocker div -- old one will be removed
   if (!deepEquals(oldViewData.block, viewData.block)) {
     view.blockerDiv = createBlockerDiv(viewData.block);
   }
-
-
 
 
   if (viewData.blur) {
@@ -618,12 +577,8 @@ function getView(viewData) {
   }
 
 
-
-
   return view;
 }
-
-
 
 
 function getZoom() {
@@ -631,19 +586,13 @@ function getZoom() {
 }
 
 
-
-
 // Computed values based on user settings
 function getViewData(settings) {
   let zoom = getZoom();
 
 
-
-
   // When there is any ghosting, add a little blur
   let blurPlusExtra = settings.blurLevel + (settings.ghostingLevel > 0 ? 3 : 0) + (settings.cloudyLevel / 2.5);
-
-
 
 
   let viewData = {
@@ -654,11 +603,8 @@ function getViewData(settings) {
     ghosting: settings.ghostingLevel / zoom,
     snow: { zoom: zoom, amount: 0.03 * settings.snowLevel },
     cloudy: { zoom: zoom, cloudyLevel: settings.cloudyLevel * 6 },
-    flutter: { zoom: zoom, flutterLevel: settings.flutterLevel },
-    applyCursorEffects: oldViewData.applyCursorEffects || false
+    flutter: { zoom: zoom, flutterLevel: settings.flutterLevel }
   };
-
-
 
 
   if (settings.blockStrength) {
@@ -737,13 +683,9 @@ function getViewData(settings) {
 }
 
 
-
-
 function deleteNodeIfExists(node) {
   if (node) { node.parentNode.removeChild(node); }
 }
-
-
 
 
 function deepEquals(obj1, obj2) {
@@ -752,13 +694,9 @@ function deepEquals(obj1, obj2) {
   }
 
 
-
-
   if (typeof obj1 !== typeof obj2) {
     return false;
   }
-
-
 
 
   if (typeof obj1 === 'object') {
@@ -777,18 +715,12 @@ function deepEquals(obj1, obj2) {
   }
 
 
-
-
   return obj1 === obj2;
 }
 
 
-
-
 function refresh(viewData) {
   let view = getView(viewData);
-
-
 
 
   if (typeof view.doc.svgFilterElt !== 'undefined') {
@@ -805,16 +737,12 @@ function refresh(viewData) {
   }
 
 
-
-
   if (typeof view.svgOverlayElt !== 'undefined') {
     deleteNodeIfExists(document.querySelector('.' + kSvgOverlayClassName)); // Delete old one
     if (view.svgOverlayElt) {
       document.body.appendChild(view.svgOverlayElt);
     }
   }
-
-
 
 
   if (typeof view.cloudyDiv !== 'undefined') {
@@ -825,8 +753,6 @@ function refresh(viewData) {
   }
 
 
-
-
   if (typeof view.blockerDiv !== 'undefined') {
     deleteNodeIfExists(document.querySelector('.' + kBlockerClassName)); // Delete old one
     if (view.blockerDiv) {
@@ -835,36 +761,26 @@ function refresh(viewData) {
   }
 
 
-
-
   document.documentElement.style.filter = view.doc.cssFilter;
   document.body.style.filter = view.body.cssFilter;
-
-
 
 
   updateCursorEffects(view, viewData);
 }
 
 
-
-
 browser.runtime.onMessage.addListener(
   function(request) {
     if (request.type === 'refresh') {
       let viewData = getViewData(request.settings);
+     
+      // Add a flag to determine if cursor effects should be applied
+      viewData.applyCursorEffects = request.settings.applyCursorEffects !== false;
+     
       if (!deepEquals(viewData, oldViewData)) {
         refresh(viewData); // View data has changed -- re-render
         oldViewData = viewData;
       }
-    } else if (request.type === 'updateCursorEffects') {
-      let view = getView(oldViewData);
-      updateCursorEffects(view, {
-        applyCursorEffects: request.settings.applyCursorEffects,
-        blur: oldViewData.blur || 0,
-        contrast: oldViewData.contrast || 100,
-        brightness: oldViewData.brightness || 100
-      });
     }
   });
 
