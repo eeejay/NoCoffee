@@ -4,17 +4,13 @@
 // - Simple vs advanced tab
 // - Also affect mouse cursor
 // - Option to follow mouse cursor
-
-
 // - Might be more starfish shaped:
 // - Misshapen macular degenation blob, add blur to outside
 // - Stargardt's add brightness, some good holes in it, loss of contrast sensitivity
 
-
 let oldViewData = {};
 let flutterCount = 0;
 // let currentCursorStyle = 'default';
-
 
 const kSvgDocClassName = 'noCoffeeSvgFilterDoc';
 const kSvgBodyClassName = 'noCoffeeSvgFilterBody';
@@ -32,10 +28,8 @@ const kMinFloaterOpacity = 0.1;
 const kMaxFloaterOpacity = 0.4;
 const kFlutterDist = 15;
 
-
 const kCursorWrapperClassName = 'noCoffeeCursorWrapper';
 const kCustomCursorClassName = 'noCoffeeCustomCursor';
-
 
 const cursorSVGs = {
   default: `
@@ -117,16 +111,13 @@ function detectCursorType(event) {
   }
 }
 
-
 function updateCustomCursor(event) {
   const element = document.elementFromPoint(event.clientX, event.clientY);
   const existingCursor = document.querySelector('.' + kCustomCursorClassName);
  
   if (!existingCursor) return;
 
-
   let svgType;
-
 
   const isInteractive = element.tagName === 'A' ||
                         element.tagName === 'BUTTON' ||  
@@ -134,7 +125,6 @@ function updateCustomCursor(event) {
                         element.closest('a') ||
                         element.closest('button') ||
                         element.closest('select');
-
 
   if (originalCursorType.includes('pointer') || isInteractive) {
     svgType = 'pointer';
@@ -148,7 +138,6 @@ function updateCustomCursor(event) {
     existingCursor.innerHTML = cursorSVGs[svgType];
   }
 }
-
 
 function updateCursorEffects(view, viewData) {
   const existingCursor = document.querySelector('.' + kCustomCursorClassName);
@@ -230,14 +219,12 @@ function createSvgFilter(filterMarkup, className) {
    '</defs>' +
 '</svg>';
 
-
   let containerElt = document.createElement('div');
   containerElt.style.visibility = 'hidden';
   containerElt.className = className;
   containerElt.innerHTML = svgMarkup;
   return containerElt;
 }
-
 
 function getSvgColorMatrixFilter(colorMatrixValues) {
   if (!colorMatrixValues) {
@@ -246,7 +233,6 @@ function getSvgColorMatrixFilter(colorMatrixValues) {
   let str = '<feColorMatrix type="matrix" values="' + colorMatrixValues + '" />';
   return str;
 }
-
 
 function getSvgGhostingFilter(ghostingLevel) {
   if (!ghostingLevel) {
@@ -258,7 +244,6 @@ function getSvgGhostingFilter(ghostingLevel) {
   return str;
 }
 
-
 function getSvgFlutterFilter(flutter) {
   if (!flutter || !flutter.flutterLevel) {
     return '';
@@ -269,7 +254,6 @@ function getSvgFlutterFilter(flutter) {
   return str;
 }
 
-
 function oneFlutter(bodyCssFilter) {
   if (--flutterCount <= 0) {
     stopFluttering();
@@ -277,13 +261,11 @@ function oneFlutter(bodyCssFilter) {
   document.body.style.filter = document.body.style.filter ? '' : bodyCssFilter;
 }
 
-
 function stopFluttering() {
   document.body.style.filter = '';
   clearInterval(window.flutterInterval);
   window.flutterInterval = 0;
 }
-
 
 function startFluttering(flutter, bodyCssFilter) {
   if (!window.flutterInterval) {
@@ -292,7 +274,6 @@ function startFluttering(flutter, bodyCssFilter) {
   }
 }
 
-
 function maybeStartFluttering(flutter, bodyCssFilter) {
   let randomized = Math.random() * 1000;
   if (randomized < flutter.flutterLevel) {
@@ -300,15 +281,11 @@ function maybeStartFluttering(flutter, bodyCssFilter) {
   }
 }
 
-
 function initFlutter(flutter, bodyCssFilter) {
   startFluttering(flutter, bodyCssFilter);
-
-
   window.addEventListener('scroll', function() { maybeStartFluttering(flutter, bodyCssFilter); });
   window.addEventListener('mousemove', function() { maybeStartFluttering(flutter, bodyCssFilter); });
 }
-
 
 function createFloater(floater) {
   let floaterImg = document.createElement('img');
@@ -325,7 +302,6 @@ function createFloater(floater) {
     function() { animateFloater(floater, floaterImg); }, false);
   return floaterImg;
 }
-
 
 function resetFloaters(blockerDiv, floaters) {
   let floaterMix = [];
@@ -350,7 +326,6 @@ function resetFloaters(blockerDiv, floaters) {
     animateFloater(floater, floaterImg);
   }
 }
-
 
 function animateFloater(floater, floaterImg) {
   let delay = Math.random() * kMaxFloaterTravelDelayTime;
@@ -380,11 +355,9 @@ function animateFloater(floater, floaterImg) {
    'transition: all ' + seconds + 's;' +
   '}';
 
-
     floaterImg.parentNode.appendChild(floaterStyleElt);
   }, delay * 1000);
 }
-
 
 function createCloudyDiv(cloudy) {
   if (!cloudy || !cloudy.cloudyLevel) {
@@ -393,7 +366,6 @@ function createCloudyDiv(cloudy) {
   let cloudyDiv = document.createElement('div');
   cloudyDiv.className = kCloudyClassName;
   let size = 100 * cloudy.zoom;
-
 
   let style =
   'z-index:2147483646 !important; ' +
@@ -405,11 +377,9 @@ function createCloudyDiv(cloudy) {
   'background-repeat: no-repeat; background-size: 100% 100%; ' +
   'background-position: 0 0; filter: opacity(' + cloudy.cloudyLevel + '%);';
 
-
   cloudyDiv.setAttribute('style', style);
   return cloudyDiv;
 }
-
 
 function createBlockerDiv(block) {
   if (!block) {
@@ -453,11 +423,9 @@ function createBlockerDiv(block) {
     }
   }
 
-
   if (block.floaters) {
     resetFloaters(blockerDiv, block.floaters);
   }
-
 
   if (block.zoom) {
     let size = 100 * block.zoom;
@@ -465,13 +433,10 @@ function createBlockerDiv(block) {
  'width: ' + size + '%; height: ' + size + '%; left: 0; top: 0;';
   }
 
-
   blockerDiv.setAttribute('style', style);
-
 
   return blockerDiv;
 }
-
 
 function createSvgSnowOverlay(snow) {
   if (!snow || !snow.amount) {
@@ -502,10 +467,8 @@ function createSvgSnowOverlay(snow) {
    '<use filter="url(#noCoffeeSnowFilter)" />' +
   '</svg>';
 
-
   return svgOverlay;
 }
-
 
 // Return style object
 function getView(viewData) {
@@ -522,7 +485,6 @@ function getView(viewData) {
     blockerDiv: undefined
   };
 
-
   // Create new svg color filter -- old one will be removed
   // Needs to go on body element otherwise the filter does not work in Firefox
   let svgColorFilterMarkup = getSvgColorMatrixFilter(viewData.colorMatrixValues);
@@ -531,7 +493,6 @@ function getView(viewData) {
     let id = view.body.svgFilterElt.querySelector('filter').id;
     view.body.cssFilter += 'url(#' + id + ') ';
   }
-
 
   // Create new svg ghosting filter -- old one will be removed
   // Ghosting filter needs to go on body -- learned through trial and error. Seems to be a bug in Chrome.
@@ -547,24 +508,20 @@ function getView(viewData) {
     }
   }
 
-
   // Create new svg overlay div -- old one will be removed
   if (!deepEquals(oldViewData.snow, viewData.snow)) {
     view.svgOverlayElt = createSvgSnowOverlay(viewData.snow);
   }
-
 
   // Create new cloudy div -- old one will be removed
   if (!deepEquals(oldViewData.cloudy, viewData.cloudy)) {
     view.cloudyDiv = createCloudyDiv(viewData.cloudy);
   }
 
-
   // Create new blocker div -- old one will be removed
   if (!deepEquals(oldViewData.block, viewData.block)) {
     view.blockerDiv = createBlockerDiv(viewData.block);
   }
-
 
   if (viewData.blur) {
     view.doc.cssFilter += 'blur(' + viewData.blur + 'px) ';
@@ -575,25 +532,19 @@ function getView(viewData) {
   if (viewData.brightness) {
     view.doc.cssFilter += 'brightness(' + viewData.brightness + '%) ';
   }
-
-
   return view;
 }
-
 
 function getZoom() {
   return window.outerWidth / window.innerWidth; // Works in Chrome
 }
 
-
 // Computed values based on user settings
 function getViewData(settings) {
   let zoom = getZoom();
 
-
   // When there is any ghosting, add a little blur
   let blurPlusExtra = settings.blurLevel + (settings.ghostingLevel > 0 ? 3 : 0) + (settings.cloudyLevel / 2.5);
-
 
   let viewData = {
     blur: (blurPlusExtra / zoom) / 2,
@@ -605,7 +556,6 @@ function getViewData(settings) {
     cloudy: { zoom: zoom, cloudyLevel: settings.cloudyLevel * 6 },
     flutter: { zoom: zoom, flutterLevel: settings.flutterLevel }
   };
-
 
   if (settings.blockStrength) {
     switch (settings.blockType) {
@@ -682,22 +632,18 @@ function getViewData(settings) {
   return viewData;
 }
 
-
 function deleteNodeIfExists(node) {
   if (node) { node.parentNode.removeChild(node); }
 }
-
 
 function deepEquals(obj1, obj2) {
   if (!obj1 || !obj2) {
     return obj1 === obj2;
   }
 
-
   if (typeof obj1 !== typeof obj2) {
     return false;
   }
-
 
   if (typeof obj1 === 'object') {
     let item;
@@ -713,15 +659,12 @@ function deepEquals(obj1, obj2) {
     }
     return true;
   }
-
-
   return obj1 === obj2;
 }
 
 
 function refresh(viewData) {
   let view = getView(viewData);
-
 
   if (typeof view.doc.svgFilterElt !== 'undefined') {
     deleteNodeIfExists(document.querySelector('.' + kSvgDocClassName)); // Delete old one
@@ -736,14 +679,12 @@ function refresh(viewData) {
     }
   }
 
-
   if (typeof view.svgOverlayElt !== 'undefined') {
     deleteNodeIfExists(document.querySelector('.' + kSvgOverlayClassName)); // Delete old one
     if (view.svgOverlayElt) {
       document.body.appendChild(view.svgOverlayElt);
     }
   }
-
 
   if (typeof view.cloudyDiv !== 'undefined') {
     deleteNodeIfExists(document.querySelector('.' + kCloudyClassName)); // Delete old one
@@ -752,7 +693,6 @@ function refresh(viewData) {
     }
   }
 
-
   if (typeof view.blockerDiv !== 'undefined') {
     deleteNodeIfExists(document.querySelector('.' + kBlockerClassName)); // Delete old one
     if (view.blockerDiv) {
@@ -760,10 +700,8 @@ function refresh(viewData) {
     }
   }
 
-
   document.documentElement.style.filter = view.doc.cssFilter;
   document.body.style.filter = view.body.cssFilter;
-
 
   updateCursorEffects(view, viewData);
 }
@@ -784,10 +722,7 @@ browser.runtime.onMessage.addListener(
     }
   });
 
-
 let isInitialized = false;
-
-
 // (feb-2025-refactor) it has to be a promise to avoid a no-matching-signature error on the extensions page
 async function initIfStillNecessaryAndBodyExists() {
   if (document.body && !isInitialized) {
@@ -801,7 +736,6 @@ async function initIfStillNecessaryAndBodyExists() {
 }
  
 setTimeout(initIfStillNecessaryAndBodyExists, 0);
-
 
 // Refresh once on first load
 document.addEventListener('readystatechange', function() {
