@@ -12,7 +12,7 @@ const kColorDeficiencyTable = [
   {name: 'Achromatomaly', values: '0.618 0.320 0.062 0 0  0.163 0.775 0.062 0 0    0.163 0.320 0.516 0 0    0 0 0 1 0'}
 ];
 
-async function updateSettingsImpl() {
+async function updateSettingsImpl() {  
   let blockTypeRadio = document.querySelector('input[type="radio"][name="blockType"]:checked');
   let blockType = blockTypeRadio ? blockTypeRadio.id : 'noBlock';
   let colorDeficiencyTypeIndex = document.getElementById('color').selectedIndex;
@@ -53,11 +53,7 @@ function updateOneSetting(evt) {
 }
 
 async function visitLink() {
-  try {
-    await browser.tabs.create({url: this.getAttribute('href')});
-  } catch (error) {
-    console.error('Failed to open link:', error);
-  }
+  await browser.tabs.create({url: this.getAttribute('href')});
 }
 
 function createColorDeficiencyOptions(settings) {
@@ -74,7 +70,7 @@ function focusEventTarget(evt) {
   setTimeout(function() { evt.target.focus(); }, 0);
 }
 
-document.addEventListener('DOMContentLoaded', async function() { 
+document.addEventListener('DOMContentLoaded', async function() {
   let settings = await browser.runtime.sendMessage({ type: 'getSettings' }) || {};
   document.getElementById('blurValueText').focus();
   updateValue('blur', settings.blurLevel || 0);
@@ -100,6 +96,14 @@ document.addEventListener('DOMContentLoaded', async function() {
   document.visionSettings.addEventListener('change', updateOneSetting);
   document.visionSettings.addEventListener('select', updateSettings);
   document.visionSettings.addEventListener('reset', updateSettings);
+  document.getElementById('cursor').addEventListener('change', async function(e) {
+    await browser.runtime.sendMessage({
+      type: 'updateCursorEffects',
+      settings: {
+        applyCursorEffects: e.target.checked
+      }
+    });
+  });
 
   // Make links work
   let links = document.querySelectorAll('a[href]');
@@ -109,3 +113,4 @@ document.addEventListener('DOMContentLoaded', async function() {
   let sliders = document.querySelectorAll('input[type="range"]');
   for (let sliderNum = 0; sliderNum < sliders.length; sliderNum++) { sliders[sliderNum].addEventListener('mousedown', focusEventTarget); }
 });
+

@@ -5,12 +5,27 @@
 // - Also affect mouse cursor
 // - Option to follow mouse cursor
 
+
+
+
 // - Might be more starfish shaped:
 // - Misshapen macular degenation blob, add blur to outside
 // - Stargardt's add brightness, some good holes in it, loss of contrast sensitivity
 
-let oldViewData = {};
+
+
+
+let oldViewData = {
+  blur: 0,
+  contrast: 100,
+  brightness: 100,
+  applyCursorEffects: false
+};
 let flutterCount = 0;
+// let currentCursorStyle = 'default';
+
+
+
 
 const kSvgDocClassName = 'noCoffeeSvgFilterDoc';
 const kSvgBodyClassName = 'noCoffeeSvgFilterBody';
@@ -28,15 +43,212 @@ const kMinFloaterOpacity = 0.1;
 const kMaxFloaterOpacity = 0.4;
 const kFlutterDist = 15;
 
+
+const kCursorWrapperClassName = 'noCoffeeCursorWrapper';
+const kCustomCursorClassName = 'noCoffeeCustomCursor';
+
+
+const cursorSVGs = {
+  default: `
+    <svg width="32px" height="32px" viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#000000">
+      <g stroke-width="0"/>
+      <g stroke-linecap="round" stroke-linejoin="round"/>
+      <g>
+        <path d="M593.066667 846.933333c-2.133333 0-4.266667 0-8.533334-2.133333s-8.533333-6.4-12.8-10.666667l-78.933333-183.466666-96 89.6c-2.133333 4.266667-6.4 6.4-12.8 6.4-2.133333 0-6.4 0-8.533333-2.133334-6.4-2.133333-12.8-10.666667-12.8-19.2V256c0-8.533333 4.266667-17.066667 12.8-19.2 2.133333-2.133333 6.4-2.133333 8.533333-2.133333 4.266667 0 10.666667 2.133333 14.933333 6.4l341.333334 320c6.4 6.4 8.533333 14.933333 6.4 23.466666-2.133333 8.533333-10.666667 12.8-19.2 14.933334l-134.4 12.8 83.2 181.333333c2.133333 4.266667 2.133333 10.666667 0 17.066667-2.133333 4.266667-6.4 10.666667-10.666667 12.8l-61.866667 27.733333c-4.266667-4.266667-8.533333-4.266667-10.666666-4.266667z" fill="#ffffff"/>
+        <path d="M384 256l341.333333 320-164.266666 14.933333 96 209.066667-61.866667 27.733333-91.733333-211.2L384 725.333333V256m0-42.666667c-6.4 0-10.666667 2.133333-17.066667 4.266667-14.933333 6.4-25.6 21.333333-25.6 38.4v469.333333c0 17.066667 10.666667 32 25.6 38.4 6.4 4.266667 12.8 4.266667 17.066667 4.266667 10.666667 0 21.333333-4.266667 29.866667-10.666667l72.533333-68.266666 66.133333 155.733333c4.266667 10.666667 12.8 19.2 23.466667 23.466667 4.266667 2.133333 10.666667 2.133333 14.933333 2.133333 6.4 0 10.666667-2.133333 17.066667-4.266667l61.866667-27.733333c10.666667-4.266667 19.2-12.8 23.466666-23.466667 4.266667-10.666667 4.266667-23.466667 0-32l-70.4-153.6 104.533334-8.533333c17.066667-2.133333 32-12.8 36.266666-27.733333 6.4-14.933333 2.133333-34.133333-10.666666-44.8l-341.333334-320c-6.4-10.666667-17.066667-14.933333-27.733333-14.933334z" fill="#ffffff212121"/>
+      </g>
+    </svg>
+  `,
+  pointer: `
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0,0,256,256" width="26px" height="26px" fill-rule="nonzero">
+      <g fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal">
+        <g transform="scale(8,8)"><path d="M13,2c-1.64453,0 -3,1.35547 -3,3v11.8125l-0.65625,-0.6875l-0.25,-0.21875c-1.15234,-1.15234 -3.03516,-1.15234 -4.1875,0c-1.15234,1.15234 -1.15234,3.03516 0,4.1875v0.03125l8.1875,8.09375l0.0625,0.03125l0.03125,0.0625c1.34766,1.01172 3.06641,1.6875 5,1.6875h1.71875c4.53516,0 8.1875,-3.65234 8.1875,-8.1875v-7.8125c0,-1.64453 -1.35547,-3 -3,-3c-0.42578,0 -0.82031,0.11719 -1.1875,0.28125c-0.32812,-1.30078 -1.51172,-2.28125 -2.90625,-2.28125c-0.76562,0 -1.46875,0.30078 -2,0.78125c-0.53125,-0.48047 -1.23437,-0.78125 -2,-0.78125c-0.35156,0 -0.68359,0.07422 -1,0.1875v-4.1875c0,-1.64453 -1.35547,-3 -3,-3zM13,4c0.55469,0 1,0.44531 1,1v11h2v-4c0,-0.55469 0.44531,-1 1,-1c0.55469,0 1,0.44531 1,1v4h2v-4c0,-0.55469 0.44531,-1 1,-1c0.55469,0 1,0.44531 1,1v4h2.09375v-2c0,-0.55469 0.44531,-1 1,-1c0.55469,0 1,0.44531 1,1v7.8125c0,3.46484 -2.72266,6.1875 -6.1875,6.1875h-1.71875c-1.46484,0 -2.73047,-0.52344 -3.78125,-1.3125l-8.09375,-8c-0.44531,-0.44531 -0.44531,-0.92969 0,-1.375c0.44531,-0.44531 0.92969,-0.44531 1.375,0l4.3125,4.3125v-16.625c0,-0.55469 0.44531,-1 1,-1z"></path>
+        </g>
+      </g>
+    </svg>
+  `,
+  text: `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" width="10px" height="20px">
+      <path d="M.1 29.3C-1.4 47 11.7 62.4 29.3 63.9l8 .7C70.5 67.3 96 95 96 128.3L96 224l-32 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l32 0 0 95.7c0 33.3-25.5 61-58.7 63.8l-8 .7C11.7 449.6-1.4 465 .1 482.7s16.9 30.7 34.5 29.2l8-.7c34.1-2.8 64.2-18.9 85.4-42.9c21.2 24 51.2 40 85.4 42.9l8 .7c17.6 1.5 33.1-11.6 34.5-29.2s-11.6-33.1-29.2-34.5l-8-.7C185.5 444.7 160 417 160 383.7l0-95.7 32 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-32 0 0-95.7c0-33.3 25.5-61 58.7-63.8l8-.7c17.6-1.5 30.7-16.9 29.2-34.5S239-1.4 221.3 .1l-8 .7C179.2 3.6 149.2 19.7 128 43.7c-21.2-24-51.2-40-85.4-42.9l-8-.7C17-1.4 1.6 11.7 .1 29.3z"/>
+    </svg>
+  `
+};
+
+
+
+
+// https://stackoverflow.com/questions/10389459/is-there-a-way-to-detect-if-im-hovering-over-text
+function isPointOverText(x, y) {
+  const element = document.elementFromPoint(x, y);
+  if (element == null) return false;
+  const nodes = element.childNodes;
+  for (let i = 0, node; (node = nodes[i++]); ) {
+      if (node.nodeType === 3) {
+          const range = document.createRange();
+          range.selectNode(node);
+          const rects = range.getClientRects();
+          for (let j = 0, rect; (rect = rects[j++]); ) {
+              if (
+                  x > rect.left &&
+                  x < rect.right &&
+                  y > rect.top &&
+                  y < rect.bottom
+              ) {
+                  if (node.nodeType === Node.TEXT_NODE) return true;
+              }
+          }
+      }
+  }
+  return false;
+}
+
+
+let originalCursorType;
+function detectCursorType(event) {
+  const element = document.elementFromPoint(event.clientX, event.clientY);
+ 
+  if (element) {
+    // Get the original cursor type by temporarily removing our cursor style
+    const tempCursorType = element.style.cursor;
+    element.style.cursor = '';
+    const computedStyle = window.getComputedStyle(element);
+    let browserCursor = computedStyle.cursor;
+    // Restore our cursor style
+    element.style.cursor = tempCursorType;
+   
+    console.log('Cursor type:', browserCursor);
+   
+    if (originalCursorType !== browserCursor) {
+      originalCursorType = browserCursor;
+    }
+   
+    updateCustomCursor(event);
+   
+    // Hide cursor on the element. Not working for scrollbars and shadow roots
+    element.style.cursor = 'none';
+  }
+}
+
+
+
+
+function updateCustomCursor(event) {
+  const element = document.elementFromPoint(event.clientX, event.clientY);
+  const existingCursor = document.querySelector('.' + kCustomCursorClassName);
+ 
+  if (!existingCursor) return;
+
+
+  let svgType;
+
+
+  const isInteractive = element.tagName === 'A' ||
+                        element.tagName === 'BUTTON' ||  
+                        element.tagName === 'SELECT' ||
+                        element.closest('a') ||
+                        element.closest('button') ||
+                        element.closest('select');
+
+
+  if (originalCursorType.includes('pointer') || isInteractive) {
+    svgType = 'pointer';
+  } else if (originalCursorType.includes('text') || isPointOverText(event.clientX, event.clientY)) {
+    svgType = 'text';
+  } else if (originalCursorType.includes('auto')) {
+    svgType = 'default';
+  }
+ 
+  if (existingCursor && cursorSVGs[svgType]) {
+    existingCursor.innerHTML = cursorSVGs[svgType];
+  }
+}
+
+
+function updateCursorEffects(view, viewData) {
+  const existingCursor = document.querySelector('.' + kCustomCursorClassName);
+
+
+  if (existingCursor) {
+    existingCursor.remove();
+  }
+ 
+  if (!viewData.applyCursorEffects) {
+    document.body.style.cursor = 'default';
+    return;
+  }
+ 
+  const cursor = document.createElement('div');
+  cursor.className = kCustomCursorClassName;
+  cursor.style.cssText = `
+    position: absolute;
+    pointer-events: none;
+    z-index: 2147483640;
+    transform: translate(-50%, -10%);
+  `;
+ 
+  // Apply filters
+  let cursorFilters = [];
+  if (view.doc.cssFilter) cursorFilters.push(view.doc.cssFilter);
+ 
+  if (viewData.blur) {
+    cursorFilters.push(`blur(${viewData.blur}px)`);
+  }
+  if (viewData.contrast !== 100) {
+    cursorFilters.push(`contrast(${viewData.contrast}%)`);
+  }
+  if (viewData.brightness) {
+    cursorFilters.push(`brightness(${viewData.brightness}%)`);
+  }
+ 
+  cursor.style.filter = cursorFilters.join(' ');
+  document.body.appendChild(cursor);
+
+
+  // Set initial cursor content
+  // cursor.innerHTML = cursorSVGs.default;
+ 
+  let lastX = 0;
+  let lastY = 0;
+  let rafId = null;
+
+
+  const updatePosition = (e) => {
+    lastX = e.clientX;
+    lastY = e.clientY;
+
+
+    if (!rafId) {
+      rafId = requestAnimationFrame(() => {
+        cursor.style.left = `${lastX + window.scrollX}px`;
+        cursor.style.top = `${lastY + window.scrollY}px`;
+        rafId = null;
+      });
+    }
+  };
+ 
+  document.addEventListener('mousemove', updatePosition);
+  document.addEventListener('mousemove', detectCursorType);
+ 
+  document.addEventListener('mouseenter', () => {
+    cursor.style.display = 'block';
+  });
+ 
+  document.addEventListener('mouseleave', () => {
+    cursor.style.display = 'none';
+  });
+}
+
+
 function createSvgFilter(filterMarkup, className) {
   let svgMarkup =
-'<svg xmlns="http://www.w3.org/2000/svg" version="1.1">' +
-  '<defs>' +
- '<filter id="' + className + Date.now() + '" >' +
-   filterMarkup +
- '</filter>' +
-   '</defs>' +
-'</svg>';
+    '<svg xmlns="http://www.w3.org/2000/svg" version="1.1">' +
+      '<defs>' +
+      '<filter id="' + className + Date.now() + '" >' +
+        filterMarkup +
+      '</filter>' +
+      '</defs>' +
+    '</svg>';
+
 
   let containerElt = document.createElement('div');
   containerElt.style.visibility = 'hidden';
@@ -45,6 +257,7 @@ function createSvgFilter(filterMarkup, className) {
   return containerElt;
 }
 
+
 function getSvgColorMatrixFilter(colorMatrixValues) {
   if (!colorMatrixValues) {
     return '';
@@ -52,6 +265,7 @@ function getSvgColorMatrixFilter(colorMatrixValues) {
   let str = '<feColorMatrix type="matrix" values="' + colorMatrixValues + '" />';
   return str;
 }
+
 
 function getSvgGhostingFilter(ghostingLevel) {
   if (!ghostingLevel) {
@@ -63,6 +277,7 @@ function getSvgGhostingFilter(ghostingLevel) {
   return str;
 }
 
+
 function getSvgFlutterFilter(flutter) {
   if (!flutter || !flutter.flutterLevel) {
     return '';
@@ -73,6 +288,7 @@ function getSvgFlutterFilter(flutter) {
   return str;
 }
 
+
 function oneFlutter(bodyCssFilter) {
   if (--flutterCount <= 0) {
     stopFluttering();
@@ -80,11 +296,13 @@ function oneFlutter(bodyCssFilter) {
   document.body.style.filter = document.body.style.filter ? '' : bodyCssFilter;
 }
 
+
 function stopFluttering() {
   document.body.style.filter = '';
   clearInterval(window.flutterInterval);
   window.flutterInterval = 0;
 }
+
 
 function startFluttering(flutter, bodyCssFilter) {
   if (!window.flutterInterval) {
@@ -93,6 +311,7 @@ function startFluttering(flutter, bodyCssFilter) {
   }
 }
 
+
 function maybeStartFluttering(flutter, bodyCssFilter) {
   let randomized = Math.random() * 1000;
   if (randomized < flutter.flutterLevel) {
@@ -100,12 +319,15 @@ function maybeStartFluttering(flutter, bodyCssFilter) {
   }
 }
 
+
 function initFlutter(flutter, bodyCssFilter) {
   startFluttering(flutter, bodyCssFilter);
+
 
   window.addEventListener('scroll', function() { maybeStartFluttering(flutter, bodyCssFilter); });
   window.addEventListener('mousemove', function() { maybeStartFluttering(flutter, bodyCssFilter); });
 }
+
 
 function createFloater(floater) {
   let floaterImg = document.createElement('img');
@@ -122,6 +344,7 @@ function createFloater(floater) {
     function() { animateFloater(floater, floaterImg); }, false);
   return floaterImg;
 }
+
 
 function resetFloaters(blockerDiv, floaters) {
   let floaterMix = [];
@@ -146,6 +369,7 @@ function resetFloaters(blockerDiv, floaters) {
     animateFloater(floater, floaterImg);
   }
 }
+
 
 function animateFloater(floater, floaterImg) {
   let delay = Math.random() * kMaxFloaterTravelDelayTime;
@@ -175,9 +399,11 @@ function animateFloater(floater, floaterImg) {
    'transition: all ' + seconds + 's;' +
   '}';
 
+
     floaterImg.parentNode.appendChild(floaterStyleElt);
   }, delay * 1000);
 }
+
 
 function createCloudyDiv(cloudy) {
   if (!cloudy || !cloudy.cloudyLevel) {
@@ -186,6 +412,7 @@ function createCloudyDiv(cloudy) {
   let cloudyDiv = document.createElement('div');
   cloudyDiv.className = kCloudyClassName;
   let size = 100 * cloudy.zoom;
+
 
   let style =
   'z-index:2147483646 !important; ' +
@@ -197,9 +424,11 @@ function createCloudyDiv(cloudy) {
   'background-repeat: no-repeat; background-size: 100% 100%; ' +
   'background-position: 0 0; filter: opacity(' + cloudy.cloudyLevel + '%);';
 
+
   cloudyDiv.setAttribute('style', style);
   return cloudyDiv;
 }
+
 
 function createBlockerDiv(block) {
   if (!block) {
@@ -243,9 +472,15 @@ function createBlockerDiv(block) {
     }
   }
 
+
+
+
   if (block.floaters) {
     resetFloaters(blockerDiv, block.floaters);
   }
+
+
+
 
   if (block.zoom) {
     let size = 100 * block.zoom;
@@ -253,10 +488,19 @@ function createBlockerDiv(block) {
  'width: ' + size + '%; height: ' + size + '%; left: 0; top: 0;';
   }
 
+
+
+
   blockerDiv.setAttribute('style', style);
+
+
+
 
   return blockerDiv;
 }
+
+
+
 
 function createSvgSnowOverlay(snow) {
   if (!snow || !snow.amount) {
@@ -287,8 +531,14 @@ function createSvgSnowOverlay(snow) {
    '<use filter="url(#noCoffeeSnowFilter)" />' +
   '</svg>';
 
+
+
+
   return svgOverlay;
 }
+
+
+
 
 // Return style object
 function getView(viewData) {
@@ -305,6 +555,7 @@ function getView(viewData) {
     blockerDiv: undefined
   };
 
+
   // Create new svg color filter -- old one will be removed
   // Needs to go on body element otherwise the filter does not work in Firefox
   let svgColorFilterMarkup = getSvgColorMatrixFilter(viewData.colorMatrixValues);
@@ -313,6 +564,7 @@ function getView(viewData) {
     let id = view.body.svgFilterElt.querySelector('filter').id;
     view.body.cssFilter += 'url(#' + id + ') ';
   }
+
 
   // Create new svg ghosting filter -- old one will be removed
   // Ghosting filter needs to go on body -- learned through trial and error. Seems to be a bug in Chrome.
@@ -328,20 +580,32 @@ function getView(viewData) {
     }
   }
 
+
+
+
   // Create new svg overlay div -- old one will be removed
   if (!deepEquals(oldViewData.snow, viewData.snow)) {
     view.svgOverlayElt = createSvgSnowOverlay(viewData.snow);
   }
+
+
+
 
   // Create new cloudy div -- old one will be removed
   if (!deepEquals(oldViewData.cloudy, viewData.cloudy)) {
     view.cloudyDiv = createCloudyDiv(viewData.cloudy);
   }
 
+
+
+
   // Create new blocker div -- old one will be removed
   if (!deepEquals(oldViewData.block, viewData.block)) {
     view.blockerDiv = createBlockerDiv(viewData.block);
   }
+
+
+
 
   if (viewData.blur) {
     view.doc.cssFilter += 'blur(' + viewData.blur + 'px) ';
@@ -353,19 +617,34 @@ function getView(viewData) {
     view.doc.cssFilter += 'brightness(' + viewData.brightness + '%) ';
   }
 
+
+
+
   return view;
 }
+
+
+
 
 function getZoom() {
   return window.outerWidth / window.innerWidth; // Works in Chrome
 }
 
+
+
+
 // Computed values based on user settings
 function getViewData(settings) {
   let zoom = getZoom();
 
+
+
+
   // When there is any ghosting, add a little blur
   let blurPlusExtra = settings.blurLevel + (settings.ghostingLevel > 0 ? 3 : 0) + (settings.cloudyLevel / 2.5);
+
+
+
 
   let viewData = {
     blur: (blurPlusExtra / zoom) / 2,
@@ -375,8 +654,12 @@ function getViewData(settings) {
     ghosting: settings.ghostingLevel / zoom,
     snow: { zoom: zoom, amount: 0.03 * settings.snowLevel },
     cloudy: { zoom: zoom, cloudyLevel: settings.cloudyLevel * 6 },
-    flutter: { zoom: zoom, flutterLevel: settings.flutterLevel }
+    flutter: { zoom: zoom, flutterLevel: settings.flutterLevel },
+    applyCursorEffects: oldViewData.applyCursorEffects || false
   };
+
+
+
 
   if (settings.blockStrength) {
     switch (settings.blockType) {
@@ -453,18 +736,30 @@ function getViewData(settings) {
   return viewData;
 }
 
+
+
+
 function deleteNodeIfExists(node) {
   if (node) { node.parentNode.removeChild(node); }
 }
+
+
+
 
 function deepEquals(obj1, obj2) {
   if (!obj1 || !obj2) {
     return obj1 === obj2;
   }
 
+
+
+
   if (typeof obj1 !== typeof obj2) {
     return false;
   }
+
+
+
 
   if (typeof obj1 === 'object') {
     let item;
@@ -481,11 +776,20 @@ function deepEquals(obj1, obj2) {
     return true;
   }
 
+
+
+
   return obj1 === obj2;
 }
 
+
+
+
 function refresh(viewData) {
   let view = getView(viewData);
+
+
+
 
   if (typeof view.doc.svgFilterElt !== 'undefined') {
     deleteNodeIfExists(document.querySelector('.' + kSvgDocClassName)); // Delete old one
@@ -500,12 +804,18 @@ function refresh(viewData) {
     }
   }
 
+
+
+
   if (typeof view.svgOverlayElt !== 'undefined') {
     deleteNodeIfExists(document.querySelector('.' + kSvgOverlayClassName)); // Delete old one
     if (view.svgOverlayElt) {
       document.body.appendChild(view.svgOverlayElt);
     }
   }
+
+
+
 
   if (typeof view.cloudyDiv !== 'undefined') {
     deleteNodeIfExists(document.querySelector('.' + kCloudyClassName)); // Delete old one
@@ -514,6 +824,9 @@ function refresh(viewData) {
     }
   }
 
+
+
+
   if (typeof view.blockerDiv !== 'undefined') {
     deleteNodeIfExists(document.querySelector('.' + kBlockerClassName)); // Delete old one
     if (view.blockerDiv) {
@@ -521,11 +834,21 @@ function refresh(viewData) {
     }
   }
 
+
+
+
   document.documentElement.style.filter = view.doc.cssFilter;
   document.body.style.filter = view.body.cssFilter;
+
+
+
+
+  updateCursorEffects(view, viewData);
 }
 
-// Setup refresh listener
+
+
+
 browser.runtime.onMessage.addListener(
   function(request) {
     if (request.type === 'refresh') {
@@ -534,10 +857,20 @@ browser.runtime.onMessage.addListener(
         refresh(viewData); // View data has changed -- re-render
         oldViewData = viewData;
       }
+    } else if (request.type === 'updateCursorEffects') {
+      let view = getView(oldViewData);
+      updateCursorEffects(view, {
+        applyCursorEffects: request.settings.applyCursorEffects,
+        blur: oldViewData.blur || 0,
+        contrast: oldViewData.contrast || 100,
+        brightness: oldViewData.brightness || 100
+      });
     }
   });
 
+
 let isInitialized = false;
+
 
 // (feb-2025-refactor) it has to be a promise to avoid a no-matching-signature error on the extensions page
 async function initIfStillNecessaryAndBodyExists() {
@@ -550,8 +883,9 @@ async function initIfStillNecessaryAndBodyExists() {
     }
   }
 }
-  
+ 
 setTimeout(initIfStillNecessaryAndBodyExists, 0);
+
 
 // Refresh once on first load
 document.addEventListener('readystatechange', function() {
