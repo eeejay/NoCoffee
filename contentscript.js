@@ -8,9 +8,10 @@
 // - Misshapen macular degenation blob, add blur to outside
 // - Stargardt's add brightness, some good holes in it, loss of contrast sensitivity
 
+browser.runtime.sendMessage({ type: 'contentScriptLoaded' });
+
 let oldViewData = {};
 let flutterCount = 0;
-// let currentCursorStyle = 'default';
 
 const kSvgDocClassName = 'noCoffeeSvgFilterDoc';
 const kSvgBodyClassName = 'noCoffeeSvgFilterBody';
@@ -57,6 +58,10 @@ const cursorSVGs = {
   `
 };
 
+// When page loads, reset settings
+// window.addEventListener('reload', async () => {
+//   await browser.runtime.sendMessage({ type: 'pageRefreshed' });
+// });
 
 // https://stackoverflow.com/questions/10389459/is-there-a-way-to-detect-if-im-hovering-over-text
 function isPointOverText(x, y) {
