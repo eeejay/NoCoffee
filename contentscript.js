@@ -148,6 +148,15 @@ function updateCursorEffects(view, viewData) {
  
   if (!viewData.applyCursorEffects) {
     document.body.style.cursor = '';
+    const allElements = document.querySelectorAll('*');
+    for (const element of allElements) {
+      if (element.style.cursor === 'none') {
+        element.style.cursor = '';
+      }
+    }
+    
+    // Remove existing event handlers
+    document.removeEventListener('mousemove', detectCursorType);
     return;
   }
  
@@ -713,7 +722,7 @@ browser.runtime.onMessage.addListener(
       let viewData = getViewData(request.settings);
      
       // Add a flag to determine if cursor effects should be applied
-      viewData.applyCursorEffects = request.settings.applyCursorEffects !== false;
+      viewData.applyCursorEffects = request.settings.applyCursorEffects === true;
      
       if (!deepEquals(viewData, oldViewData)) {
         refresh(viewData); // View data has changed -- re-render

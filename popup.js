@@ -72,6 +72,7 @@ function focusEventTarget(evt) {
 
 document.addEventListener('DOMContentLoaded', async function() {
   let settings = await browser.runtime.sendMessage({ type: 'getSettings' }) || {};
+  document.getElementById('cursor').checked = settings.applyCursorEffects === true;
   document.getElementById('blurValueText').focus();
   updateValue('blur', settings.blurLevel || 0);
   updateValue('contrast', settings.contrastLevel || 0);
@@ -95,7 +96,18 @@ document.addEventListener('DOMContentLoaded', async function() {
   // Add listeners
   document.visionSettings.addEventListener('change', updateOneSetting);
   document.visionSettings.addEventListener('select', updateSettings);
-  document.visionSettings.addEventListener('reset', updateSettings);
+  // document.visionSettings.addEventListener('reset', updateSettings);
+  document.getElementById('reset').addEventListener('click', async function() {
+    document.getElementById('cursor').checked = false;
+    await browser.runtime.sendMessage({
+      type: 'updateCursorEffects',
+      settings: {
+        applyCursorEffects: false
+      }
+    });
+    
+    updateSettings();
+  });
   document.getElementById('cursor').addEventListener('change', async function(e) {
     await browser.runtime.sendMessage({
       type: 'updateCursorEffects',
