@@ -47,11 +47,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   //   sendResponse({ success: true });
   //   return true;
   // }
-  if (request.type === 'contentScriptLoaded' && sender.tab) {
-    tabSettings.delete(sender.tab.id);
-    sendResponse({ success: true });
-    return true;
-  }
+  // allows browser refresh to reset the settings (it has to be paired with line 12 in content.js)
+  // if (request.type === 'contentScriptLoaded' && sender.tab) {
+  //   tabSettings.delete(sender.tab.id);
+  //   sendResponse({ success: true });
+  //   return true;
+  // }
 
   // if (request.type === 'updateCursorEffects') {
   //   gSettings = { ...gSettings, applyCursorEffects: request.settings.applyCursorEffects };

@@ -8,6 +8,7 @@
 // - Misshapen macular degenation blob, add blur to outside
 // - Stargardt's add brightness, some good holes in it, loss of contrast sensitivity
 
+// allows browser refresh to reset the settings
 browser.runtime.sendMessage({ type: 'contentScriptLoaded' });
 
 let oldViewData = {};
