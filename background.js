@@ -1,6 +1,7 @@
 // let gSettings = {};
 let tabSettings = new Map();
 
+// settings apply to the active tab, but when a new tab uses the extension the settings will be the same as the last active tab
 // async function updateActiveTab() {
 //   const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
 //   if (!activeTab) return;
@@ -13,6 +14,7 @@ let tabSettings = new Map();
 //     console.warn('Error updating tab:', e);
 //   }
 // }
+// each tab can have its own settings
 async function updateActiveTab() {
   const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!activeTab) return;
@@ -33,7 +35,6 @@ async function updateSettings(settings) {
   if (!activeTab) return;
   
   let currentSettings = tabSettings.get(activeTab.id) || {};
-  
   tabSettings.set(activeTab.id, {...currentSettings, ...settings});
   
   await updateActiveTab();
@@ -48,11 +49,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   //   return true;
   // }
   // allows browser refresh to reset the settings (it has to be paired with line 12 in content.js)
-  // if (request.type === 'contentScriptLoaded' && sender.tab) {
-  //   tabSettings.delete(sender.tab.id);
-  //   sendResponse({ success: true });
-  //   return true;
-  // }
+  if (request.type === 'contentScriptLoaded' && sender.tab) {
+    tabSettings.delete(sender.tab.id);
+    sendResponse({ success: true });
+    return true;
+  }
 
   // if (request.type === 'updateCursorEffects') {
   //   gSettings = { ...gSettings, applyCursorEffects: request.settings.applyCursorEffects };
