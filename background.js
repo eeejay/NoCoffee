@@ -14,6 +14,7 @@ let tabSettings = new Map();
 //     console.warn('Error updating tab:', e);
 //   }
 // }
+
 // each tab can have its own settings
 async function updateActiveTab() {
   const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
