@@ -4,18 +4,16 @@ to fix: contrast for number input & select when in focus
 
 */
 :root {
-	--color-dark: #151515; 
+    --color-dark: #151515; 
     --color-light: #f2f2f2; 
-	--color-blue-lighter: rgba(60, 140, 255, 1);
+    --color-blue-lighter: rgba(60, 140, 255, 1);
     --color-blue-darker: rgba(40, 120, 255, 1);
-    --color-green: #226622;
+    --color-green: #287728;
     --color-purple: rgb(60, 40, 60);
     --color-gray: rgb(40, 40, 40);
     --color-light-gray: rgba(200,200,200,.8);
     --color-blue-gray: #203040; 
     --color-purple-gray: rgba(160,160,220,.6);
-    
-	/* --focus-color: var(--color-blue-lighter); */
 }
 
 * {
@@ -25,7 +23,7 @@ to fix: contrast for number input & select when in focus
 body { 
     background-color: var(--color-dark);
     color: var(--color-light);
-    font-family: sans-serif; 
+    font-family: Arial, Helvetica, sans-serif;
     font-size: 1rem;
     padding-inline: 12px; 
 }
@@ -41,9 +39,10 @@ h1 {
     border: 2px solid var(--color-dark);
     border-radius: 6px;
     color: var(--color-light);
+    font-family: Arial, Helvetica, sans-serif;
     font-size: 1rem;
     margin-block: 0;
-    padding: 3px 11px;
+    padding: 3px 13px;
 }
 
 /* **** FORM **** */
@@ -143,6 +142,10 @@ input[type="range"]::-moz-range-thumb {
     height: 18px;
     width: 11px;
 }
+
+label input[type="checkbox"] {
+    border-radius: 4px;
+}
  
 select {
     color: var(--color-light);
@@ -155,10 +158,17 @@ select {
 }
 
 /* **** FOOTER **** */
-a.footerItem { 
+.footerItem { 
     color: var(--color-light);
     font-family: Arial, Helvetica, sans-serif;
     padding: 2px;
+}
+
+.cursorEffectsLabel {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
 }
 
 /* **** FOCUS MODE **** */
@@ -179,6 +189,11 @@ input[type="radio"]:focus + label {
     outline-offset: 2px;
 }
 
+input[type="checkbox"]:focus-visible {
+    outline: 2px solid var(--color-blue-lighter);
+    outline-offset: 2px;
+}
+
 /* to explore further: maybe a better solution for radio focus??? */
 /* .line:has(input[type="radio"]:focus-visible) {
     border-radius: 4px;
@@ -195,7 +210,7 @@ input[type="number"]:focus {
 
 button:focus, 
 a:focus-visible {
-    border-radius: 6px;
+    border-radius: 4px;
     outline: 2px solid var(--color-blue-lighter);
     outline-offset: 1px;
 }
