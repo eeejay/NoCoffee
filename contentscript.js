@@ -63,19 +63,13 @@ const cursorSVGs = {
   `
 };
 
-// good pointer
+// an alternate (good) pointer
 {/* <svg xmlns="http://www.w3.org/2000/svg" viewBox="0,0,32,32" width="26px" height="26px">
   <path d="m 14.285578,2.8680272 c 1.20794,0.140206 1.496662,0.9677764 1.501053,1.522449 l 0.08708,11.0000008 -0.002,-0.217687 -0.17415,-4.000001 c -0.05974,-1.3721922 0.810952,-1.9483242 1.326905,-2.0013604 1.694183,-0.1741497 2.165713,0.9678214 2.154116,2.0448974 l -0.04354,4.043539 -0.002,-0.04354 0.04354,-4.043538 c 0.01496,-1.3897412 1.896668,-1.130612 2.41534,-1.130612 0.431598,0 1.10181,1.229033 1.109218,1.783673 l 0.04354,3.259865 -0.04492,0.08708 0,-2.391837 c 0,-2.034962 1.461293,-1.435375 1.979966,-1.435375 0.518673,0 1.152755,0.96776 1.152755,1.52245 v 7.8125 c 0,3.46484 -2.545872,6.1875 -5.785733,6.1875 h -1.607148 c -1.369725,0 -3.598073,-0.828202 -4.580624,-1.617262 L 6.9874125,18.556889 C 6.5710174,18.111579 6.52748,16.799988 6.9438751,16.354678 c 0.4163951,-0.44531 1.2611601,-0.61946 1.6775552,-0.17415 l 4.0324807,2.745153 V 3.8680272 c 0,-0.55469 0.721489,-1.1056445 1.631667,-1 z"
     fill="#fff" 
     stroke="#000" 
     stroke-width="0.7"/>
 </svg> */}
-
-// working pointer, stroke too thick
-{/* <svg xmlns="http://www.w3.org/2000/svg" viewBox="0,0,32,32" width="26px" height="26px" fill="#000">
-      <path stroke="none" d="M13,2c-1.64453,0 -3,1.35547 -3,3v11.8125l-0.65625,-0.6875l-0.25,-0.21875c-1.15234,-1.15234 -3.03516,-1.15234 -4.1875,0c-1.15234,1.15234 -1.15234,3.03516 0,4.1875v0.03125l8.1875,8.09375l0.0625,0.03125l0.03125,0.0625c1.34766,1.01172 3.06641,1.6875 5,1.6875h1.71875c4.53516,0 8.1875,-3.65234 8.1875,-8.1875v-7.8125c0,-1.64453 -1.35547,-3 -3,-3c-0.42578,0 -0.82031,0.11719 -1.1875,0.28125c-0.32812,-1.30078 -1.51172,-2.28125 -2.90625,-2.28125c-0.76562,0 -1.46875,0.30078 -2,0.78125c-0.53125,-0.48047 -1.23437,-0.78125 -2,-0.78125c-0.35156,0 -0.68359,0.07422 -1,0.1875v-4.1875c0,-1.64453 -1.35547,-3 -3,-3z" />
-      <path fill="white" stroke="#fff" stroke-width="1" d="M13,4c0.55469,0 1,0.44531 1,1v11h2v-4c0,-0.55469 0.44531,-1 1,-1c0.55469,0 1,0.44531 1,1v4h2v-4c0,-0.55469 0.44531,-1 1,-1c0.55469,0 1,0.44531 1,1v4h2.09375v-2c0,-0.55469 0.44531,-1 1,-1c0.55469,0 1,0.44531 1,1v7.8125c0,3.46484 -2.72266,6.1875 -6.1875,6.1875h-1.71875c-1.46484,0 -2.73047,-0.52344 -3.78125,-1.3125l-8.09375,-8c-0.44531,-0.44531 -0.44531,-0.92969 0,-1.375c0.44531,-0.44531 0.92969,-0.44531 1.375,0l4.3125,4.3125v-16.625c0,-0.55469 0.44531,-1 1,-1z" />
-    </svg> */}
     
 // default pointer
 {/* <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0,0,256,256" width="26px" height="26px" fill-rule="nonzero">
@@ -86,7 +80,7 @@ const cursorSVGs = {
 </g>
 </svg> */}
 
-// working text, with indentation
+// alternate working text cursor, with indentation
 {/* <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 200" width="10px" height="20px" shape-rendering="crispEdges">
     <rect x="0" y="0" width="40" height="8" fill="#000"/>
     <rect x="52" y="0" width="40" height="8" fill="#000"/>
@@ -96,16 +90,6 @@ const cursorSVGs = {
     <rect x="0" y="157" width="40" height="8" fill="#000"/>
     <rect x="52" y="157" width="40" height="8" fill="#000"/>
   </svg> */}
-
-// original text
-{/* <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" width="10px" height="20px">
-      <path d="M.1 29.3C-1.4 47 11.7 62.4 29.3 63.9l8 .7C70.5 67.3 96 95 96 128.3L96 224l-32 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l32 0 0 95.7c0 33.3-25.5 61-58.7 63.8l-8 .7C11.7 449.6-1.4 465 .1 482.7s16.9 30.7 34.5 29.2l8-.7c34.1-2.8 64.2-18.9 85.4-42.9c21.2 24 51.2 40 85.4 42.9l8 .7c17.6 1.5 33.1-11.6 34.5-29.2s-11.6-33.1-29.2-34.5l-8-.7C185.5 444.7 160 417 160 383.7l0-95.7 32 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-32 0 0-95.7c0-33.3 25.5-61 58.7-63.8l8-.7c17.6-1.5 30.7-16.9 29.2-34.5S239-1.4 221.3 .1l-8 .7C179.2 3.6 149.2 19.7 128 43.7c-21.2-24-51.2-40-85.4-42.9l-8-.7C17-1.4 1.6 11.7 .1 29.3z"/>
-    </svg> */}
-
-// When page loads, reset settings
-// window.addEventListener('reload', async () => {
-//   await browser.runtime.sendMessage({ type: 'pageRefreshed' });
-// });
 
 // https://stackoverflow.com/questions/10389459/is-there-a-way-to-detect-if-im-hovering-over-text
 function isPointOverText(x, y) {
@@ -239,11 +223,9 @@ function updateCursorEffects(view, viewData) {
   let lastY = 0;
   let rafId = null;
 
-
   const updatePosition = (e) => {
     lastX = e.clientX;
     lastY = e.clientY;
-
 
     if (!rafId) {
       rafId = requestAnimationFrame(() => {
@@ -514,7 +496,7 @@ function createSvgSnowOverlay(snow) {
    '<defs>' +
   '<filter id="noCoffeeSnowFilter" filterUnits="userSpaceOnUse" x="0" y="0">' +
     '<feTurbulence type="fractalNoise" baseFrequency=".25" numOctaves="1" seed="4" stitchTiles="noStitch" width="159" height="120">' +
-      '<animate attributeType="XML" attributeName="seed" from="500" to="1" dur="70s" repeatCount="indefinite" />' +
+      '<animate attributeType="XML" attributeName="seed" from="500" to="1" dur="30s" repeatCount="indefinite" />' +
     '</feTurbulence>' +
     '<feComponentTransfer>' +
       '<feFuncA type="discrete" tableValues="0 0 ' + snow.amount + ' 1"/>' +
