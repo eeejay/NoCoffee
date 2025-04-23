@@ -6,11 +6,11 @@ to fix: contrast for number input & select when in focus
 :root {
     --color-dark: #151515; 
     --color-light: #f2f2f2; 
-    --color-blue-lighter: rgba(60, 140, 255, 1);
-    --color-blue-darker: rgba(40, 120, 255, 1);
+    --color-blue-lighter: #3c8cff;
+    --color-blue-darker: #2878ff;
     --color-green: #287728;
-    --color-purple: rgb(60, 40, 60);
-    --color-gray: rgb(40, 40, 40);
+    --color-purple: #3c283c;
+    --color-gray: #282828;
     --color-light-gray: rgba(200,200,200,.8);
     --color-blue-gray: #203040; 
     --color-purple-gray: rgba(160,160,220,.6);

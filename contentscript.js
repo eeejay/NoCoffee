@@ -52,13 +52,13 @@ const cursorSVGs = {
   `,
   text: `
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 200" width="10px" height="20px" shape-rendering="crispEdges">
-      <path d="M0 0 H40 V8 H0 Z
-              M52 0 H92 V8 H52 Z
-              M0 8 H92 V15 H0 Z
-              M40 15 H52 V150 H40 Z
-              M0 150 H92 V157 H0 Z
-              M0 157 H40 V165 H0 Z
-              M52 157 H92 V165 H52 Z" fill="#000"/>
+      <rect x="0" y="0" width="40" height="8" fill="#000"/>
+      <rect x="52" y="0" width="40" height="8" fill="#000"/>
+      <rect x="0" y="8" width="92" height="7" fill="#000"/>
+      <rect x="40" y="15" width="12" height="135" fill="#000"/>
+      <rect x="0" y="150" width="92" height="7" fill="#000"/>
+      <rect x="0" y="157" width="40" height="8" fill="#000"/>
+      <rect x="52" y="157" width="40" height="8" fill="#000"/>
     </svg>
   `
 };
@@ -80,16 +80,16 @@ const cursorSVGs = {
 </g>
 </svg> */}
 
-// alternate working text cursor, with indentation
+// alternate text cursor, with indentation. It does not work well in Firefox
 {/* <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 200" width="10px" height="20px" shape-rendering="crispEdges">
-    <rect x="0" y="0" width="40" height="8" fill="#000"/>
-    <rect x="52" y="0" width="40" height="8" fill="#000"/>
-    <rect x="0" y="8" width="92" height="7" fill="#000"/>
-    <rect x="40" y="15" width="12" height="135" fill="#000"/>
-    <rect x="0" y="150" width="92" height="7" fill="#000"/>
-    <rect x="0" y="157" width="40" height="8" fill="#000"/>
-    <rect x="52" y="157" width="40" height="8" fill="#000"/>
-  </svg> */}
+  <path d="M0 0 H40 V8 H0 Z
+          M52 0 H92 V8 H52 Z
+          M0 8 H92 V15 H0 Z
+          M40 15 H52 V150 H40 Z
+          M0 150 H92 V157 H0 Z
+          M0 157 H40 V165 H0 Z
+          M52 157 H92 V165 H52 Z" fill="#000"/>
+</svg> */}
 
 // https://stackoverflow.com/questions/10389459/is-there-a-way-to-detect-if-im-hovering-over-text
 function isPointOverText(x, y) {
