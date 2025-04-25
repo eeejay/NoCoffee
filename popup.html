@@ -10,7 +10,7 @@
 	</head>
 	<body>
 		<form name="visionSettings">
-			<div class="flex">
+			<div class="header">
 				<h1>NoCoffee Vision Simulator</h1>
 				<button id="reset" type="reset">Reset all</button>
 			</div>
@@ -95,13 +95,16 @@
 			</fieldset>
 		</form>
 		<div class="flex footer">
-      <a class="footerItem" href="http://accessgarage.wordpress.com/2013/02/09/458/">More info</a>
-      
-      <label for="cursor" class="cursorEffectsLabel footerItem">
+			<div class="cursorEffects">
 				<input type="checkbox" id="cursor"/>
-				Cursor effects
-			</label>
-      <a class="footerItem" href="https://chrome.google.com/webstore/support/jjeeggmbnhckmgdhmgdckeigabjfbddl?hl=en&gl=US#bug" id="feedback">Feedback</a>
+				<label for="cursor">
+					Cursor effects
+				</label>
+			</div>
+			<div class="links">
+				<a class="link" href="http://accessgarage.wordpress.com/2013/02/09/458/">More info</a>
+				<a class="link" href="https://chrome.google.com/webstore/support/jjeeggmbnhckmgdhmgdckeigabjfbddl?hl=en&gl=US#bug" id="feedback">Feedback</a>
+			</div>
     </div>
 	</body>
 </html>

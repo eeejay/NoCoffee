@@ -29,6 +29,14 @@ body {
 }
 
 /* **** HEADER **** */
+.header {
+    display: flex;
+    justify-content: space-between;
+    /* align-items:self-start; */
+    align-items: center;
+    margin-inline: 2px;
+    /* width: 100%; */
+}
 h1 { 
     font-size: 1.4rem; 
     margin-block: 0;
@@ -36,13 +44,14 @@ h1 {
 
 #reset {
     background-color: var(--color-green);
-    border: 2px solid var(--color-dark);
+    border: 2px solid var(--color-green);
     border-radius: 6px;
     color: var(--color-light);
     font-family: Arial, Helvetica, sans-serif;
     font-size: 1rem;
+    /* font-weight: bold; */
     margin-block: 0;
-    padding: 3px 13px;
+    padding: 3px 14px;
 }
 
 /* **** FORM **** */
@@ -143,8 +152,8 @@ input[type="range"]::-moz-range-thumb {
     width: 11px;
 }
 
-label input[type="checkbox"] {
-    border-radius: 4px;
+input[type="checkbox"] {
+    margin: 1px;
 }
  
 select {
@@ -158,15 +167,30 @@ select {
 }
 
 /* **** FOOTER **** */
-.footerItem { 
+
+.footer {
+    display:flex;
+    justify-content:space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.link { 
     color: var(--color-light);
     font-family: Arial, Helvetica, sans-serif;
     padding: 2px;
 }
 
-.cursorEffectsLabel {
+.cursorEffects {
     display: flex;
-    justify-content: center;
+    justify-content:flex-start;
     align-items: center;
     gap: 5px;
 }
@@ -189,10 +213,11 @@ input[type="radio"]:focus + label {
     outline-offset: 2px;
 }
 
-input[type="checkbox"]:focus-visible {
+/* outline on label instead??? */
+/* input[type="checkbox"]:focus-visible {
     outline: 2px solid var(--color-blue-lighter);
     outline-offset: 2px;
-}
+} */
 
 /* to explore further: maybe a better solution for radio focus??? */
 /* .line:has(input[type="radio"]:focus-visible) {
@@ -208,9 +233,20 @@ input[type="number"]:focus {
     outline: none;
 }
 
-button:focus, 
+/* #reset:focus {
+    outline: none;
+} */
+
+#reset:focus,
+#reset:hover {
+    border: 2px solid var(--color-light);
+    /* outline: 2px solid var(--color-blue-lighter);
+    outline-offset: 1px; */
+}
+
 a:focus-visible {
     border-radius: 4px;
+    /* change color based on rest of button's outline/border color */
     outline: 2px solid var(--color-blue-lighter);
     outline-offset: 1px;
 }
@@ -220,10 +256,3 @@ a:focus-visible {
 .margin-top-10 { margin-top: 10px; }
 
 .margin-top-15 { margin-top: 15px; }
-
-.flex {
-    display: flex;
-    justify-content: space-between;
-    align-items:self-start;
-    width: 100%;
-}
