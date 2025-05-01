@@ -52,7 +52,9 @@ function updateOneSetting(evt) {
   updateSettings();
 }
 
-async function visitLink() {
+async function visitLink(event) {
+  // necessary to prevent Firefox from opening two tabs
+  event.preventDefault();
   await browser.tabs.create({url: this.getAttribute('href')});
 }
 
