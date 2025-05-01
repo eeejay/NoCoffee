@@ -33,6 +33,7 @@ const kFlutterDist = 15;
 const kCursorWrapperClassName = 'noCoffeeCursorWrapper';
 const kCustomCursorClassName = 'noCoffeeCustomCursor';
 
+// current text cursor is the better on average than the other versions; the color is nor very crisp though
 const cursorSVGs = {
   default: `
     <svg width="32px" height="32px" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
@@ -63,32 +64,15 @@ const cursorSVGs = {
   `
 };
 
-// an alternate (good) pointer
-{/* <svg xmlns="http://www.w3.org/2000/svg" viewBox="0,0,32,32" width="26px" height="26px">
-  <path d="m 14.285578,2.8680272 c 1.20794,0.140206 1.496662,0.9677764 1.501053,1.522449 l 0.08708,11.0000008 -0.002,-0.217687 -0.17415,-4.000001 c -0.05974,-1.3721922 0.810952,-1.9483242 1.326905,-2.0013604 1.694183,-0.1741497 2.165713,0.9678214 2.154116,2.0448974 l -0.04354,4.043539 -0.002,-0.04354 0.04354,-4.043538 c 0.01496,-1.3897412 1.896668,-1.130612 2.41534,-1.130612 0.431598,0 1.10181,1.229033 1.109218,1.783673 l 0.04354,3.259865 -0.04492,0.08708 0,-2.391837 c 0,-2.034962 1.461293,-1.435375 1.979966,-1.435375 0.518673,0 1.152755,0.96776 1.152755,1.52245 v 7.8125 c 0,3.46484 -2.545872,6.1875 -5.785733,6.1875 h -1.607148 c -1.369725,0 -3.598073,-0.828202 -4.580624,-1.617262 L 6.9874125,18.556889 C 6.5710174,18.111579 6.52748,16.799988 6.9438751,16.354678 c 0.4163951,-0.44531 1.2611601,-0.61946 1.6775552,-0.17415 l 4.0324807,2.745153 V 3.8680272 c 0,-0.55469 0.721489,-1.1056445 1.631667,-1 z"
-    fill="#fff" 
-    stroke="#000" 
-    stroke-width="0.7"/>
-</svg> */}
-    
-// default pointer
-{/* <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0,0,256,256" width="26px" height="26px" fill-rule="nonzero">
-<g fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal">
-  <g transform="scale(8,8)">
-    <path d="M13,2c-1.64453,0 -3,1.35547 -3,3v11.8125l-0.65625,-0.6875l-0.25,-0.21875c-1.15234,-1.15234 -3.03516,-1.15234 -4.1875,0c-1.15234,1.15234 -1.15234,3.03516 0,4.1875v0.03125l8.1875,8.09375l0.0625,0.03125l0.03125,0.0625c1.34766,1.01172 3.06641,1.6875 5,1.6875h1.71875c4.53516,0 8.1875,-3.65234 8.1875,-8.1875v-7.8125c0,-1.64453 -1.35547,-3 -3,-3c-0.42578,0 -0.82031,0.11719 -1.1875,0.28125c-0.32812,-1.30078 -1.51172,-2.28125 -2.90625,-2.28125c-0.76562,0 -1.46875,0.30078 -2,0.78125c-0.53125,-0.48047 -1.23437,-0.78125 -2,-0.78125c-0.35156,0 -0.68359,0.07422 -1,0.1875v-4.1875c0,-1.64453 -1.35547,-3 -3,-3zM13,4c0.55469,0 1,0.44531 1,1v11h2v-4c0,-0.55469 0.44531,-1 1,-1c0.55469,0 1,0.44531 1,1v4h2v-4c0,-0.55469 0.44531,-1 1,-1c0.55469,0 1,0.44531 1,1v4h2.09375v-2c0,-0.55469 0.44531,-1 1,-1c0.55469,0 1,0.44531 1,1v7.8125c0,3.46484 -2.72266,6.1875 -6.1875,6.1875h-1.71875c-1.46484,0 -2.73047,-0.52344 -3.78125,-1.3125l-8.09375,-8c-0.44531,-0.44531 -0.44531,-0.92969 0,-1.375c0.44531,-0.44531 0.92969,-0.44531 1.375,0l4.3125,4.3125v-16.625c0,-0.55469 0.44531,-1 1,-1z"></path>
-  </g>
-</g>
-</svg> */}
-
-// alternate text cursor, with indentation. It does not work well in Firefox
-{/* <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 200" width="10px" height="20px" shape-rendering="crispEdges">
-  <path d="M0 0 H40 V8 H0 Z
-          M52 0 H92 V8 H52 Z
-          M0 8 H92 V15 H0 Z
-          M40 15 H52 V150 H40 Z
-          M0 150 H92 V157 H0 Z
-          M0 157 H40 V165 H0 Z
-          M52 157 H92 V165 H52 Z" fill="#000"/>
+// working text cursor; pro: works well on all sites (no bottom bar thicker than top bar); con: not very crisp
+{/* <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 92 165" width="10" height="20" vector-effect="non-scaling-stroke" preserveAspectRatio="xMidYMid meet">
+  <rect x="0" y="0" width="36" height="6" fill="#000" stroke="#000"/>
+  <rect x="48" y="0" width="36" height="6" fill="#000" stroke="#000"/>
+  <rect x="0" y="6" width="84" height="4" fill="#000" stroke="#000"/>
+  <rect x="36" y="10" width="12" height="127" fill="#000" stroke="#000"/>
+  <rect x="0" y="137" width="84" height="4" fill="#000" stroke="#000"/>
+  <rect x="0" y="141" width="36" height="6" fill="#000" stroke="#000"/>
+  <rect x="48" y="141" width="36" height="6" fill="#000" stroke="#000"/>
 </svg> */}
 
 // https://stackoverflow.com/questions/10389459/is-there-a-way-to-detect-if-im-hovering-over-text
@@ -115,7 +99,6 @@ function isPointOverText(x, y) {
   }
   return false;
 }
-
 
 let originalCursorType;
 function detectCursorType(event) {
@@ -144,11 +127,60 @@ function detectCursorType(event) {
   }
 }
 
+// get element's bg color
+function parseColor(bgColor) {
+  const match = bgColor.match(/rgba?\(([\d.]+), ([\d.]+), ([\d.]+)(?:, ([\d.]+))?\)/);
+  if (match) {
+    let [_, r, g, b, a] = match;
+    return {
+      r: parseFloat(r),
+      g: parseFloat(g),
+      b: parseFloat(b),
+      a: a !== undefined ? parseFloat(a) : 1
+    };
+  }
+  return null;
+}
+
+function getBackgroundColor(el) {
+  if (!el) {
+    return { r: 255, g: 255, b: 255 };
+  }
+
+  const bgColor = window.getComputedStyle(el).backgroundColor;
+  const parsed = parseColor(bgColor);
+
+  if (parsed) {
+    if (parsed.a === 1) {
+      return { r: parsed.r, g: parsed.g, b: parsed.b };
+    } else if (parsed.a < 1) {
+      const parentColor = getBackgroundColor(el.parentElement);
+      return {
+        r: parsed.r * parsed.a + parentColor.r * (1 - parsed.a),
+        g: parsed.g * parsed.a + parentColor.g * (1 - parsed.a),
+        b: parsed.b * parsed.a + parentColor.b * (1 - parsed.a)
+      };
+    }
+  }
+
+  return getBackgroundColor(el.parentElement);
+}
+
+function getInvertedBackgroundColor(el) {
+  const { r, g, b } = getBackgroundColor(el);
+  return {
+    r: 255 - Math.round(r),
+    g: 255 - Math.round(g),
+    b: 255 - Math.round(b)
+  };
+}
+// end of get element's bg color functions
+
 function updateCustomCursor(event) {
   const element = document.elementFromPoint(event.clientX, event.clientY);
   const existingCursor = document.querySelector('.' + kCustomCursorClassName);
- 
-  if (!existingCursor) return;
+
+  if (!existingCursor || !element) return;
 
   let svgType;
 
@@ -163,12 +195,27 @@ function updateCustomCursor(event) {
     svgType = 'pointer';
   } else if (originalCursorType.includes('text') || isPointOverText(event.clientX, event.clientY)) {
     svgType = 'text';
-  } else if (originalCursorType.includes('auto')) {
+  } else {
     svgType = 'default';
   }
- 
+
   if (existingCursor && cursorSVGs[svgType]) {
-    existingCursor.innerHTML = cursorSVGs[svgType];
+    if (svgType === 'text') {
+      const { r, g, b } = getInvertedBackgroundColor(element);
+      const hex = '#' + 
+          r.toString(16).padStart(2, '0') + 
+          g.toString(16).padStart(2, '0') + 
+          b.toString(16).padStart(2, '0');
+
+      console.log("Inverted color:", hex, "from element:", element);
+      const updatedSVG = cursorSVGs[svgType]
+        .replace(/fill="[^"]*"/g, `fill="${hex}"`)
+        .replace(/stroke="[^"]*"/g, `stroke="${hex}"`);
+
+      existingCursor.innerHTML = updatedSVG;
+    } else {
+      existingCursor.innerHTML = cursorSVGs[svgType];
+    }
   }
 }
 
