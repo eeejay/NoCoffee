@@ -110,6 +110,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     updateSettings();
   });
+  
   document.getElementById('cursor').addEventListener('change', async function(e) {
     await browser.runtime.sendMessage({
       type: 'updateCursorEffects',

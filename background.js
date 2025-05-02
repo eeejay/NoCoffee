@@ -27,7 +27,7 @@ async function updateSettings(settings) {
 // Must use chrome.runtime (not browser.runtime) to avoid undefined error
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // browser refresh can reset settings (it has to be paired with line 12 in content.js)
-  if (request.type === 'contentScriptLoaded' && sender.tab) {
+  if (request.type === 'browserRefresh' && sender.tab) {
     tabSettings.delete(sender.tab.id);
     sendResponse({ success: true });
     return true;

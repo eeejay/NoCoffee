@@ -9,7 +9,7 @@
 // - Stargardt's add brightness, some good holes in it, loss of contrast sensitivity
 
 // allows browser refresh to reset the settings
-browser.runtime.sendMessage({ type: 'contentScriptLoaded' });
+browser.runtime.sendMessage({ type: 'browserRefresh' });
 
 let oldViewData = {};
 let flutterCount = 0;
@@ -348,17 +348,17 @@ function oneFlutter(bodyCssFilter) {
   document.body.style.filter = document.body.style.filter ? '' : bodyCssFilter;
 }
 
-function stopFluttering() {
-  document.body.style.filter = '';
-  clearInterval(window.flutterInterval);
-  window.flutterInterval = 0;
-}
-
 function startFluttering(flutter, bodyCssFilter) {
   if (!window.flutterInterval) {
     window.flutterCount = Math.random() * flutter.flutterLevel * 1.5 + 5;
     window.flutterInterval = setInterval(function() { oneFlutter(bodyCssFilter); }, 10);
   }
+}
+
+function stopFluttering() {
+  document.body.style.filter = '';
+  clearInterval(window.flutterInterval);
+  window.flutterInterval = 0;
 }
 
 function maybeStartFluttering(flutter, bodyCssFilter) {
@@ -585,7 +585,9 @@ function getView(viewData) {
   // Ghosting filter needs to go on body -- learned through trial and error. Seems to be a bug in Chrome.
   let svgGhostingFilterMarkup = getSvgGhostingFilter(viewData.ghosting);
   let svgFlutterFilterMarkup = getSvgFlutterFilter(viewData.flutter);
+
   stopFluttering();
+  
   if (svgGhostingFilterMarkup || svgFlutterFilterMarkup) {
     view.body.svgFilterElt = createSvgFilter(svgFlutterFilterMarkup || svgGhostingFilterMarkup, kSvgBodyClassName);
     let id = view.body.svgFilterElt.querySelector('filter').id;
@@ -806,10 +808,11 @@ browser.runtime.onMessage.addListener(
         refresh(viewData); // View data has changed -- re-render
         oldViewData = viewData;
       }
-    }
+    } 
   });
 
 let isInitialized = false;
+
 // (feb-2025-refactor) it has to be a promise to avoid a no-matching-signature error on the extensions page
 async function initIfStillNecessaryAndBodyExists() {
   if (document.body && !isInitialized) {
