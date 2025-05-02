@@ -12,7 +12,7 @@
 browser.runtime.sendMessage({ type: 'browserRefresh' });
 
 let oldViewData = {};
-let flutterCount = 0;
+window.flutterCount = 0;
 
 const kSvgDocClassName = 'noCoffeeSvgFilterDoc';
 const kSvgBodyClassName = 'noCoffeeSvgFilterBody';
@@ -342,7 +342,7 @@ function getSvgFlutterFilter(flutter) {
 }
 
 function oneFlutter(bodyCssFilter) {
-  if (--flutterCount <= 0) {
+  if (--window.flutterCount <= 0) {
     stopFluttering();
   }
   document.body.style.filter = document.body.style.filter ? '' : bodyCssFilter;
@@ -355,11 +355,31 @@ function startFluttering(flutter, bodyCssFilter) {
   }
 }
 
+// function stopFluttering() {
+//   document.body.style.filter = '';
+//   clearInterval(window.flutterInterval);
+//   window.flutterInterval = 0;
+// }
+
 function stopFluttering() {
   document.body.style.filter = '';
-  clearInterval(window.flutterInterval);
-  window.flutterInterval = 0;
+
+  if (window.flutterInterval) {
+    clearInterval(window.flutterInterval);
+    window.flutterInterval = 0;
+  }
+
+  if (window.flutterScrollListener) {
+    window.removeEventListener('scroll', window.flutterScrollListener);
+    delete window.flutterScrollListener;
+  }
+
+  if (window.flutterMouseListener) {
+    window.removeEventListener('mousemove', window.flutterMouseListener);
+    delete window.flutterMouseListener;
+  }
 }
+
 
 // Create a dedicated object to store flutter state. the flutter effect is more pronounced
 // const flutterState = {
@@ -394,11 +414,23 @@ function maybeStartFluttering(flutter, bodyCssFilter) {
   }
 }
 
+// function initFlutter(flutter, bodyCssFilter) {
+//   startFluttering(flutter, bodyCssFilter);
+//   window.addEventListener('scroll', function() { maybeStartFluttering(flutter, bodyCssFilter); });
+//   window.addEventListener('mousemove', function() { maybeStartFluttering(flutter, bodyCssFilter); });
+// }
+
 function initFlutter(flutter, bodyCssFilter) {
   startFluttering(flutter, bodyCssFilter);
-  window.addEventListener('scroll', function() { maybeStartFluttering(flutter, bodyCssFilter); });
-  window.addEventListener('mousemove', function() { maybeStartFluttering(flutter, bodyCssFilter); });
+
+  // Store named listener functions on window so we can remove them later
+  window.flutterScrollListener = () => maybeStartFluttering(flutter, bodyCssFilter);
+  window.flutterMouseListener = () => maybeStartFluttering(flutter, bodyCssFilter);
+
+  window.addEventListener('scroll', window.flutterScrollListener);
+  window.addEventListener('mousemove', window.flutterMouseListener);
 }
+
 
 function createFloater(floater) {
   let floaterImg = document.createElement('img');
