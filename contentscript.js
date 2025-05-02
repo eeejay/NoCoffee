@@ -363,18 +363,19 @@ function stopFluttering() {
     window.flutterInterval = 0;
   }
 
-  if (window.flutterScrollListener) {
-    window.removeEventListener('scroll', window.flutterScrollListener);
-    delete window.flutterScrollListener;
-  }
+  // if (window.flutterScrollListener) {
+  //   document.removeEventListener('scroll', window.flutterScrollListener, true);
+  //   delete window.flutterScrollListener;
+  // }
 
-  if (window.flutterMouseListener) {
-    window.removeEventListener('mousemove', window.flutterMouseListener);
-    delete window.flutterMouseListener;
-  }
+  // if (window.flutterMouseListener) {
+  //   document.removeEventListener('mousemove', window.flutterMouseListener, true);
+  //   delete window.flutterMouseListener;
+  // }
 }
 
 function maybeStartFluttering(flutter, bodyCssFilter) {
+  console.log('maybeStartFluttering triggered', flutter.flutterLevel);
   let randomized = Math.random() * 1000;
   if (randomized < flutter.flutterLevel) {
     startFluttering(flutter, bodyCssFilter);
@@ -382,15 +383,25 @@ function maybeStartFluttering(flutter, bodyCssFilter) {
 }
 
 function initFlutter(flutter, bodyCssFilter) {
+  
+  console.log('initFlutter called with level:', flutter.flutterLevel);
+
   startFluttering(flutter, bodyCssFilter);
 
-  // Store named listener functions on window so we can remove them later
-  window.flutterScrollListener = () => maybeStartFluttering(flutter, bodyCssFilter);
-  window.flutterMouseListener = () => maybeStartFluttering(flutter, bodyCssFilter);
+  window.flutterScrollListener = () => {
+    console.log('Scroll detected');
+    maybeStartFluttering(flutter, bodyCssFilter);
+  };
 
-  window.addEventListener('scroll', window.flutterScrollListener);
-  window.addEventListener('mousemove', window.flutterMouseListener);
+  window.flutterMouseListener = () => {
+    console.log('Mouse move detected');
+    maybeStartFluttering(flutter, bodyCssFilter);
+  };
+
+  document.addEventListener('scroll', window.flutterScrollListener, true);
+  document.addEventListener('mousemove', window.flutterMouseListener, true);
 }
+
 
 
 function createFloater(floater) {
