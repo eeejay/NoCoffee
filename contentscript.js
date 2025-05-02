@@ -355,12 +355,6 @@ function startFluttering(flutter, bodyCssFilter) {
   }
 }
 
-// function stopFluttering() {
-//   document.body.style.filter = '';
-//   clearInterval(window.flutterInterval);
-//   window.flutterInterval = 0;
-// }
-
 function stopFluttering() {
   document.body.style.filter = '';
 
@@ -380,45 +374,12 @@ function stopFluttering() {
   }
 }
 
-
-// Create a dedicated object to store flutter state. the flutter effect is more pronounced
-// const flutterState = {
-//   intervalId: 0,
-//   count: 0
-// };
-
-// function stopFluttering() {
-//   document.body.style.filter = '';
-//   clearInterval(flutterState.intervalId);
-//   flutterState.intervalId = 0;
-// }
-
-// function startFluttering(flutter, bodyCssFilter) {
-//   if (!flutterState.intervalId) {
-//     flutterState.count = Math.random() * flutter.flutterLevel * 1.5 + 5;
-//     flutterState.intervalId = setInterval(function() { oneFlutter(bodyCssFilter); }, 10);
-//   }
-// }
-
-// function oneFlutter(bodyCssFilter) {
-//   if (--flutterState.count <= 0) {
-//     stopFluttering();
-//   }
-//   document.body.style.filter = document.body.style.filter ? '' : bodyCssFilter;
-// }
-
 function maybeStartFluttering(flutter, bodyCssFilter) {
   let randomized = Math.random() * 1000;
   if (randomized < flutter.flutterLevel) {
     startFluttering(flutter, bodyCssFilter);
   }
 }
-
-// function initFlutter(flutter, bodyCssFilter) {
-//   startFluttering(flutter, bodyCssFilter);
-//   window.addEventListener('scroll', function() { maybeStartFluttering(flutter, bodyCssFilter); });
-//   window.addEventListener('mousemove', function() { maybeStartFluttering(flutter, bodyCssFilter); });
-// }
 
 function initFlutter(flutter, bodyCssFilter) {
   startFluttering(flutter, bodyCssFilter);
