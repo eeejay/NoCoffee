@@ -362,16 +362,6 @@ function stopFluttering() {
     clearInterval(window.flutterInterval);
     window.flutterInterval = 0;
   }
-
-  // if (window.flutterScrollListener) {
-  //   document.removeEventListener('scroll', window.flutterScrollListener, true);
-  //   delete window.flutterScrollListener;
-  // }
-
-  // if (window.flutterMouseListener) {
-  //   document.removeEventListener('mousemove', window.flutterMouseListener, true);
-  //   delete window.flutterMouseListener;
-  // }
 }
 
 function maybeStartFluttering(flutter, bodyCssFilter) {
@@ -589,6 +579,15 @@ function createSvgSnowOverlay(snow) {
 
 // Return style object
 function getView(viewData) {
+  if (window.flutterScrollListener) {
+    document.removeEventListener('scroll', window.flutterScrollListener, true);
+    window.flutterScrollListener = null;
+  }
+  if (window.flutterMouseListener) {
+    document.removeEventListener('mousemove', window.flutterMouseListener, true);
+    window.flutterMouseListener = null;
+  }
+
   let view = {
     doc: {
       cssFilter: '',
@@ -781,57 +780,46 @@ function deepEquals(obj1, obj2) {
   return obj1 === obj2;
 }
 
-
 function refresh(viewData) {
-  let view = getView(viewData);
+  const view = getView(viewData);
 
-  if (typeof view.doc.svgFilterElt !== 'undefined') {
-    deleteNodeIfExists(document.querySelector('.' + kSvgDocClassName)); // Delete old one
-    if (view.doc.svgFilterElt) {
-      document.body.appendChild(view.doc.svgFilterElt);
-    }
+  deleteNodeIfExists(document.querySelector('.' + kSvgDocClassName));
+  deleteNodeIfExists(document.querySelector('.' + kSvgBodyClassName));
+
+  if (view.doc.svgFilterElt) {
+    document.documentElement.appendChild(view.doc.svgFilterElt);
   }
-  if (typeof view.body.svgFilterElt !== 'undefined') {
-    deleteNodeIfExists(document.querySelector('.' + kSvgBodyClassName)); // Delete old one
-    if (view.body.svgFilterElt) {
-      document.body.appendChild(view.body.svgFilterElt);
-    }
+  if (view.body.svgFilterElt) {
+    document.body.appendChild(view.body.svgFilterElt);
   }
 
-  if (typeof view.svgOverlayElt !== 'undefined') {
-    deleteNodeIfExists(document.querySelector('.' + kSvgOverlayClassName)); // Delete old one
-    if (view.svgOverlayElt) {
-      document.body.appendChild(view.svgOverlayElt);
-    }
+  deleteNodeIfExists(document.querySelector('.' + kSvgOverlayClassName));
+  if (view.svgOverlayElt) {
+    document.body.appendChild(view.svgOverlayElt);
   }
 
-  if (typeof view.cloudyDiv !== 'undefined') {
-    deleteNodeIfExists(document.querySelector('.' + kCloudyClassName)); // Delete old one
-    if (view.cloudyDiv) {
-      document.body.appendChild(view.cloudyDiv);
-    }
+  deleteNodeIfExists(document.querySelector('.' + kCloudyClassName));
+  if (view.cloudyDiv) { 
+    document.body.appendChild(view.cloudyDiv);
   }
 
-  if (typeof view.blockerDiv !== 'undefined') {
-    deleteNodeIfExists(document.querySelector('.' + kBlockerClassName)); // Delete old one
-    if (view.blockerDiv) {
-      document.body.appendChild(view.blockerDiv);
-    }
+  deleteNodeIfExists(document.querySelector('.' + kBlockerClassName));
+  if (view.blockerDiv) { 
+    document.body.appendChild(view.blockerDiv);
   }
 
   document.documentElement.style.filter = view.doc.cssFilter;
-  document.body.style.filter = view.body.cssFilter;
+  document.body.style.filter            = view.body.cssFilter;
 
   updateCursorEffects(view, viewData);
 }
-
 
 browser.runtime.onMessage.addListener(
   function(request) {
     if (request.type === 'refresh') {
       let viewData = getViewData(request.settings);
      
-      // Add a flag to determine if cursor effects should be applied
+      // flag to determine if cursor effects should be applied
       viewData.applyCursorEffects = request.settings.applyCursorEffects === true;
      
       if (!deepEquals(viewData, oldViewData)) {
