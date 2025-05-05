@@ -549,32 +549,41 @@ function createSvgSnowOverlay(snow) {
   if (!snow || !snow.amount) {
     return null;
   }
-  let svgOverlay = document.createElement('div');
-  svgOverlay.className = kSvgOverlayClassName;
-  let size = 100 * snow.zoom;
-  let startPos = (100 - size) / 2;
-  svgOverlay.setAttribute('style',
-    'transform: scale(' + (1 / snow.zoom) + '); ' +
-  'z-index:2147483645 !important; ' +
-  'pointer-events: none; ' +
-  'position: fixed; left: ' + startPos + '%; top: ' + startPos + '%; height: ' + size + '%; width: ' + size + '%; ');
-  svgOverlay.innerHTML =
-  '<svg xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%" preserveAspectRatio="xMidYMid meet">' +
-   '<defs>' +
-  '<filter id="noCoffeeSnowFilter" filterUnits="userSpaceOnUse" x="0" y="0">' +
-    '<feTurbulence type="fractalNoise" baseFrequency=".25" numOctaves="1" seed="4" stitchTiles="noStitch" width="159" height="120">' +
-      '<animate attributeType="XML" attributeName="seed" from="500" to="1" dur="30s" repeatCount="indefinite" />' +
-    '</feTurbulence>' +
-    '<feComponentTransfer>' +
-      '<feFuncA type="discrete" tableValues="0 0 ' + snow.amount + ' 1"/>' +
-    '</feComponentTransfer>' +
-    '<feTile x="0" y="0" width="100%" height="100%" result="tiled"/>' +
-  '</filter>' +
-   '</defs>' +
-   '<use filter="url(#noCoffeeSnowFilter)" />' +
-  '</svg>';
-
-  return svgOverlay;
+  let overlay = document.createElement('div');
+  overlay.className = kSvgOverlayClassName;
+  const sizePct = 100 * snow.zoom;
+  const offsetPct = (100 - sizePct) / 2;
+  overlay.style.cssText = `transform: scale(${1 / snow.zoom}); 
+    z-index:2147483645 !important; 
+    pointer-events: none; 
+    position: fixed; 
+    left: ${offsetPct}%; 
+    top: ${offsetPct}%; 
+    width: ${sizePct}%; 
+    height: ${sizePct}%;`;
+  
+  overlay.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%; height:100%">
+      <defs>
+        <filter id="noCoffeeSnowFilter" filterUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%">
+          <feTurbulence type="fractalNoise" baseFrequency=".25" numOctaves="1" seed="0" stitchTiles="noStitch">
+            <animate 
+              attributeName="seed" 
+              from="500" 
+              to="1" 
+              dur="70s" 
+              repeatCount="indefinite" />
+          </feTurbulence>
+          <feComponentTransfer>
+            <feFuncA type="discrete" tableValues="0 0 ${snow.amount} 1"/>
+          </feComponentTransfer>
+          <feTile result="tiled"/>
+        </filter>
+      </defs>
+      <rect width="100%" height="100%" filter="url(#noCoffeeSnowFilter)" />
+    </svg>`;
+  
+  return overlay;
 }
 
 // Return style object
