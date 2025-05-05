@@ -30,10 +30,8 @@ const kMinFloaterOpacity = 0.1;
 const kMaxFloaterOpacity = 0.4;
 const kFlutterDist = 15;
 
-const kCursorWrapperClassName = 'noCoffeeCursorWrapper';
-const kCustomCursorClassName = 'noCoffeeCustomCursor';
+const kCursorContainerClassName = 'noCoffeeCursorDiv';
 
-// current text cursor is the better on average than the other versions; the color is nor very crisp though
 const cursorSVGs = {
   default: `
     <svg width="32px" height="32px" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
@@ -52,28 +50,19 @@ const cursorSVGs = {
     </svg>
   `,
   text: `
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 200" width="10px" height="20px" shape-rendering="crispEdges">
-      <rect x="0" y="0" width="40" height="8" fill="#000"/>
-      <rect x="52" y="0" width="40" height="8" fill="#000"/>
-      <rect x="0" y="8" width="92" height="7" fill="#000"/>
-      <rect x="40" y="15" width="12" height="135" fill="#000"/>
-      <rect x="0" y="150" width="92" height="7" fill="#000"/>
-      <rect x="0" y="157" width="40" height="8" fill="#000"/>
-      <rect x="52" y="157" width="40" height="8" fill="#000"/>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21 32" 
+      width="14px" 
+      height="24px" 
+      shape-rendering="crispEdges"
+    >
+      <rect x="0" y="0" width="6" height="2" fill="#000"/>
+      <rect x="8" y="0" width="6" height="2" fill="#000"/>
+      <rect x="6" y="1" width="2" height="22" fill="#000"/>
+      <rect x="0" y="22" width="6" height="2" fill="#000"/>
+      <rect x="8" y="22" width="6" height="2" fill="#000"/>
     </svg>
   `
 };
-
-// working text cursor; pro: works well on all sites (no bottom bar thicker than top bar); con: not very crisp
-{/* <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 92 165" width="10" height="20" vector-effect="non-scaling-stroke" preserveAspectRatio="xMidYMid meet">
-  <rect x="0" y="0" width="36" height="6" fill="#000" stroke="#000"/>
-  <rect x="48" y="0" width="36" height="6" fill="#000" stroke="#000"/>
-  <rect x="0" y="6" width="84" height="4" fill="#000" stroke="#000"/>
-  <rect x="36" y="10" width="12" height="127" fill="#000" stroke="#000"/>
-  <rect x="0" y="137" width="84" height="4" fill="#000" stroke="#000"/>
-  <rect x="0" y="141" width="36" height="6" fill="#000" stroke="#000"/>
-  <rect x="48" y="141" width="36" height="6" fill="#000" stroke="#000"/>
-</svg> */}
 
 // https://stackoverflow.com/questions/10389459/is-there-a-way-to-detect-if-im-hovering-over-text
 function isPointOverText(x, y) {
@@ -178,7 +167,7 @@ function getInvertedBackgroundColor(el) {
 
 function updateCustomCursor(event) {
   const element = document.elementFromPoint(event.clientX, event.clientY);
-  const existingCursor = document.querySelector('.' + kCustomCursorClassName);
+  const existingCursor = document.querySelector('.' + kCursorDivClassName);
 
   if (!existingCursor || !element) return;
 
@@ -220,7 +209,7 @@ function updateCustomCursor(event) {
 }
 
 function updateCursorEffects(view, viewData) {
-  const existingCursor = document.querySelector('.' + kCustomCursorClassName);
+  const existingCursor = document.querySelector('.' + kCursorContainerClassName);
  
   if (existingCursor) {
     existingCursor.remove();
@@ -241,7 +230,7 @@ function updateCursorEffects(view, viewData) {
   }
  
   const cursor = document.createElement('div');
-  cursor.className = kCustomCursorClassName;
+  cursor.className = kCursorContainerClassName;
   cursor.style.cssText = `
     position: absolute;
     pointer-events: none;
