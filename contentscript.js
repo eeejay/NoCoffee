@@ -783,33 +783,53 @@ function deepEquals(obj1, obj2) {
 function refresh(viewData) {
   const view = getView(viewData);
 
-  deleteNodeIfExists(document.querySelector('.' + kSvgDocClassName));
-  deleteNodeIfExists(document.querySelector('.' + kSvgBodyClassName));
+  // if (typeof view.doc.svgFilterElt !== 'undefined') {
+  //   deleteNodeIfExists(document.querySelector('.' + kSvgDocClassName)); // Delete old one
+  //   if (view.doc.svgFilterElt) {
+  //     document.body.appendChild(view.doc.svgFilterElt);
+  //   }
+  // }
+  // if (typeof view.body.svgFilterElt !== 'undefined') {
+  //   deleteNodeIfExists(document.querySelector('.' + kSvgBodyClassName)); // Delete old one
+  //   if (view.body.svgFilterElt) {
+  //     document.body.appendChild(view.body.svgFilterElt);
+  //   }
+  // }
 
+  // old doc/body filters must be removed unconditionally otherwise the flutter filter stays on after reset
+  deleteNodeIfExists(document.querySelector('.' + kSvgDocClassName));
   if (view.doc.svgFilterElt) {
     document.documentElement.appendChild(view.doc.svgFilterElt);
   }
+
+  deleteNodeIfExists(document.querySelector('.' + kSvgBodyClassName));
   if (view.body.svgFilterElt) {
     document.body.appendChild(view.body.svgFilterElt);
   }
 
-  deleteNodeIfExists(document.querySelector('.' + kSvgOverlayClassName));
-  if (view.svgOverlayElt) {
-    document.body.appendChild(view.svgOverlayElt);
+  if (typeof view.svgOverlayElt !== 'undefined') {
+    deleteNodeIfExists(document.querySelector('.' + kSvgOverlayClassName)); // Delete old one
+    if (view.svgOverlayElt) {
+      document.body.appendChild(view.svgOverlayElt);
+    }
   }
 
-  deleteNodeIfExists(document.querySelector('.' + kCloudyClassName));
-  if (view.cloudyDiv) { 
-    document.body.appendChild(view.cloudyDiv);
+  if (typeof view.cloudyDiv !== 'undefined') {
+    deleteNodeIfExists(document.querySelector('.' + kCloudyClassName)); // Delete old one
+    if (view.cloudyDiv) {
+      document.body.appendChild(view.cloudyDiv);
+    }
   }
 
-  deleteNodeIfExists(document.querySelector('.' + kBlockerClassName));
-  if (view.blockerDiv) { 
-    document.body.appendChild(view.blockerDiv);
+  if (typeof view.blockerDiv !== 'undefined') {
+    deleteNodeIfExists(document.querySelector('.' + kBlockerClassName)); // Delete old one
+    if (view.blockerDiv) {
+      document.body.appendChild(view.blockerDiv);
+    }
   }
 
   document.documentElement.style.filter = view.doc.cssFilter;
-  document.body.style.filter            = view.body.cssFilter;
+  document.body.style.filter = view.body.cssFilter;
 
   updateCursorEffects(view, viewData);
 }
