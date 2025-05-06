@@ -224,7 +224,6 @@ function updateCursorEffects(view, viewData) {
       }
     }
     
-    // Remove existing event handlers
     document.removeEventListener('mousemove', detectCursorType);
     return;
   }
@@ -238,7 +237,7 @@ function updateCursorEffects(view, viewData) {
     transform: translate(-50%, -10%);
   `;
  
-  // Apply filters tu custom cursor
+  // Apply filters to custom cursor
   let cursorFilters = [];
   if (view.doc.cssFilter) cursorFilters.push(view.doc.cssFilter);
  
@@ -286,14 +285,15 @@ function updateCursorEffects(view, viewData) {
 
 
 function createSvgFilter(filterMarkup, className) {
-  let svgMarkup =
-'<svg xmlns="http://www.w3.org/2000/svg" version="1.1">' +
-  '<defs>' +
- '<filter id="' + className + Date.now() + '" >' +
-   filterMarkup +
- '</filter>' +
-   '</defs>' +
-'</svg>';
+  const filterId = `${className}${Date.now()}`;
+  let svgMarkup = `
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+      <defs>
+        <filter id="${filterId}">
+          ${filterMarkup}
+        </filter>
+      </defs>
+    </svg>`;
 
   let containerElt = document.createElement('div');
   containerElt.style.visibility = 'hidden';
@@ -306,7 +306,7 @@ function getSvgColorMatrixFilter(colorMatrixValues) {
   if (!colorMatrixValues) {
     return '';
   }
-  let str = '<feColorMatrix type="matrix" values="' + colorMatrixValues + '" />';
+  let str = `<feColorMatrix type="matrix" values="${colorMatrixValues}" />`;
   return str;
 }
 
@@ -314,9 +314,10 @@ function getSvgGhostingFilter(ghostingLevel) {
   if (!ghostingLevel) {
     return '';
   }
-  let str =
-        '<feOffset result="offOut" in="SourceGraphic" dx="' + ghostingLevel + '" dy="0" />' +
-        '<feBlend in="SourceGraphic" in2="offOut" mode="multiply" />';
+  let str = `
+    <feOffset result="offOut" in="SourceGraphic" dx="${ghostingLevel}" dy="0" />
+    <feBlend in="SourceGraphic" in2="offOut" mode="multiply" />
+  `;
   return str;
 }
 
@@ -325,8 +326,7 @@ function getSvgFlutterFilter(flutter) {
     return '';
   }
   let horizMovement = kFlutterDist / flutter.zoom;
-  let str =
-        '<feOffset result="offOut" in="SourceGraphic" dx="' + horizMovement + '" dy="0" />';
+  let str = `<feOffset result="offOut" in="SourceGraphic" dx="${horizMovement}" dy="0" />`;
   return str;
 }
 
@@ -380,7 +380,6 @@ function initFlutter(flutter, bodyCssFilter) {
   document.addEventListener('scroll', window.flutterScrollListener, true);
   document.addEventListener('mousemove', window.flutterMouseListener, true);
 }
-
 
 
 function createFloater(floater) {
@@ -444,13 +443,14 @@ function animateFloater(floater, floaterImg) {
     let left = floater.x + Math.sin(direction) * distance;
     let top = floater.y + Math.cos(direction) * distance;
     let seconds = Math.random() * (kMaxFloaterTravelTime - kMinFloaterTravelTime) + kMinFloaterTravelTime;
-    floaterStyleElt.innerText = '#' + floaterImg.id + ' { ' +
-   'top: ' + top + '% !important; ' +
-   'left: ' + left + '% !important; ' +
-   'transform: rotate(' + newRotation + 'deg) !important;' +
-   'transition: all ' + seconds + 's;' +
-  '}';
-
+    floaterStyleElt.innerText = `
+      #${floaterImg.id} {
+        top: ${top}% !important;
+        left: ${left}% !important;
+        transform: rotate(${newRotation}deg) !important;
+        transition: all ${seconds}s;
+      }
+    `;
     floaterImg.parentNode.appendChild(floaterStyleElt);
   }, delay * 1000);
 }
@@ -463,19 +463,28 @@ function createCloudyDiv(cloudy) {
   cloudyDiv.className = kCloudyClassName;
   let size = 100 * cloudy.zoom;
 
-  let style =
-  'z-index:2147483646 !important; ' +
-  'transform: scale(' + (1 / cloudy.zoom) + '); ' +
-  'transform-origin: 0 0;' +
-  'pointer-events: none; ' +
-  'position: fixed; left: 0; top: 0; height: ' + size + '%; width: ' + size + '%; ' +
-    'background-image: url(' + browser.runtime.getURL('overlays/cataracts.png') + '); ' +
-  'background-repeat: no-repeat; background-size: 100% 100%; ' +
-  'background-position: 0 0; filter: opacity(' + cloudy.cloudyLevel + '%);';
+  let style = `
+    z-index: 2147483646 !important;
+    transform: scale(${1 / cloudy.zoom});
+    transform-origin: 0 0;
+    pointer-events: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: ${size}%;
+    width: ${size}%;
+    background-image: url(${browser.runtime.getURL('overlays/cataracts.png')});
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: 0 0;
+    filter: opacity(${cloudy.cloudyLevel}%);
+  `;
 
   cloudyDiv.setAttribute('style', style);
   return cloudyDiv;
 }
+
+
 
 function createBlockerDiv(block) {
   if (!block) {
@@ -483,39 +492,51 @@ function createBlockerDiv(block) {
   }
   let blockerDiv = document.createElement('div');
   blockerDiv.className = kBlockerClassName;
-  let style =
-  'z-index:2147483646 !important; ' +
-  'pointer-events: none; ' +
-  'position: fixed; ';
+  let style = `
+    z-index: 2147483646 !important;
+    pointer-events: none;
+    position: fixed;
+  `;
   if (block.image) {
-    style += "background-image: url('" + block.image + "'); " +
- 'background-repeat: no-repeat; background-size: 100% 100%; ' +
- 'left: ' + block.xPosition + '; top: ' + block.yPosition + '; filter: opacity(' + block.opacity + '%);';
+    style += `
+      background-image: url('${block.image}');
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+      left: ${block.xPosition};
+      top: ${block.yPosition};
+      filter: opacity(${block.opacity}%);
+    `;
     // "filter: url(#noCoffeeDisplacementFilter);
     if (block.displacement && false) { // Don't try to do this yet
-      blockerDiv.innerHTML =
-    '<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">' +
-     '<defs>' +
-  '<filter id="noCoffeeDisplacementFilter" filterUnits="userSpaceOnUse">' +
-      '<feImage xlink:href="' + block.image + '" result="noCoffeeSource"/>' +
-      '<feImage xlink:href="' + block.image + '" result="noCoffeeDisplacementMap"/>' +
-      '<feDisplacementMap scale="1" xChannelSelector="R" yChannelSelector="R"   in="noCoffeeSource" in2="noCoffeeDisplacementMap"/>' +
-  '</filter>' +
-     '</defs>' +
-     '<use filter="url(#noCoffeeDisplacementFilter)" />' +
-    '</svg>';
+      blockerDiv.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <filter id="noCoffeeDisplacementFilter" filterUnits="userSpaceOnUse">
+              <feImage xlink:href="${block.image}" result="noCoffeeSource"/>
+              <feImage xlink:href="${block.image}" result="noCoffeeDisplacementMap"/>
+              <feDisplacementMap scale="1" xChannelSelector="R" yChannelSelector="R" in="noCoffeeSource" in2="noCoffeeDisplacementMap"/>
+            </filter>
+          </defs>
+          <use filter="url(#noCoffeeDisplacementFilter)" />
+        </svg>
+      `;
     }
   } else if (block.innerStrength) {
-    style += 'left: 0; top: 0; height: 100%; width: 100%;';
+    style += `
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 100%;
+    `;
     if (block.type === 'radial') {
-      style += 'background-image: radial-gradient(circle, ' +
-     block.innerColor + ' ' + block.innerStrength + '%, ' +
- block.outerColor + ' ' + block.outerStrength + '%);';
+      style += `
+        background-image: radial-gradient(circle, ${block.innerColor} ${block.innerStrength}%, ${block.outerColor} ${block.outerStrength}%);
+      `;
     } else {
       // (feb-2025-refactor) side filter not working without -webkit in linear-gradient
-      style += 'background-image: -webkit-linear-gradient(left, ' +
-     block.innerColor + ' ' + block.innerStrength + '%, ' +
- block.outerColor + ' ' + block.outerStrength + '%);';
+      style += `
+        background-image: -webkit-linear-gradient(left, ${block.innerColor} ${block.innerStrength}%, ${block.outerColor} ${block.outerStrength}%);
+      `;
     }
   }
 
@@ -525,8 +546,14 @@ function createBlockerDiv(block) {
 
   if (block.zoom) {
     let size = 100 * block.zoom;
-    style += 'transform: scale(' + 1 / block.zoom + '); transform-origin: 0 0; ' +
- 'width: ' + size + '%; height: ' + size + '%; left: 0; top: 0;';
+    style += `
+      transform: scale(${1 / block.zoom});
+      transform-origin: 0 0;
+      width: ${size}%;
+      height: ${size}%;
+      left: 0;
+      top: 0;
+    `;
   }
 
   blockerDiv.setAttribute('style', style);
@@ -607,7 +634,8 @@ function getView(viewData) {
   if (svgColorFilterMarkup) {
     view.body.svgFilterElt = createSvgFilter(svgColorFilterMarkup, kSvgBodyClassName);
     let id = view.body.svgFilterElt.querySelector('filter').id;
-    view.body.cssFilter += 'url(#' + id + ') ';
+    view.body.cssFilter += `url(#${id}) `;
+
   }
 
   // Create new svg ghosting filter -- old one will be removed
@@ -620,7 +648,7 @@ function getView(viewData) {
   if (svgGhostingFilterMarkup || svgFlutterFilterMarkup) {
     view.body.svgFilterElt = createSvgFilter(svgFlutterFilterMarkup || svgGhostingFilterMarkup, kSvgBodyClassName);
     let id = view.body.svgFilterElt.querySelector('filter').id;
-    view.body.cssFilter += 'url(#' + id + ')';
+    view.body.cssFilter += `url(#${id}) `;
     if (svgFlutterFilterMarkup) {
       initFlutter(viewData.flutter, view.body.cssFilter);
     }
@@ -642,13 +670,13 @@ function getView(viewData) {
   }
 
   if (viewData.blur) {
-    view.doc.cssFilter += 'blur(' + viewData.blur + 'px) ';
+    view.doc.cssFilter += `blur(${viewData.blur}px) `;
   }
   if (viewData.contrast != 100) {
-    view.doc.cssFilter += 'contrast(' + viewData.contrast + '%) ';
+    view.doc.cssFilter += `contrast(${viewData.contrast}%) `;
   }
   if (viewData.brightness) {
-    view.doc.cssFilter += 'brightness(' + viewData.brightness + '%) ';
+    view.doc.cssFilter += `brightness(${viewData.brightness}%) `;
   }
   return view;
 }
@@ -682,7 +710,7 @@ function getViewData(settings) {
           type: 'radial',
           innerStrength: settings.blockStrength / 2,
           outerStrength: settings.blockStrength + 10,
-          innerColor: 'rgba(150,150,150,' + (0.9 + settings.blockStrength / 1000) + ')',
+          innerColor: `rgba(150,150,150,${0.9 + settings.blockStrength / 1000})`,
           outerColor: 'transparent'
         };
         break;

@@ -1,6 +1,6 @@
 let tabSettings = new Map();
 
-// each tab can have its own settings
+// (2025-refactor) each tab can have its own settings
 async function updateActiveTab() {
   const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!activeTab) return;
@@ -24,9 +24,9 @@ async function updateSettings(settings) {
 
 
 // Listen for messages
-// Must use chrome.runtime (not browser.runtime) to avoid undefined error
+// (2025-refactor) Must use chrome.runtime (not browser.runtime) to avoid undefined error
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  // browser refresh can reset settings (it has to be paired with line 12 in content.js)
+  // (2025-refactor) browser refresh can reset settings (it has to be paired with line 12 in content.js)
   if (request.type === 'browserRefresh' && sender.tab) {
     tabSettings.delete(sender.tab.id);
     sendResponse({ success: true });
