@@ -555,14 +555,7 @@ function createSvgSnowOverlay(snow) {
     <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%; height:100%">
       <defs>
         <filter id="noCoffeeSnowFilter" filterUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%">
-          <feTurbulence type="fractalNoise" baseFrequency=".25" numOctaves="1" seed="0" stitchTiles="noStitch">
-            <animate 
-              attributeName="seed" 
-              from="500" 
-              to="1" 
-              dur="70s" 
-              repeatCount="indefinite" />
-          </feTurbulence>
+          <feTurbulence type="fractalNoise" baseFrequency=".25" numOctaves="1" seed="0" stitchTiles="noStitch" />
           <feComponentTransfer>
             <feFuncA type="discrete" tableValues="0 0 ${snow.amount} 1"/>
           </feComponentTransfer>
@@ -572,6 +565,15 @@ function createSvgSnowOverlay(snow) {
       <rect width="100%" height="100%" filter="url(#noCoffeeSnowFilter)" />
     </svg>`;
   
+  // works better than <animate> in Chrome; animation still slow on heavy sites, mostly driven by mouse movement
+  const feTurb = overlay.querySelector('feTurbulence');
+  if (feTurb) {
+    let seed = 0;
+    setInterval(() => {
+      feTurb.setAttribute('seed', seed = (seed + 1) % 1000);
+    }, 40);
+  }
+
   return overlay;
 }
 
