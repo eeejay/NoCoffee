@@ -540,16 +540,16 @@ function createSvgSnowOverlay(snow) {
   }
   let overlay = document.createElement('div');
   overlay.className = kSvgOverlayClassName;
-  const sizePct = 100 * snow.zoom;
-  const offsetPct = (100 - sizePct) / 2;
+  const size = 100 * snow.zoom;
+  const startPos = (100 - size) / 2;
   overlay.style.cssText = `transform: scale(${1 / snow.zoom}); 
     z-index:2147483645 !important; 
     pointer-events: none; 
     position: fixed; 
-    left: ${offsetPct}%; 
-    top: ${offsetPct}%; 
-    width: ${sizePct}%; 
-    height: ${sizePct}%;`;
+    left: ${startPos}%; 
+    top: ${startPos}%; 
+    width: ${size}%; 
+    height: ${size}%;`;
   
   overlay.innerHTML = `
     <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%; height:100%">
