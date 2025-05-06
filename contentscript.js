@@ -8,7 +8,7 @@
 // - Misshapen macular degenation blob, add blur to outside
 // - Stargardt's add brightness, some good holes in it, loss of contrast sensitivity
 
-// allows browser refresh to reset the settings
+// (2025-refactor) allows browser refresh to reset the settings
 browser.runtime.sendMessage({ type: 'browserRefresh' });
 
 let oldViewData = {};
@@ -167,7 +167,7 @@ function getInvertedBackgroundColor(el) {
 
 function updateCustomCursor(event) {
   const element = document.elementFromPoint(event.clientX, event.clientY);
-  const existingCursor = document.querySelector('.' + kCursorDivClassName);
+  const existingCursor = document.querySelector('.' + kCursorContainerClassName);
 
   if (!existingCursor || !element) return;
 
@@ -238,7 +238,7 @@ function updateCursorEffects(view, viewData) {
     transform: translate(-50%, -10%);
   `;
  
-  // Apply filters
+  // Apply filters tu custom cursor
   let cursorFilters = [];
   if (view.doc.cssFilter) cursorFilters.push(view.doc.cssFilter);
  
@@ -565,13 +565,13 @@ function createSvgSnowOverlay(snow) {
       <rect width="100%" height="100%" filter="url(#noCoffeeSnowFilter)" />
     </svg>`;
   
-  // works better than <animate> in Chrome; animation still slow on heavy sites, mostly driven by mouse movement
+  // (2025-refactor) works better than <animate> in Chrome; animation still laggy on some sites
   const feTurb = overlay.querySelector('feTurbulence');
   if (feTurb) {
     let seed = 0;
     setInterval(() => {
       feTurb.setAttribute('seed', seed = (seed + 1) % 1000);
-    }, 40);
+    }, 70);
   }
 
   return overlay;
