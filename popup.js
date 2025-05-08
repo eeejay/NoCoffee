@@ -52,10 +52,10 @@ function updateOneSetting(evt) {
   updateSettings();
 }
 
-async function visitLink(event) {
-  // necessary to prevent Firefox from opening two tabs
-  event.preventDefault();
-  await browser.tabs.create({url: this.getAttribute('href')});
+function visitLink(evt) {
+  // (2025-refactor) necessary to prevent Firefox from opening two tabs
+  evt.preventDefault();
+  browser.tabs.create({url: evt.currentTarget.href}).catch(console.error);
 }
 
 function createColorDeficiencyOptions(settings) {
@@ -74,7 +74,7 @@ function focusEventTarget(evt) {
 
 document.addEventListener('DOMContentLoaded', async function() {
   let settings = await browser.runtime.sendMessage({ type: 'getSettings' }) || {};
-  document.getElementById('cursor').checked = settings.applyCursorEffects === true;
+  // document.getElementById('cursor').checked = settings.applyCursorEffects === true;
   document.getElementById('blurValueText').focus();
   updateValue('blur', settings.blurLevel || 0);
   updateValue('contrast', settings.contrastLevel || 0);
@@ -111,11 +111,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     updateSettings();
   });
   
-  document.getElementById('cursor').addEventListener('change', async function(e) {
+  document.getElementById('cursor').addEventListener('change', async function(evt) {
     await browser.runtime.sendMessage({
       type: 'updateCursorEffects',
       settings: {
-        applyCursorEffects: e.target.checked
+        applyCursorEffects: evt.target.checked
       }
     });
   });

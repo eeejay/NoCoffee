@@ -484,8 +484,6 @@ function createCloudyDiv(cloudy) {
   return cloudyDiv;
 }
 
-
-
 function createBlockerDiv(block) {
   if (!block) {
     return null;
