@@ -49,6 +49,11 @@ function updateOneSetting(evt) {
   if (evt.target.localName === 'input' && evt.target.hasAttribute('value')) {
     updateValue(evt.target.parentNode.className, evt.target.value);
   }
+
+  // (2025-refactor) reset blockStrength to default if Normal is selected
+  if (evt.target.name === 'blockType' && evt.target.id === 'noBlock') {
+    updateValue('blockStrength', kDefaultBlockStrength);
+  }
   updateSettings();
 }
 
@@ -56,6 +61,8 @@ function visitLink(evt) {
   // (2025-refactor) necessary to prevent Firefox from opening two tabs
   evt.preventDefault();
   browser.tabs.create({url: evt.currentTarget.href}).catch(console.error);
+  // (2025-refactor) close the popup after opening the link
+  // window.close();
 }
 
 function createColorDeficiencyOptions(settings) {
