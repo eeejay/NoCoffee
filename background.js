@@ -2,15 +2,27 @@ let tabSettings = new Map();
 
 // (2025-refactor) each tab can have its own settings
 async function updateActiveTab() {
-  const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  const [activeTab] = await browser.tabs.query({ active: true, currentWindow: true });
   if (!activeTab) return;
- 
+
   const settings = tabSettings.get(activeTab.id) || {};
   await chrome.tabs.sendMessage(activeTab.id, {
     type: 'refresh',
     settings: settings
   });
 }
+
+// refresh settings when switching back to a tab that has been idle for more than 30 seconds
+chrome.tabs.onActivated.addListener(() => {
+  updateActiveTab().catch(err => {
+    // ignore the fact that the content‐script was removed because the service worker is idle
+    if (!err.message.includes('Receiving end does not exist')) {
+      console.error(err);
+    }
+  });
+});
+
+// chrome.tabs.onActivated.addListener(updateActiveTab);
 
 async function updateSettings(settings) {
   const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });

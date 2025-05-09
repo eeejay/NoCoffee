@@ -29,8 +29,31 @@ const kMinFloaterWidth = 10;
 const kMinFloaterOpacity = 0.1;
 const kMaxFloaterOpacity = 0.4;
 const kFlutterDist = 15;
-
 const kCursorContainerClassName = 'noCoffeeCursorDiv';
+
+// clear of filters when switching tabs; it does not wait for the service worker to become idle
+// const FILTER_CLASSES = [
+//   kSvgDocClassName,
+//   kSvgBodyClassName,
+//   kSvgOverlayClassName,
+//   kCloudyClassName,
+//   kBlockerClassName
+// ];
+
+// function clearAllFilters() {
+//   FILTER_CLASSES.forEach(cls => {
+//     document.querySelectorAll('.' + cls)
+//       .forEach(node => node.remove());
+//   });
+//   document.documentElement.style.filter = '';
+//   document.body.style.filter = '';
+// }
+
+// document.addEventListener('visibilitychange', () => {
+//   if (document.visibilityState === 'visible') {
+//     clearAllFilters();
+//   }
+// });
 
 const cursorSVGs = {
   default: `
