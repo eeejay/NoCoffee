@@ -1,8 +1,23 @@
 let tabSettings = new Map();
 
+const defaultSettings = {
+  blurLevel: 0,
+  contrastLevel: 0,
+  brightnessLevel: 0,
+  ghostingLevel: 0,
+  snowLevel: 0,
+  cloudyLevel: 0,
+  flutterLevel: 0,
+  colorDeficiencyTypeIndex: 0,
+  colorDeficiencyMatrixValues: null,
+  blockType: 'noBlock',
+  blockStrength: 40,
+  applyCursorEffects: false
+};
+
 // (2025-refactor) each tab can have its own settings
 async function updateActiveTab() {
-  const [activeTab] = await browser.tabs.query({ active: true, currentWindow: true });
+  const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!activeTab) return;
 
   const settings = tabSettings.get(activeTab.id) || {};
@@ -11,18 +26,6 @@ async function updateActiveTab() {
     settings: settings
   });
 }
-
-// refresh settings when switching back to a tab that has been idle for more than 30 seconds
-chrome.tabs.onActivated.addListener(() => {
-  updateActiveTab().catch(err => {
-    // ignore the fact that the content‐script was removed because the service worker is idle
-    if (!err.message.includes('Receiving end does not exist')) {
-      console.error(err);
-    }
-  });
-});
-
-// chrome.tabs.onActivated.addListener(updateActiveTab);
 
 async function updateSettings(settings) {
   const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -33,7 +36,6 @@ async function updateSettings(settings) {
  
   await updateActiveTab();
 }
-
 
 // Listen for messages
 // (2025-refactor) Must use chrome.runtime (not browser.runtime) to avoid undefined error
@@ -63,13 +65,26 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
   }
 
+  // if (request.type === 'getSettings') {
+  //   (async () => {
+  //     const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  //     if (activeTab) {
+  //       sendResponse(tabSettings.get(activeTab.id) || {});
+  //     } else {
+  //       sendResponse({});
+  //     }
+  //   })();
+  //   return true;
+  // }
+
   if (request.type === 'getSettings') {
     (async () => {
       const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
       if (activeTab) {
-        sendResponse(tabSettings.get(activeTab.id) || {});
+        const currentSettings = tabSettings.get(activeTab.id);
+        sendResponse(currentSettings || defaultSettings);
       } else {
-        sendResponse({});
+        sendResponse(defaultSettings);
       }
     })();
     return true;

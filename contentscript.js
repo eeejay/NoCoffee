@@ -31,30 +31,6 @@ const kMaxFloaterOpacity = 0.4;
 const kFlutterDist = 15;
 const kCursorContainerClassName = 'noCoffeeCursorDiv';
 
-// clear of filters when switching tabs; it does not wait for the service worker to become idle
-// const FILTER_CLASSES = [
-//   kSvgDocClassName,
-//   kSvgBodyClassName,
-//   kSvgOverlayClassName,
-//   kCloudyClassName,
-//   kBlockerClassName
-// ];
-
-// function clearAllFilters() {
-//   FILTER_CLASSES.forEach(cls => {
-//     document.querySelectorAll('.' + cls)
-//       .forEach(node => node.remove());
-//   });
-//   document.documentElement.style.filter = '';
-//   document.body.style.filter = '';
-// }
-
-// document.addEventListener('visibilitychange', () => {
-//   if (document.visibilityState === 'visible') {
-//     clearAllFilters();
-//   }
-// });
-
 const cursorSVGs = {
   default: `
     <svg width="32px" height="32px" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
@@ -368,7 +344,9 @@ function startFluttering(flutter, bodyCssFilter) {
 }
 
 function stopFluttering() {
-  document.body.style.filter = '';
+  if (document.body) {
+    document.body.style.filter = '';
+  }
 
   if (window.flutterInterval) {
     clearInterval(window.flutterInterval);
@@ -917,4 +895,18 @@ setTimeout(initIfStillNecessaryAndBodyExists, 0);
 // Refresh once on first load
 document.addEventListener('readystatechange', function() {
   initIfStillNecessaryAndBodyExists();
+});
+
+// refresh when the page is visible again (e.g. after switching tabs)
+// necessary to remove any filters once the bg script/service worker stopped working
+document.addEventListener('visibilitychange', async () => {
+  if (document.visibilityState === 'visible') {
+    const settings = await browser.runtime.sendMessage({ type: 'getSettings' });
+    const viewData = getViewData(settings);
+    viewData.applyCursorEffects = settings.applyCursorEffects === true;
+    if (!deepEquals(viewData, oldViewData)) {
+      refresh(viewData);
+    }
+    oldViewData = viewData;
+  }
 });
