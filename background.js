@@ -1,5 +1,7 @@
 let tabSettings = new Map();
 
+// (2025-refactor) necessary to avoid validation errors in the Chrome store 
+// (the errors are related to the refresh called once the bg/service worker was shutdown for inactivity) )
 const defaultSettings = {
   blurLevel: 0,
   contrastLevel: 0,
@@ -62,6 +64,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         sendResponse({ success: true });
       }
     })();
+    return true;
+  }
+
+  if (request.type === 'hasSettings') {
+    if (sender.tab && tabSettings.has(sender.tab.id)) {
+      sendResponse(true);
+    } else {
+      sendResponse(false);
+    }
     return true;
   }
 
