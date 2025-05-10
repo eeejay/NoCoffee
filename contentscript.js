@@ -8,49 +8,9 @@
 // - Misshapen macular degenation blob, add blur to outside
 // - Stargardt's add brightness, some good holes in it, loss of contrast sensitivity
 
+
 // (2025-refactor) allows browser refresh to reset the settings
 // browser.runtime.sendMessage({ type: 'browserRefresh' });
-if (window.top === window) {
-  (async () => {
-    try {
-      await browser.runtime.sendMessage({ type: 'browserRefresh' });
-    } catch (_) {}
-  })();
-}
-
-let isInitialized = false;
-
-document.addEventListener('visibilitychange', async () => {
-  // only run if the tab ever initialized successfully
-  if (document.visibilityState === 'visible' && isInitialized) {
-    try {
-      const settings = await browser.runtime.sendMessage({ type: 'getSettings' });
-      const viewData = getViewData(settings);
-      viewData.applyCursorEffects = settings.applyCursorEffects === true;
-      if (!deepEquals(viewData, oldViewData)) {
-        refresh(viewData);
-      }
-      oldViewData = viewData;
-    } catch (err) {}
-  }
-});
-
-// (feb-2025-refactor) it has to be a promise to avoid a no-matching-signature error on the extensions page
-async function initIfStillNecessaryAndBodyExists() {
-  if (document.body && !isInitialized) {
-    try {
-      await browser.runtime.sendMessage({type: 'getSettings'});
-      isInitialized = true;
-    } catch (error) {}
-  }
-}
- 
-setTimeout(initIfStillNecessaryAndBodyExists, 0);
-
-// Refresh once on first load
-document.addEventListener('readystatechange', function() {
-  initIfStillNecessaryAndBodyExists();
-});
 
 let oldViewData = {};
 window.flutterCount = 0;
@@ -915,4 +875,38 @@ browser.runtime.onMessage.addListener(
         oldViewData = viewData;
       }
     } 
+  });
+
+  let isInitialized = false;
+
+  document.addEventListener('visibilitychange', async () => {
+    // only run if the tab ever initialized successfully
+    if (document.visibilityState === 'visible' && isInitialized) {
+      try {
+        const settings = await browser.runtime.sendMessage({ type: 'getSettings' });
+        const viewData = getViewData(settings);
+        viewData.applyCursorEffects = settings.applyCursorEffects === true;
+        if (!deepEquals(viewData, oldViewData)) {
+          refresh(viewData);
+        }
+        oldViewData = viewData;
+      } catch (err) {}
+    }
+  });
+  
+  // (feb-2025-refactor) it has to be a promise to avoid a no-matching-signature error on the extensions page
+  async function initIfStillNecessaryAndBodyExists() {
+    if (document.body && !isInitialized) {
+      try {
+        await browser.runtime.sendMessage({type: 'getSettings'});
+        isInitialized = true;
+      } catch (error) {}
+    }
+  }
+   
+  setTimeout(initIfStillNecessaryAndBodyExists, 0);
+  
+  // Refresh once on first load
+  document.addEventListener('readystatechange', function() {
+    initIfStillNecessaryAndBodyExists();
   });

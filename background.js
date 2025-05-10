@@ -20,14 +20,15 @@ const defaultSettings = {
 // (2025-refactor) each tab can have its own settings
 async function updateActiveTab() {
   const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (!activeTab) return;
+  if (!activeTab || !tabSettings.has(activeTab.id)) return;
 
-  const settings = tabSettings.get(activeTab.id) || {};
-  await chrome.tabs.sendMessage(activeTab.id, {
+  const settings = tabSettings.get(activeTab.id);
+  chrome.tabs.sendMessage(activeTab.id, {
     type: 'refresh',
     settings: settings
-  });
+  })
 }
+
 
 async function updateSettings(settings) {
   const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -66,27 +67,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     })();
     return true;
   }
-
-  if (request.type === 'hasSettings') {
-    if (sender.tab && tabSettings.has(sender.tab.id)) {
-      sendResponse(true);
-    } else {
-      sendResponse(false);
-    }
-    return true;
-  }
-
-  // if (request.type === 'getSettings') {
-  //   (async () => {
-  //     const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  //     if (activeTab) {
-  //       sendResponse(tabSettings.get(activeTab.id) || {});
-  //     } else {
-  //       sendResponse({});
-  //     }
-  //   })();
-  //   return true;
-  // }
 
   if (request.type === 'getSettings') {
     (async () => {
