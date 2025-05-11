@@ -61,8 +61,8 @@ function visitLink(evt) {
   // (2025-refactor) necessary to prevent Firefox from opening two tabs
   evt.preventDefault();
   browser.tabs.create({url: evt.currentTarget.href}).catch(console.error);
-  // (2025-refactor) close the popup after opening the link
-  // window.close();
+  // (2025-refactor) fix for firefox: close the popup after the link opens
+  window.close();
 }
 
 function createColorDeficiencyOptions(settings) {
@@ -136,3 +136,8 @@ document.addEventListener('DOMContentLoaded', async function() {
   for (let sliderNum = 0; sliderNum < sliders.length; sliderNum++) { sliders[sliderNum].addEventListener('mousedown', focusEventTarget); }
 });
 
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    window.close();
+  }
+});
