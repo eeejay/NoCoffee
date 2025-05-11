@@ -9,6 +9,8 @@
     --color-light-gray: rgba(200,200,200,.8);
     --color-blue-gray: #203040; 
     --color-purple-gray: rgba(160,160,220,.6);
+
+    --color-focus-outline:var(--color-blue-lighter);
 }
 
 * {
@@ -27,9 +29,8 @@ body {
 .header {
     display: flex;
     justify-content: space-between;
-    /* align-items:self-start; */
     align-items: center;
-    margin-inline: 2px;
+    /* margin-inline: 2px; */
     /* width: 100%; */
 }
 h1 { 
@@ -39,14 +40,22 @@ h1 {
 
 #reset {
     background-color: var(--color-green);
-    border: 2px solid var(--color-green);
+    border: 2px solid var(--color-dark);
     border-radius: 6px;
     color: var(--color-light);
     font-family: Arial, Helvetica, sans-serif;
     font-size: 1rem;
-    /* font-weight: bold; */
+    letter-spacing: 0.2px;
     margin-block: 0;
-    padding: 3px 14px;
+    padding: 4px 15px;
+}
+
+#reset:focus,
+#reset:hover {
+    /* border: 2px solid var(--color-light);
+    outline: none; */
+    outline: 2px solid var(--color-blue-lighter);
+    outline-offset: 1px;
 }
 
 /* **** FORM **** */
@@ -64,6 +73,10 @@ fieldset > legend {
 }
 
 .line:has(input[type="radio"]) {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 5px;
     padding-block: 1.5px;
 }
 
@@ -86,18 +99,6 @@ fieldset > legend {
 .lineup label { 
     display: inline-block; 
     width: 10.5rem; 
-}
-
-input[type="number"] {
-    background-color: var(--color-gray);
-    border: 2px solid var(--color-purple-gray);
-    border-radius: 6px;
-    color: var(--color-light);
-    display: inline-block;
-    font-size: 0.9rem;
-    height: auto;
-    padding: 1px 2px 0px;
-    width: 3rem;
 }
 
 input[type="range"] {
@@ -147,8 +148,31 @@ input[type="range"]::-moz-range-thumb {
     width: 11px;
 }
 
-input[type="checkbox"] {
-    margin: 1px;
+input[type="range"]:focus {
+    outline: none;
+    border-color: var(--color-blue-darker);
+}
+
+input[type="radio"]:focus {
+    outline: none;
+}
+
+input[type="radio"]:focus + label {
+    border-radius: 4px;
+    outline: 2px solid var(--color-blue-lighter);
+    outline-offset: 2px;
+}
+
+input[type="number"] {
+    background-color: var(--color-gray);
+    border: 2px solid var(--color-purple-gray);
+    border-radius: 6px;
+    color: var(--color-light);
+    display: inline-block;
+    font-size: 0.9rem;
+    height: auto;
+    padding: 1px 2px 0px;
+    width: 3rem;
 }
  
 select {
@@ -159,6 +183,13 @@ select {
     font-size: 0.9rem;
     padding: 2px;
     width: 12rem;
+}
+
+select:focus, 
+input[type="number"]:focus {
+    border-color:var(--color-blue-lighter);
+    border-radius: 6px;
+    outline: none;
 }
 
 /* **** FOOTER **** */
@@ -177,73 +208,42 @@ select {
     gap: 20px;
 }
 
-.link { 
+a { 
     color: var(--color-light);
     font-family: Arial, Helvetica, sans-serif;
     padding: 2px;
+}
+
+a:focus-visible {
+    border-radius: 4px;
+    /* change color based on the reset button's outline/border color */
+    outline: 2px solid var(--color-blue-lighter);
+    outline-offset: 2px;
+}
+
+a:hover {
+    text-decoration-thickness: 5px;
 }
 
 .cursorEffects {
     display: flex;
     justify-content:flex-start;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
 }
 
-/* **** FOCUS MODE **** */
+input[type="checkbox"] {
+    margin: 1px;
+}
 
-input[type="range"]:focus {
-    outline: none;
-    border-color: var(--color-blue-darker);
- }
-
-/* the label already has an outline */
-input[type="radio"]:focus {
+input[type="checkbox"]:focus {
     outline: none;
 }
 
-input[type="radio"]:focus + label {
+input[type="checkbox"]:focus + label {
     border-radius: 4px;
     outline: 2px solid var(--color-blue-lighter);
     outline-offset: 2px;
-}
-
-/* outline on label instead??? */
-/* input[type="checkbox"]:focus-visible {
-    outline: 2px solid var(--color-blue-lighter);
-    outline-offset: 2px;
-} */
-
-/* to explore further: maybe a better solution for radio focus??? */
-/* .line:has(input[type="radio"]:focus-visible) {
-    border-radius: 4px;
-    outline: 2px solid rgba(60, 140, 255, 1);
-    outline-offset: 4px;
-} */
-
-select:focus, 
-input[type="number"]:focus {
-    border-color:var(--color-blue-lighter);
-    border-radius: 6px;
-    outline: none;
-}
-
-/* #reset:focus {
-    outline: none;
-} */
-
-#reset:focus,
-#reset:hover {
-    border: 2px solid var(--color-light);
-    /* outline: 2px solid var(--color-blue-lighter);
-    outline-offset: 1px; */
-}
-
-a:focus-visible {
-    border-radius: 4px;
-    /* change color based on rest of button's outline/border color */
-    outline: 2px solid var(--color-blue-lighter);
-    outline-offset: 1px;
 }
 
 /* **** UTILITIES **** */
