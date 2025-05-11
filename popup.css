@@ -10,7 +10,7 @@
     --color-blue-gray: #203040; 
     --color-purple-gray: rgba(160,160,220,.6);
 
-    --color-focus-outline:var(--color-blue-lighter);
+    --color-focus-outline-blue:var(--color-blue-lighter);
 }
 
 * {
@@ -153,6 +153,10 @@ input[type="range"]:focus {
     border-color: var(--color-blue-darker);
 }
 
+input[type="radio"] {
+    margin: 3px;
+}
+
 input[type="radio"]:focus {
     outline: none;
 }
@@ -185,6 +189,10 @@ select {
     width: 12rem;
 }
 
+select:open {
+    width: 12rem !important;
+}
+
 select:focus, 
 input[type="number"]:focus {
     border-color:var(--color-blue-lighter);
@@ -212,6 +220,7 @@ a {
     color: var(--color-light);
     font-family: Arial, Helvetica, sans-serif;
     padding: 2px;
+    /* transition: text-decoration-thickness 0.3s ease; */
 }
 
 a:focus-visible {
