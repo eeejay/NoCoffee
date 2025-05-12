@@ -46,6 +46,8 @@ const kMaxFloaterOpacity = 0.4;
 const kFlutterDist = 15;
 const kCursorContainerClassName = 'noCoffeeCursorDiv';
 
+/////////////////////////////////////////////////////////////////////////////////////
+// cursor logic
 const cursorSVGs = {
   default: `
     <svg width="32px" height="32px" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
@@ -108,12 +110,12 @@ function detectCursorType(event) {
   const element = document.elementFromPoint(event.clientX, event.clientY);
  
   if (element) {
-    // Get the original cursor type by temporarily removing our cursor style
+    // Get the original cursor type by temporarily removing the custom cursor
     const tempCursorType = element.style.cursor;
     element.style.cursor = '';
     const computedStyle = window.getComputedStyle(element);
     let browserCursor = computedStyle.cursor;
-    // Restore our cursor style
+    // Restore the custom cursor
     element.style.cursor = tempCursorType;
    
     console.log('Cursor type:', browserCursor);
@@ -124,14 +126,15 @@ function detectCursorType(event) {
    
     updateCustomCursor(event);
    
-    // Hide cursor on the element. Not working for scrollbars and shadow roots
+    // Hide browser cursor. Not working for scrollbars and shadow roots
     element.style.cursor = 'none';
    
   }
 }
 
+///////////////////////////////////////////////////////////////////////////////
 // get element's bg color
-function parseColor(bgColor) {
+function parseBackgroundColor(bgColor) {
   const match = bgColor.match(/rgba?\(([\d.]+), ([\d.]+), ([\d.]+)(?:, ([\d.]+))?\)/);
   if (match) {
     let [_, r, g, b, a] = match;
@@ -145,19 +148,19 @@ function parseColor(bgColor) {
   return null;
 }
 
-function getBackgroundColor(el) {
+function getElementBackgroundColor(el) {
   if (!el) {
     return { r: 255, g: 255, b: 255 };
   }
 
   const bgColor = window.getComputedStyle(el).backgroundColor;
-  const parsed = parseColor(bgColor);
+  const parsed = parseBackgroundColor(bgColor);
 
   if (parsed) {
     if (parsed.a === 1) {
       return { r: parsed.r, g: parsed.g, b: parsed.b };
     } else if (parsed.a < 1) {
-      const parentColor = getBackgroundColor(el.parentElement);
+      const parentColor = getElementBackgroundColor(el.parentElement);
       return {
         r: parsed.r * parsed.a + parentColor.r * (1 - parsed.a),
         g: parsed.g * parsed.a + parentColor.g * (1 - parsed.a),
@@ -166,11 +169,11 @@ function getBackgroundColor(el) {
     }
   }
 
-  return getBackgroundColor(el.parentElement);
+  return getElementBackgroundColor(el.parentElement);
 }
 
 function getInvertedBackgroundColor(el) {
-  const { r, g, b } = getBackgroundColor(el);
+  const { r, g, b } = getElementBackgroundColor(el);
   return {
     r: 255 - Math.round(r),
     g: 255 - Math.round(g),
@@ -178,6 +181,7 @@ function getInvertedBackgroundColor(el) {
   };
 }
 // end of get element's bg color functions
+////////////////////////////////////////////////////////////////////////////
 
 function updateCustomCursor(event) {
   const element = document.elementFromPoint(event.clientX, event.clientY);
@@ -255,15 +259,15 @@ function updateCursorEffects(view, viewData) {
   let cursorFilters = [];
   if (view.doc.cssFilter) cursorFilters.push(view.doc.cssFilter);
  
-  if (viewData.blur) {
-    cursorFilters.push(`blur(${viewData.blur}px)`);
-  }
-  if (viewData.contrast !== 100) {
-    cursorFilters.push(`contrast(${viewData.contrast}%)`);
-  }
-  if (viewData.brightness) {
-    cursorFilters.push(`brightness(${viewData.brightness}%)`);
-  }
+  // if (viewData.blur) {
+  //   cursorFilters.push(`blur(${viewData.blur}px)`);
+  // }
+  // if (viewData.contrast !== 100) {
+  //   cursorFilters.push(`contrast(${viewData.contrast}%)`);
+  // }
+  // if (viewData.brightness) {
+  //   cursorFilters.push(`brightness(${viewData.brightness}%)`);
+  // }
  
   cursor.style.filter = cursorFilters.join(' ');
   document.body.appendChild(cursor);
@@ -296,6 +300,8 @@ function updateCursorEffects(view, viewData) {
     cursor.style.display = 'none';
   });
 }
+// end of cursor logic
+/////////////////////////////////////////////////////////////////////////////////
 
 
 function createSvgFilter(filterMarkup, className) {
@@ -909,23 +915,23 @@ document.addEventListener('readystatechange', () => {
 });
 
 // (2025-refactor) anticipate background shut down, so reset and remove all filters after 25 seconds of inactivity
-let inactivityTimer = null;
+let inactivityFlag = null;
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') {
-    inactivityTimer = setTimeout(() => {
+    inactivityFlag = setTimeout(() => {
       const defaultViewData = getViewData(defaultSettings);
       defaultViewData.applyCursorEffects = false;
       refresh(defaultViewData);
       oldViewData = {};
       
-      inactivityTimer = null;
+      inactivityFlag = null;
     }, 25000);
   } 
 
   if (document.visibilityState === 'visible') {
-    if (inactivityTimer) {
-      clearTimeout(inactivityTimer);
-      inactivityTimer = null;
+    if (inactivityFlag) {
+      clearTimeout(inactivityFlag);
+      inactivityFlag = null;
     }
   }
 });
