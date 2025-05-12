@@ -10,7 +10,22 @@
 
 
 // (2025-refactor) allows browser refresh to reset the settings
-// browser.runtime.sendMessage({ type: 'browserRefresh' });
+browser.runtime.sendMessage({ type: 'browserRefresh' });
+
+const defaultSettings = {
+  blurLevel: 0,
+  contrastLevel: 0,
+  brightnessLevel: 0,
+  ghostingLevel: 0,
+  snowLevel: 0,
+  cloudyLevel: 0,
+  flutterLevel: 0,
+  colorDeficiencyTypeIndex: 0,
+  colorDeficiencyMatrixValues: null,
+  blockType: 'noBlock',
+  blockStrength: 40,
+  applyCursorEffects: false
+};
 
 let oldViewData = {};
 window.flutterCount = 0;
@@ -877,36 +892,57 @@ browser.runtime.onMessage.addListener(
     } 
   });
 
-  let isInitialized = false;
-
-  document.addEventListener('visibilitychange', async () => {
-    // only run if the tab ever initialized successfully
-    if (document.visibilityState === 'visible' && isInitialized) {
-      try {
-        const settings = await browser.runtime.sendMessage({ type: 'getSettings' });
-        const viewData = getViewData(settings);
-        viewData.applyCursorEffects = settings.applyCursorEffects === true;
-        if (!deepEquals(viewData, oldViewData)) {
-          refresh(viewData);
-        }
-        oldViewData = viewData;
-      } catch (err) {}
-    }
-  });
+let isInitialized = false;
   
-  // (feb-2025-refactor) it has to be a promise to avoid a no-matching-signature error on the extensions page
-  async function initIfStillNecessaryAndBodyExists() {
-    if (document.body && !isInitialized) {
-      try {
-        await browser.runtime.sendMessage({type: 'getSettings'});
-        isInitialized = true;
-      } catch (error) {}
+// (feb-2025-refactor) it has to be a promise to avoid a no-matching-signature error on the extensions page
+async function initIfStillNecessaryAndBodyExists() {
+  if (document.body && !isInitialized) {
+    try {
+      await browser.runtime.sendMessage({type: 'getSettings'});
+      isInitialized = true;
+    } catch (error) {}
+  }
+}
+  
+setTimeout(initIfStillNecessaryAndBodyExists, 0);
+
+// Refresh once on first load
+document.addEventListener('readystatechange', function() {
+  initIfStillNecessaryAndBodyExists();
+});
+
+
+// (2025-refactor) anticipate background shut down, and remove all filters after 25 seconds of inactivity
+let inactivityTimer = null;
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') {
+    inactivityTimer = setTimeout(() => {
+      const defaultViewData = getViewData(defaultSettings);
+      defaultViewData.applyCursorEffects = false;
+      refresh(defaultViewData);
+      oldViewData = {};
+      
+      inactivityTimer = null;
+    }, 25000);
+  } 
+
+  if (document.visibilityState === 'visible') {
+    if (inactivityTimer) {
+      clearTimeout(inactivityTimer);
+      inactivityTimer = null;
     }
   }
-   
-  setTimeout(initIfStillNecessaryAndBodyExists, 0);
-  
-  // Refresh once on first load
-  document.addEventListener('readystatechange', function() {
-    initIfStillNecessaryAndBodyExists();
-  });
+});
+
+// (2025-refactor) respond to background shutdown: clean up filters
+// document.addEventListener('visibilitychange', async () => {
+//   if (document.visibilityState === 'visible' && isInitialized) {
+//     const settings = await browser.runtime.sendMessage({ type: 'getSettings' });
+//     const viewData = getViewData(settings);
+//     viewData.applyCursorEffects = settings.applyCursorEffects === true;
+//     if (!deepEquals(viewData, oldViewData)) {
+//       refresh(viewData);
+//     }
+//     oldViewData = viewData;
+//   }
+// });
