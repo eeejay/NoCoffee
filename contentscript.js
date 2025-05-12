@@ -8,8 +8,7 @@
 // - Misshapen macular degenation blob, add blur to outside
 // - Stargardt's add brightness, some good holes in it, loss of contrast sensitivity
 
-
-// (2025-refactor) allows browser refresh to reset the settings
+// (2025-refactor) allows a browser refresh to reset the settings
 browser.runtime.sendMessage({ type: 'browserRefresh' });
 
 const defaultSettings = {
@@ -897,22 +896,19 @@ let isInitialized = false;
 // (feb-2025-refactor) it has to be a promise to avoid a no-matching-signature error on the extensions page
 async function initIfStillNecessaryAndBodyExists() {
   if (document.body && !isInitialized) {
-    try {
-      await browser.runtime.sendMessage({type: 'getSettings'});
-      isInitialized = true;
-    } catch (error) {}
+    await browser.runtime.sendMessage({type: 'getSettings'});
+    isInitialized = true;
   }
 }
   
 setTimeout(initIfStillNecessaryAndBodyExists, 0);
 
-// Refresh once on first load
-document.addEventListener('readystatechange', function() {
+// Refresh on first load
+document.addEventListener('readystatechange', () => {
   initIfStillNecessaryAndBodyExists();
 });
 
-
-// (2025-refactor) anticipate background shut down, and remove all filters after 25 seconds of inactivity
+// (2025-refactor) anticipate background shut down, so reset and remove all filters after 25 seconds of inactivity
 let inactivityTimer = null;
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') {
@@ -936,7 +932,7 @@ document.addEventListener('visibilitychange', () => {
 
 // (2025-refactor) respond to background shutdown: clean up filters
 // document.addEventListener('visibilitychange', async () => {
-//   if (document.visibilityState === 'visible' && isInitialized) {
+//   if (document.visibilityState === 'visible') {
 //     const settings = await browser.runtime.sendMessage({ type: 'getSettings' });
 //     const viewData = getViewData(settings);
 //     viewData.applyCursorEffects = settings.applyCursorEffects === true;
