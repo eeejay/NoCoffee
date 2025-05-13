@@ -208,7 +208,19 @@ function updateCustomCursor(event) {
     svgType = 'default';
   }
 
-  if (existingCursor && cursorSVGs[svgType]) {
+  if (existingCursor) {
+    // const zoom = getZoom();
+    
+    // if (svgType === 'default') {
+    //   // Use PNG for default cursor
+    //   const adjustedWidth = 32 / zoom;
+    //   const adjustedHeight = 32 / zoom;
+    //   existingCursor.innerHTML = `<img src="${browser.runtime.getURL('arrow.png')}" 
+    //     width="${adjustedWidth}"
+    //     height="${adjustedHeight}"
+    //     style="display: block;">`;
+    // } else 
+    
     if (svgType === 'text') {
       const { r, g, b } = getInvertedBackgroundColor(element);
       const hex = '#' + 
@@ -593,14 +605,21 @@ function createSvgSnowOverlay(snow) {
       <rect width="100%" height="100%" filter="url(#noCoffeeSnowFilter)" />
     </svg>`;
   
-  // (2025-refactor) works better than <animate> in Chrome; animation still laggy on some sites
-  const feTurb = overlay.querySelector('feTurbulence');
-  if (feTurb) {
-    let seed = 0;
-    setInterval(() => {
-      feTurb.setAttribute('seed', seed = (seed + 1) % 1000);
-    }, 70);
-  }
+    const feTurb = overlay.querySelector('feTurbulence');
+    if (feTurb) {
+      let startTime = Date.now();
+      let animationId;
+      
+      const animate = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = (elapsed % 70000) / 70000; 
+        const seed = Math.floor(500 - (499 * progress));
+        feTurb.setAttribute('seed', seed.toString());
+        animationId = requestAnimationFrame(animate);
+      };
+      
+      animate();
+    }
 
   return overlay;
 }
