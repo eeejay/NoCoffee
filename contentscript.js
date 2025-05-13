@@ -59,10 +59,10 @@ const cursorSVGs = {
   `,
   pointer: `
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0,0,32,32" width="26px" height="26px">
-      <path  d="m 14.285578,2.8680272 c 1.20794,0.140206 1.496662,0.9677764 1.501053,1.522449 l 0.08708,11.0000008 -0.002,-0.217687 -0.17415,-4.000001 c -0.05974,-1.3721922 0.810952,-1.9483242 1.326905,-2.0013604 1.694183,-0.1741497 2.165713,0.9678214 2.154116,2.0448974 l -0.04354,4.043539 -0.002,-0.04354 0.04354,-4.043538 c 0.01496,-1.3897412 1.461886,-1.2424597 1.849354,-1.217687 0.909693,0.058161 1.667796,1.316108 1.675204,1.870748 l 0.04354,3.259865 -0.04492,0.08708 v -2.391837 c 0,-2.034962 1.461293,-1.52245 1.979966,-1.52245 0.518673,0 1.152755,1.054835 1.152755,1.609525 v 7.8125 c 0,3.46484 -2.545872,6.1875 -5.785733,6.1875 H 18.4396 c -1.369725,0 -5.557257,-1.263576 -7.628243,-3.750595 L 9.1207459,21.473896 C 6.6145548,18.677566 6.52748,16.799988 6.9438751,16.354678 c 0.4163951,-0.44531 1.2611601,-0.61946 1.6775552,-0.17415 l 4.0324807,2.353316 V 3.8680272 c 0,-0.55469 0.721489,-1.1056445 1.631667,-1 z"
-        fill="#fff" 
-        stroke="#000" 
-        stroke-width="0.7"/>
+      <path d="m 14.285578,2.8680272 c 1.20794,0.140206 1.496662,0.9677764 1.501053,1.522449 l 0.08708,11.0000008 -0.002,-0.217687 -0.17415,-4.000001 c -0.05974,-1.3721922 0.810952,-1.9483242 1.326905,-2.0013604 1.694183,-0.1741497 2.165713,0.9678214 2.154116,2.0448974 l -0.04354,4.043539 -0.002,-0.04354 0.04354,-4.043538 c 0.01496,-1.3897412 1.461886,-1.2424597 1.849354,-1.217687 0.909693,0.058161 1.667796,1.316108 1.675204,1.870748 l 0.04354,3.259865 -0.04492,0.08708 v -2.391837 c 0,-2.034962 1.461293,-1.52245 1.979966,-1.52245 0.518673,0 1.152755,1.054835 1.152755,1.609525 v 7.8125 c 0,3.46484 -2.545872,6.1875 -5.785733,6.1875 H 18.4396 c -1.369725,0 -5.557257,-1.263576 -7.628243,-3.750595 L 9.1207459,21.473896 C 6.6145548,18.677566 6.52748,16.799988 6.9438751,16.354678 c 0.4163951,-0.44531 1.2611601,-0.61946 1.6775552,-0.17415 l 4.0324807,2.353316 V 3.8680272 c 0,-0.55469 0.721489,-1.1056445 1.631667,-1 z"
+            fill="#fff" 
+            stroke="#000" 
+            stroke-width="0.7"/>
     </svg>
   `,
   text: `
@@ -85,6 +85,7 @@ function isPointOverText(x, y) {
   const element = document.elementFromPoint(x, y);
   if (element == null) return false;
   const nodes = element.childNodes;
+
   for (let i = 0, node; (node = nodes[i++]); ) {
       if (node.nodeType === 3) {
           const range = document.createRange();
@@ -133,7 +134,8 @@ function detectCursorType(event) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// get element's bg color
+// text cursor color
+
 function parseBackgroundColor(bgColor) {
   const match = bgColor.match(/rgba?\(([\d.]+), ([\d.]+), ([\d.]+)(?:, ([\d.]+))?\)/);
   if (match) {
@@ -180,7 +182,7 @@ function getInvertedBackgroundColor(el) {
     b: 255 - Math.round(b)
   };
 }
-// end of get element's bg color functions
+// end of text cursor color
 ////////////////////////////////////////////////////////////////////////////
 
 function updateCustomCursor(event) {
@@ -214,7 +216,6 @@ function updateCustomCursor(event) {
           g.toString(16).padStart(2, '0') + 
           b.toString(16).padStart(2, '0');
 
-      console.log("Inverted color:", hex, "from element:", element);
       const updatedSVG = cursorSVGs[svgType]
         .replace(/fill="[^"]*"/g, `fill="${hex}"`)
         .replace(/stroke="[^"]*"/g, `stroke="${hex}"`);
@@ -226,7 +227,7 @@ function updateCustomCursor(event) {
   }
 }
 
-function updateCursorEffects(view, viewData) {
+function applyCustomCursor(viewData) {
   const existingCursor = document.querySelector('.' + kCursorContainerClassName);
  
   if (existingCursor) {
@@ -254,25 +255,9 @@ function updateCursorEffects(view, viewData) {
     z-index: 2147483640;
     transform: translate(-50%, -10%);
   `;
- 
-  // Apply filters to custom cursor
-  let cursorFilters = [];
-  if (view.doc.cssFilter) cursorFilters.push(view.doc.cssFilter);
- 
-  // not needed since the filters are already applied to the body
-  // if (viewData.blur) {
-  //   cursorFilters.push(`blur(${viewData.blur}px)`);
-  // }
-  // if (viewData.contrast !== 100) {
-  //   cursorFilters.push(`contrast(${viewData.contrast}%)`);
-  // }
-  // if (viewData.brightness) {
-  //   cursorFilters.push(`brightness(${viewData.brightness}%)`);
-  // }
- 
-  cursor.style.filter = cursorFilters.join(' ');
+
   document.body.appendChild(cursor);
- 
+
   let lastX = 0;
   let lastY = 0;
   let rafId = null;
@@ -377,7 +362,6 @@ function stopFluttering() {
 }
 
 function maybeStartFluttering(flutter, bodyCssFilter) {
-  console.log('maybeStartFluttering triggered', flutter.flutterLevel);
   let randomized = Math.random() * 1000;
   if (randomized < flutter.flutterLevel) {
     startFluttering(flutter, bodyCssFilter);
@@ -385,18 +369,13 @@ function maybeStartFluttering(flutter, bodyCssFilter) {
 }
 
 function initFlutter(flutter, bodyCssFilter) {
-  
-  console.log('initFlutter called with level:', flutter.flutterLevel);
-
   startFluttering(flutter, bodyCssFilter);
 
   window.flutterScrollListener = () => {
-    console.log('Scroll detected');
     maybeStartFluttering(flutter, bodyCssFilter);
   };
 
   window.flutterMouseListener = () => {
-    console.log('Mouse move detected');
     maybeStartFluttering(flutter, bodyCssFilter);
   };
 
@@ -590,7 +569,8 @@ function createSvgSnowOverlay(snow) {
   overlay.className = kSvgOverlayClassName;
   const size = 100 * snow.zoom;
   const startPos = (100 - size) / 2;
-  overlay.style.cssText = `transform: scale(${1 / snow.zoom}); 
+  overlay.style.cssText = `
+    transform: scale(${1 / snow.zoom}); 
     z-index:2147483645 !important; 
     pointer-events: none; 
     position: fixed; 
@@ -833,19 +813,6 @@ function deepEquals(obj1, obj2) {
 function refresh(viewData) {
   const view = getView(viewData);
 
-  // if (typeof view.doc.svgFilterElt !== 'undefined') {
-  //   deleteNodeIfExists(document.querySelector('.' + kSvgDocClassName)); // Delete old one
-  //   if (view.doc.svgFilterElt) {
-  //     document.body.appendChild(view.doc.svgFilterElt);
-  //   }
-  // }
-  // if (typeof view.body.svgFilterElt !== 'undefined') {
-  //   deleteNodeIfExists(document.querySelector('.' + kSvgBodyClassName)); // Delete old one
-  //   if (view.body.svgFilterElt) {
-  //     document.body.appendChild(view.body.svgFilterElt);
-  //   }
-  // }
-
   // old doc/body filters must be removed unconditionally otherwise the flutter filter stays on after reset
   deleteNodeIfExists(document.querySelector('.' + kSvgDocClassName));
   if (view.doc.svgFilterElt) {
@@ -881,7 +848,7 @@ function refresh(viewData) {
   document.documentElement.style.filter = view.doc.cssFilter;
   document.body.style.filter = view.body.cssFilter;
 
-  updateCursorEffects(view, viewData);
+  applyCustomCursor(viewData);
 }
 
 browser.runtime.onMessage.addListener(

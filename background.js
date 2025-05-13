@@ -33,7 +33,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
   }
 
-  if (request.type === 'updateCursorEffects') {
+  if (request.type === 'applyCustomCursor') {
     (async () => {
       const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
       if (activeTab) {

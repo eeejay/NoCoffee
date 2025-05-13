@@ -220,6 +220,7 @@ a {
     color: var(--color-light);
     font-family: Arial, Helvetica, sans-serif;
     padding: 2px;
+    text-underline-offset: 2px;
     /* transition: text-decoration-thickness 0.3s ease; */
 }
 

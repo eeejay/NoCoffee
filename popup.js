@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   document.getElementById('reset').addEventListener('click', async function() {
     document.getElementById('cursor').checked = false;
     await browser.runtime.sendMessage({
-      type: 'updateCursorEffects',
+      type: 'applyCustomCursor',
       settings: {
         applyCursorEffects: false
       }
@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   
   document.getElementById('cursor').addEventListener('change', async function(evt) {
     await browser.runtime.sendMessage({
-      type: 'updateCursorEffects',
+      type: 'applyCustomCursor',
       settings: {
         applyCursorEffects: evt.target.checked
       }
