@@ -618,7 +618,10 @@ function createSvgSnowOverlay(snow) {
         animationId = requestAnimationFrame(animate);
       };
       
-      animate();
+      animationId = requestAnimationFrame(animate);
+      
+      // Store animation ID for cleanup
+      overlay.animationId = animationId;
     }
 
   return overlay;
@@ -844,7 +847,11 @@ function refresh(viewData) {
   }
 
   if (typeof view.svgOverlayElt !== 'undefined') {
-    deleteNodeIfExists(document.querySelector('.' + kSvgOverlayClassName)); // Delete old one
+    const oldOverlay = document.querySelector('.' + kSvgOverlayClassName);
+    if (oldOverlay && oldOverlay.animationId) {
+      cancelAnimationFrame(oldOverlay.animationId);
+    }
+    deleteNodeIfExists(oldOverlay);
     if (view.svgOverlayElt) {
       document.body.appendChild(view.svgOverlayElt);
     }
