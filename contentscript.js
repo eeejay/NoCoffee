@@ -209,18 +209,6 @@ function updateCustomCursor(event) {
   }
 
   if (existingCursor) {
-    // const zoom = getZoom();
-    
-    // if (svgType === 'default') {
-    //   // Use PNG for default cursor
-    //   const adjustedWidth = 32 / zoom;
-    //   const adjustedHeight = 32 / zoom;
-    //   existingCursor.innerHTML = `<img src="${browser.runtime.getURL('arrow.png')}" 
-    //     width="${adjustedWidth}"
-    //     height="${adjustedHeight}"
-    //     style="display: block;">`;
-    // } else 
-    
     if (svgType === 'text') {
       const { r, g, b } = getInvertedBackgroundColor(element);
       const hex = '#' + 
@@ -239,8 +227,9 @@ function updateCustomCursor(event) {
   }
 }
 
+// working with ctrl +/- and browser zoom. NOT working when zooming via mouse pad
 function applyCustomCursor(viewData) {
-  const existingCursor = document.querySelector('.' + kCursorContainerClassName);
+  let existingCursor = document.querySelector('.' + kCursorContainerClassName);
  
   if (existingCursor) {
     existingCursor.remove();
@@ -265,7 +254,6 @@ function applyCustomCursor(viewData) {
     position: absolute;
     pointer-events: none;
     z-index: 2147483640;
-    transform: translate(-50%, -10%);
   `;
 
   document.body.appendChild(cursor);
@@ -280,8 +268,11 @@ function applyCustomCursor(viewData) {
 
     if (!rafId) {
       rafId = requestAnimationFrame(() => {
+        const zoom = getZoom();
         cursor.style.left = `${lastX + window.scrollX}px`;
         cursor.style.top = `${lastY + window.scrollY}px`;
+        cursor.style.transform = `translate(-50%, -10%) scale(${1 / zoom})`;
+        cursor.style.transformOrigin = 'left top';
         rafId = null;
       });
     }
@@ -298,6 +289,7 @@ function applyCustomCursor(viewData) {
     cursor.style.display = 'none';
   });
 }
+
 // end of cursor logic
 /////////////////////////////////////////////////////////////////////////////////
 
