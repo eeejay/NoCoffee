@@ -1,5 +1,20 @@
 let tabSettings = new Map();
 
+const defaultSettings = {
+  blurLevel: 0,
+  contrastLevel: 0,
+  brightnessLevel: 0,
+  ghostingLevel: 0,
+  snowLevel: 0,
+  cloudyLevel: 0,
+  flutterLevel: 0,
+  colorDeficiencyTypeIndex: 0,
+  colorDeficiencyMatrixValues: null,
+  blockType: 'noBlock',
+  blockStrength: 40,
+  applyCursorEffects: false
+};
+
 // (2025-refactor) each tab can have its own settings
 async function updateActiveTab() {
   const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -16,7 +31,7 @@ async function updateSettings(settings) {
   const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!activeTab) return;
  
-  let currentSettings = tabSettings.get(activeTab.id) || {};
+  const currentSettings = tabSettings.get(activeTab.id) || {};
   tabSettings.set(activeTab.id, {...currentSettings, ...settings});
  
   await updateActiveTab();
@@ -26,7 +41,7 @@ async function updateSettings(settings) {
 // (2025-refactor) Must use chrome.runtime (not browser.runtime) to avoid undefined error
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
-  // (2025-refactor) browser refresh can reset settings (it has to be paired with line 12 in content.js)
+  // (2025-refactor) browser refresh can reset settings
   if (request.type === 'browserRefresh' && sender.tab) {
     tabSettings.delete(sender.tab.id);
     sendResponse({ success: true });
@@ -37,7 +52,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     (async () => {
       const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
       if (activeTab) {
-        let currentSettings = tabSettings.get(activeTab.id) || {};
+        const currentSettings = tabSettings.get(activeTab.id) || {};
        
         tabSettings.set(activeTab.id, {
           ...currentSettings,
@@ -56,7 +71,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
       if (activeTab) {
         const currentSettings = tabSettings.get(activeTab.id);
-        sendResponse(currentSettings || {});
+        sendResponse(currentSettings || defaultSettings);
       } else {
         sendResponse(defaultSettings);
       }

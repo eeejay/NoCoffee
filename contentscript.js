@@ -843,6 +843,7 @@ function refresh(viewData) {
     if (oldOverlay && oldOverlay.animationId) {
       cancelAnimationFrame(oldOverlay.animationId);
     }
+    
     deleteNodeIfExists(oldOverlay);
     if (view.svgOverlayElt) {
       document.body.appendChild(view.svgOverlayElt);
@@ -900,38 +901,3 @@ setTimeout(initIfStillNecessaryAndBodyExists, 0);
 document.addEventListener('readystatechange', () => {
   initIfStillNecessaryAndBodyExists();
 });
-
-// (2025-refactor) anticipate background shut down, so reset and remove all filters after 25 seconds of inactivity
-let inactivityFlag = null;
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'hidden') {
-    inactivityFlag = setTimeout(() => {
-      const defaultViewData = getViewData(defaultSettings);
-      defaultViewData.applyCursorEffects = false;
-      refresh(defaultViewData);
-      oldViewData = {};
-      
-      inactivityFlag = null;
-    }, 25000);
-  } 
-
-  if (document.visibilityState === 'visible') {
-    if (inactivityFlag) {
-      clearTimeout(inactivityFlag);
-      inactivityFlag = null;
-    }
-  }
-});
-
-// (2025-refactor) respond to background shutdown: clean up filters
-// document.addEventListener('visibilitychange', async () => {
-//   if (document.visibilityState === 'visible') {
-//     const settings = await browser.runtime.sendMessage({ type: 'getSettings' });
-//     const viewData = getViewData(settings);
-//     viewData.applyCursorEffects = settings.applyCursorEffects === true;
-//     if (!deepEquals(viewData, oldViewData)) {
-//       refresh(viewData);
-//     }
-//     oldViewData = viewData;
-//   }
-// });

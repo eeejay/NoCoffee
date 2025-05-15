@@ -81,7 +81,7 @@ function focusEventTarget(evt) {
 
 document.addEventListener('DOMContentLoaded', async function() {
   let settings = await browser.runtime.sendMessage({ type: 'getSettings' }) || {};
-  // document.getElementById('cursor').checked = settings.applyCursorEffects === true;
+  document.getElementById('cursor').checked = settings.applyCursorEffects === true;
   document.getElementById('blurValueText').focus();
   updateValue('blur', settings.blurLevel || 0);
   updateValue('contrast', settings.contrastLevel || 0);
@@ -137,6 +137,12 @@ document.addEventListener('DOMContentLoaded', async function() {
 });
 
 document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    window.close();
+  }
+});
+
+document.addEventListener('scroll', () => {
   if (document.hidden) {
     window.close();
   }
