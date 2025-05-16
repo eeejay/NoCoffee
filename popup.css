@@ -1,16 +1,15 @@
 :root {
     --color-dark: #151515; 
     --color-light: #f2f2f2; 
-    --color-blue-lighter: #3c8cff;
-    --color-blue-darker: #2878ff;
+    --color-blue: #1c6cf5;
     --color-green: #287728;
     --color-purple: #3c283c;
     --color-gray: #282828;
     --color-light-gray: rgba(200,200,200,.8);
     --color-blue-gray: #203040; 
-    --color-purple-gray: rgba(160,160,220,.6);
+    --color-purple-gray: rgba(160,160,220,.4);
 
-    --color-focus-outline-blue:var(--color-blue-lighter);
+    --color-focus-outline:var(--color-blue);
 }
 
 * {
@@ -54,7 +53,7 @@ h1 {
 #reset:hover {
     /* border: 2px solid var(--color-light);
     outline: none; */
-    outline: 2px solid var(--color-blue-lighter);
+    outline: 2px solid var(--color-focus-outline);
     outline-offset: 1px;
 }
 
@@ -150,7 +149,7 @@ input[type="range"]::-moz-range-thumb {
 
 input[type="range"]:focus {
     outline: none;
-    border-color: var(--color-blue-darker);
+    border-color: var(--color-focus-outline);
 }
 
 input[type="radio"] {
@@ -163,7 +162,7 @@ input[type="radio"]:focus {
 
 input[type="radio"]:focus + label {
     border-radius: 4px;
-    outline: 2px solid var(--color-blue-lighter);
+    outline: 2px solid var(--color-focus-outline);
     outline-offset: 2px;
 }
 
@@ -189,13 +188,10 @@ select {
     width: 12rem;
 }
 
-select:open {
-    width: 12rem !important;
-}
-
 select:focus, 
 input[type="number"]:focus {
-    border-color:var(--color-blue-lighter);
+    color: white;
+    border-color:var(--color-focus-outline);
     border-radius: 6px;
     outline: none;
 }
@@ -226,8 +222,7 @@ a {
 
 a:focus-visible {
     border-radius: 4px;
-    /* change color based on the reset button's outline/border color */
-    outline: 2px solid var(--color-blue-lighter);
+    outline: 2px solid var(--color-focus-outline);
     outline-offset: 2px;
 }
 
@@ -252,7 +247,7 @@ input[type="checkbox"]:focus {
 
 input[type="checkbox"]:focus + label {
     border-radius: 4px;
-    outline: 2px solid var(--color-blue-lighter);
+    outline: 2px solid var(--color-focus-outline);
     outline-offset: 2px;
 }
 

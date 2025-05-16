@@ -47,7 +47,7 @@ const kFlutterDist = 15;
 const kCursorContainerClassName = 'noCoffeeCursorDiv';
 
 /////////////////////////////////////////////////////////////////////////////////////
-// cursor logic
+// start of custom cursor logic
 const cursorSVGs = {
   default: `
     <svg width="32px" height="32px" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
@@ -134,7 +134,7 @@ function detectCursorType(event) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// text cursor color
+// start of text cursor color computation
 
 function parseBackgroundColor(bgColor) {
   const match = bgColor.match(/rgba?\(([\d.]+), ([\d.]+), ([\d.]+)(?:, ([\d.]+))?\)/);
@@ -182,7 +182,7 @@ function getInvertedBackgroundColor(el) {
     b: 255 - Math.round(b)
   };
 }
-// end of text cursor color
+// end of text cursor color computation
 ////////////////////////////////////////////////////////////////////////////
 
 function updateCustomCursor(event) {
@@ -227,7 +227,7 @@ function updateCustomCursor(event) {
   }
 }
 
-// working with ctrl +/- and browser zoom. NOT working when zooming via mouse pad
+// working browser zooming. NOT working when zooming via mouse pad
 function applyCustomCursor(viewData) {
   let existingCursor = document.querySelector('.' + kCursorContainerClassName);
  
@@ -290,9 +290,8 @@ function applyCustomCursor(viewData) {
   });
 }
 
-// end of cursor logic
+// end of custom cursor logic
 /////////////////////////////////////////////////////////////////////////////////
-
 
 function createSvgFilter(filterMarkup, className) {
   const filterId = `${className}${Date.now()}`;
