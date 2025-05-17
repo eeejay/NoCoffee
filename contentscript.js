@@ -227,6 +227,26 @@ function updateCustomCursor(event) {
   }
 }
 
+////////////////////////////////////////////////////////////////////
+// start of shadow root logic
+
+const HIDE_BROWSER_CURSOR_IN_SHADOW_ROOT = 'noCoffeeHideBrowserCursor';
+
+function hideBrowserCursorInShadowRoot(shadow) {
+  if (shadow[HIDE_BROWSER_CURSOR_IN_SHADOW_ROOT]) return;
+  const style = document.createElement('style');
+  style.textContent = `
+    *, *::before, *::after {
+      cursor: none !important;
+    }
+  `;
+  shadow.appendChild(style);
+  shadow[HIDE_BROWSER_CURSOR_IN_SHADOW_ROOT] = true;
+}
+
+// end of shadow root logic
+////////////////////////////////////////////////////////////////////
+
 // works with browser zooming. NOT working when zooming via a trackpad
 function applyCustomCursor(viewData) {
   let existingCursor = document.querySelector('.' + kCursorContainerClassName);
@@ -243,51 +263,71 @@ function applyCustomCursor(viewData) {
         element.style.cursor = '';
       }
     }
+
+    // Undo the shadow DOM cursor hiding
+    document.querySelectorAll('*').forEach(el => {
+      if (el.shadowRoot) {
+        const style = el.shadowRoot.querySelector('style');
+        if (style && style.textContent.includes('cursor: none')) {
+          style.remove();
+        }
+        el.shadowRoot[HIDE_BROWSER_CURSOR_IN_SHADOW_ROOT] = false;
+      }
+    });
     
     document.removeEventListener('mousemove', detectCursorType);
     return;
   }
- 
-  const cursor = document.createElement('div');
-  cursor.className = kCursorContainerClassName;
-  cursor.style.cssText = `
-    position: absolute;
-    pointer-events: none;
-    z-index: 2147483640;
-  `;
 
-  document.body.appendChild(cursor);
+  if (viewData.applyCursorEffects) {
+    // find existing shadow roots
+    document.querySelectorAll('*').forEach(el => {
+      if (el.shadowRoot) {
+        hideBrowserCursorInShadowRoot(el.shadowRoot);
+      }
+    });
 
-  let lastX = 0;
-  let lastY = 0;
-  let rafId = null;
+    const cursor = document.createElement('div');
+    cursor.className = kCursorContainerClassName;
+    cursor.style.cssText = `
+      position: absolute;
+      pointer-events: none;
+      z-index: 2147483640;
+    `;
 
-  const updatePosition = (e) => {
-    lastX = e.clientX;
-    lastY = e.clientY;
+    document.body.appendChild(cursor);
 
-    if (!rafId) {
-      rafId = requestAnimationFrame(() => {
-        const zoom = getZoom();
-        cursor.style.left = `${lastX + window.scrollX}px`;
-        cursor.style.top = `${lastY + window.scrollY}px`;
-        cursor.style.transform = `translate(-50%, -10%) scale(${1 / zoom})`;
-        cursor.style.transformOrigin = 'left top';
-        rafId = null;
-      });
-    }
-  };
+    let lastX = 0;
+    let lastY = 0;
+    let rafId = null;
+
+    const updatePosition = (e) => {
+      lastX = e.clientX;
+      lastY = e.clientY;
+
+      if (!rafId) {
+        rafId = requestAnimationFrame(() => {
+          const zoom = getZoom();
+          cursor.style.left = `${lastX + window.scrollX}px`;
+          cursor.style.top = `${lastY + window.scrollY}px`;
+          cursor.style.transform = `translate(-50%, -10%) scale(${1 / zoom})`;
+          cursor.style.transformOrigin = 'left top';
+          rafId = null;
+        });
+      }
+    };
+  
+    document.addEventListener('mousemove', updatePosition);
+    document.addEventListener('mousemove', detectCursorType);
  
-  document.addEventListener('mousemove', updatePosition);
-  document.addEventListener('mousemove', detectCursorType);
+    document.addEventListener('mouseenter', () => {
+      cursor.style.display = 'block';
+    });
  
-  document.addEventListener('mouseenter', () => {
-    cursor.style.display = 'block';
-  });
- 
-  document.addEventListener('mouseleave', () => {
-    cursor.style.display = 'none';
-  });
+    document.addEventListener('mouseleave', () => {
+      cursor.style.display = 'none';
+    });
+  }
 }
 
 // end of custom cursor logic
