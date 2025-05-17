@@ -227,7 +227,7 @@ function updateCustomCursor(event) {
   }
 }
 
-// working browser zooming. NOT working when zooming via mouse pad
+// works with browser zooming. NOT working when zooming via a trackpad
 function applyCustomCursor(viewData) {
   let existingCursor = document.querySelector('.' + kCursorContainerClassName);
  
@@ -884,11 +884,27 @@ browser.runtime.onMessage.addListener(
     } 
   });
 
+// (2025-refactor) inject a default background color so that the document canvas does not show through.
+// it seems that CSS filters do not apply to it
+function ensureDefaultBackground() {
+  const els = [document.documentElement, document.body];
+  const isTransparent = el => {
+    const { backgroundImage, backgroundColor } = getComputedStyle(el);
+    return backgroundImage === 'none' &&
+           (backgroundColor === 'transparent' || backgroundColor === 'rgba(0, 0, 0, 0)');
+  };
+
+  if (els.every(isTransparent)) {
+    document.documentElement.style.backgroundColor = '#ffffff';
+  }
+}
+
 let isInitialized = false;
   
 // (feb-2025-refactor) it has to be a promise to avoid a no-matching-signature error on the extensions page
 async function initIfStillNecessaryAndBodyExists() {
   if (document.body && !isInitialized) {
+    ensureDefaultBackground();
     await browser.runtime.sendMessage({type: 'getSettings'});
     isInitialized = true;
   }
