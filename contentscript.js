@@ -119,15 +119,13 @@ function detectCursorType(event) {
     // Restore the custom cursor
     element.style.cursor = tempCursorType;
    
-    console.log('Cursor type:', browserCursor);
-   
     if (originalCursorType !== browserCursor) {
       originalCursorType = browserCursor;
     }
    
     updateCustomCursor(event);
    
-    // Hide browser cursor. Not working for scrollbars and shadow roots
+    // Hide browser cursor. Not working for scrollbars
     element.style.cursor = 'none';
    
   }
