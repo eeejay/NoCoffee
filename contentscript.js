@@ -227,7 +227,6 @@ function updateCustomCursor(event) {
 
 ////////////////////////////////////////////////////////////////////
 // start of shadow root logic
-
 const HIDE_BROWSER_CURSOR_IN_SHADOW_ROOT = 'noCoffeeHideBrowserCursor';
 
 function hideBrowserCursorInShadowRoot(shadow) {
