@@ -58,10 +58,10 @@ function updateOneSetting(evt) {
 }
 
 function visitLink(evt) {
-  // (2025-refactor) necessary to prevent Firefox from opening two tabs
+  // (2025-refactor) necessary to prevent Firefox from opening two tabs at once
   evt.preventDefault();
   browser.tabs.create({url: evt.currentTarget.href}).catch(console.error);
-  // (2025-refactor) fix for firefox: close the popup after the link opens
+  // (2025-refactor) fix for firefox: prevent the popup from opening on the new page
   window.close();
 }
 
