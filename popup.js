@@ -46,6 +46,11 @@ function updateValue(type, value) {
 }
 
 function updateOneSetting(evt) {
+  // (2025-refactor) prevent the slider value from changing when pressing Enter on an empty number input
+  if (evt.target.type === 'number' && evt.target.value === '') {
+    return;
+  }
+
   if (evt.target.localName === 'input' && evt.target.hasAttribute('value')) {
     updateValue(evt.target.parentNode.className, evt.target.value);
   }
