@@ -87,7 +87,10 @@ function focusEventTarget(evt) {
 document.addEventListener('DOMContentLoaded', async function() {
   let settings = await browser.runtime.sendMessage({ type: 'getSettings' }) || {};
   document.getElementById('cursor').checked = settings.applyCursorEffects === true;
-  document.getElementById('blurValueText').focus();
+
+  // (Focus is set in html); select helps voice users update the value of the input
+  document.getElementById('blurValueText').select();
+
   updateValue('blur', settings.blurLevel || 0);
   updateValue('contrast', settings.contrastLevel || 0);
   updateValue('brightness', settings.brightnessLevel || 0);
@@ -110,7 +113,6 @@ document.addEventListener('DOMContentLoaded', async function() {
   // Add listeners
   document.visionSettings.addEventListener('change', updateOneSetting);
   document.visionSettings.addEventListener('select', updateSettings);
-  // document.visionSettings.addEventListener('reset', updateSettings);
   document.getElementById('reset').addEventListener('click', async function() {
     document.getElementById('cursor').checked = false;
     await browser.runtime.sendMessage({
