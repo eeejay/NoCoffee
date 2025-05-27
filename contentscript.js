@@ -573,9 +573,8 @@ function createBlockerOverlay(block) {
         background-image: radial-gradient(circle, ${block.innerColor} ${block.innerStrength}%, ${block.outerColor} ${block.outerStrength}%);
       `;
     } else {
-      // (feb-2025-refactor) side filter not working without -webkit in linear-gradient
       style += `
-        background-image: -webkit-linear-gradient(left, ${block.innerColor} ${block.innerStrength}%, ${block.outerColor} ${block.outerStrength}%);
+        background-image: linear-gradient(to right, ${block.innerColor} ${block.innerStrength}%, ${block.outerColor} ${block.outerStrength}%);
       `;
     }
   }
