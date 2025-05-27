@@ -31,9 +31,9 @@ window.flutterCount = 0;
 
 const kSvgDocClassName = 'noCoffeeSvgFilterDoc';
 const kSvgBodyClassName = 'noCoffeeSvgFilterBody';
-const kSvgOverlayClassName = 'noCoffeeSvgOverlay';
-const kBlockerClassName = 'noCoffeeVisionBlockingDiv';
-const kCloudyClassName = 'noCoffeeVisionCloudyDiv';
+const kSvgSnowOverlayClassName = 'noCoffeeSvgSnowOverlay';
+const kBlockerOverlayClassName = 'noCoffeeVisionBlockingOverlay';
+const kCloudyOverlayClassName = 'noCoffeeVisionCloudyOverlay';
 const kMaxFloaters = 15;
 const kMaxFloaterTravel = 10; // Percent of screen
 const kMinFloaterTravelTime = 3; // Seconds
@@ -440,7 +440,7 @@ function createFloater(floater) {
   return floaterImg;
 }
 
-function resetFloaters(blockerDiv, floaters) {
+function resetFloaters(blockerOverlayElt, floaters) {
   let floaterMix = [];
   let count;
   for (count = 0; count < kMaxFloaters; count++) {
@@ -459,7 +459,7 @@ function resetFloaters(blockerDiv, floaters) {
       rotation: Math.random() * 360
     };
     let floaterImg = createFloater(floater);
-    blockerDiv.appendChild(floaterImg);
+    blockerOverlayElt.appendChild(floaterImg);
     animateFloater(floater, floaterImg);
   }
 }
@@ -497,12 +497,12 @@ function animateFloater(floater, floaterImg) {
   }, delay * 1000);
 }
 
-function createCloudyDiv(cloudy) {
+function createCloudyOverlay(cloudy) {
   if (!cloudy || !cloudy.cloudyLevel) {
     return null;
   }
-  let cloudyDiv = document.createElement('div');
-  cloudyDiv.className = kCloudyClassName;
+  let cloudyOverlay = document.createElement('div');
+  cloudyOverlay.className = kCloudyOverlayClassName;
   let size = 100 * cloudy.zoom;
 
   let style = `
@@ -522,16 +522,16 @@ function createCloudyDiv(cloudy) {
     filter: opacity(${cloudy.cloudyLevel}%);
   `;
 
-  cloudyDiv.setAttribute('style', style);
-  return cloudyDiv;
+  cloudyOverlay.setAttribute('style', style);
+  return cloudyOverlay;
 }
 
-function createBlockerDiv(block) {
+function createBlockerOverlay(block) {
   if (!block) {
     return null;
   }
-  let blockerDiv = document.createElement('div');
-  blockerDiv.className = kBlockerClassName;
+  let blockerOverlay = document.createElement('div');
+  blockerOverlay.className = kBlockerOverlayClassName;
   let style = `
     z-index: 2147483646 !important;
     pointer-events: none;
@@ -548,7 +548,7 @@ function createBlockerDiv(block) {
     `;
     // "filter: url(#noCoffeeDisplacementFilter);
     if (block.displacement && false) { // Don't try to do this yet
-      blockerDiv.innerHTML = `
+      blockerOverlay.innerHTML = `
         <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
           <defs>
             <filter id="noCoffeeDisplacementFilter" filterUnits="userSpaceOnUse">
@@ -581,7 +581,7 @@ function createBlockerDiv(block) {
   }
 
   if (block.floaters) {
-    resetFloaters(blockerDiv, block.floaters);
+    resetFloaters(blockerOverlay, block.floaters);
   }
 
   if (block.zoom) {
@@ -596,20 +596,20 @@ function createBlockerDiv(block) {
     `;
   }
 
-  blockerDiv.setAttribute('style', style);
+  blockerOverlay.setAttribute('style', style);
 
-  return blockerDiv;
+  return blockerOverlay;
 }
 
 function createSvgSnowOverlay(snow) {
   if (!snow || !snow.amount) {
     return null;
   }
-  let overlay = document.createElement('div');
-  overlay.className = kSvgOverlayClassName;
+  let snowOverlay = document.createElement('div');
+  snowOverlay.className = kSvgSnowOverlayClassName;
   const size = 100 * snow.zoom;
   const startPos = (100 - size) / 2;
-  overlay.style.cssText = `
+  snowOverlay.style.cssText = `
     transform: scale(${1 / snow.zoom}); 
     z-index:2147483645 !important; 
     pointer-events: none; 
@@ -619,7 +619,7 @@ function createSvgSnowOverlay(snow) {
     width: ${size}%; 
     height: ${size}%;`;
   
-  overlay.innerHTML = `
+  snowOverlay.innerHTML = `
     <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%; height:100%">
       <defs>
         <filter id="noCoffeeSnowFilter" filterUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%">
@@ -633,7 +633,7 @@ function createSvgSnowOverlay(snow) {
       <rect width="100%" height="100%" filter="url(#noCoffeeSnowFilter)" />
     </svg>`;
   
-    const feTurb = overlay.querySelector('feTurbulence');
+    const feTurb = snowOverlay.querySelector('feTurbulence');
     if (feTurb) {
       let startTime = Date.now();
       let animationId;
@@ -648,11 +648,11 @@ function createSvgSnowOverlay(snow) {
       
       animationId = requestAnimationFrame(animate);
       
-      // Store animation ID for cleanup
-      overlay.animationId = animationId;
+      // Store animation ID for cleanup in refresh(viewData)
+      snowOverlay.animationId = animationId;
     }
 
-  return overlay;
+  return snowOverlay;
 }
 
 // Return style object
@@ -675,18 +675,18 @@ function getView(viewData) {
       cssFilter: '',
       svgFilterElt: undefined
     },
-    svgOverlayElt: undefined,
-    blockerDiv: undefined
+    svgSnowOverlayElt: undefined,
+    blockerOverlayElt: undefined,
+    cloudyOverlayElt: undefined
   };
 
   // Create new svg color filter -- old one will be removed
-  // Needs to go on body element otherwise the filter does not work in Firefox
+  // (2025-refactor) svg color filter needs to go on body element otherwise the filter does not work in Firefox
   let svgColorFilterMarkup = getSvgColorMatrixFilter(viewData.colorMatrixValues);
   if (svgColorFilterMarkup) {
     view.body.svgFilterElt = createSvgFilter(svgColorFilterMarkup, kSvgBodyClassName);
     let id = view.body.svgFilterElt.querySelector('filter').id;
     view.body.cssFilter += `url(#${id}) `;
-
   }
 
   // Create new svg ghosting filter -- old one will be removed
@@ -707,17 +707,17 @@ function getView(viewData) {
 
   // Create new svg overlay div -- old one will be removed
   if (!deepEquals(oldViewData.snow, viewData.snow)) {
-    view.svgOverlayElt = createSvgSnowOverlay(viewData.snow);
+    view.svgSnowOverlayElt = createSvgSnowOverlay(viewData.snow);
   }
 
   // Create new cloudy div -- old one will be removed
   if (!deepEquals(oldViewData.cloudy, viewData.cloudy)) {
-    view.cloudyDiv = createCloudyDiv(viewData.cloudy);
+    view.cloudyOverlayElt = createCloudyOverlay(viewData.cloudy);
   }
 
   // Create new blocker div -- old one will be removed
   if (!deepEquals(oldViewData.block, viewData.block)) {
-    view.blockerDiv = createBlockerDiv(viewData.block);
+    view.blockerOverlayElt = createBlockerOverlay(viewData.block);
   }
 
   if (viewData.blur) {
@@ -874,29 +874,29 @@ function refresh(viewData) {
     document.body.appendChild(view.body.svgFilterElt);
   }
 
-  if (typeof view.svgOverlayElt !== 'undefined') {
-    const oldOverlay = document.querySelector('.' + kSvgOverlayClassName);
+  if (typeof view.svgSnowOverlayElt !== 'undefined') {
+    const oldOverlay = document.querySelector('.' + kSvgSnowOverlayClassName);
     if (oldOverlay && oldOverlay.animationId) {
       cancelAnimationFrame(oldOverlay.animationId);
     }
     
     deleteNodeIfExists(oldOverlay);
-    if (view.svgOverlayElt) {
-      document.body.appendChild(view.svgOverlayElt);
+    if (view.svgSnowOverlayElt) {
+      document.body.appendChild(view.svgSnowOverlayElt);
     }
   }
 
-  if (typeof view.cloudyDiv !== 'undefined') {
-    deleteNodeIfExists(document.querySelector('.' + kCloudyClassName)); // Delete old one
-    if (view.cloudyDiv) {
-      document.body.appendChild(view.cloudyDiv);
+  if (typeof view.cloudyOverlayElt !== 'undefined') {
+    deleteNodeIfExists(document.querySelector('.' + kCloudyOverlayClassName)); // Delete old one
+    if (view.cloudyOverlayElt) {
+      document.body.appendChild(view.cloudyOverlayElt);
     }
   }
 
-  if (typeof view.blockerDiv !== 'undefined') {
-    deleteNodeIfExists(document.querySelector('.' + kBlockerClassName)); // Delete old one
-    if (view.blockerDiv) {
-      document.body.appendChild(view.blockerDiv);
+  if (typeof view.blockerOverlayElt !== 'undefined') {
+    deleteNodeIfExists(document.querySelector('.' + kBlockerOverlayClassName)); // Delete old one
+    if (view.blockerOverlayElt) {
+      document.body.appendChild(view.blockerOverlayElt);
     }
   }
 
