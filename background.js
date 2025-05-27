@@ -1,5 +1,3 @@
-let tabSettings = new Map();
-
 const defaultSettings = {
   blurLevel: 0,
   contrastLevel: 0,
@@ -15,12 +13,14 @@ const defaultSettings = {
   applyCursorEffects: false
 };
 
-// (2025-refactor) each tab can have its own settings
 async function updateActiveTab() {
   const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (!activeTab || !tabSettings.has(activeTab.id)) return;
+  if (!activeTab) return;
 
-  const settings = tabSettings.get(activeTab.id);
+  // Get settings from storage
+  const result = await chrome.storage.local.get(`tab_${activeTab.id}`);
+  const settings = result[`tab_${activeTab.id}`] || defaultSettings;
+ 
   chrome.tabs.sendMessage(activeTab.id, {
     type: 'refresh',
     settings: settings
@@ -31,8 +31,12 @@ async function updateSettings(settings) {
   const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!activeTab) return;
  
-  const currentSettings = tabSettings.get(activeTab.id) || {};
-  tabSettings.set(activeTab.id, {...currentSettings, ...settings});
+  // Get current settings from storage
+  const result = await chrome.storage.local.get(`tab_${activeTab.id}`);
+  const currentSettings = result[`tab_${activeTab.id}`] || {};
+ 
+  // Save to storage
+  await chrome.storage.local.set({[`tab_${activeTab.id}`]: {...currentSettings, ...settings}});
  
   await updateActiveTab();
 }
@@ -40,28 +44,27 @@ async function updateSettings(settings) {
 // Listen for messages
 // (2025-refactor) Must use chrome.runtime (not browser.runtime) to avoid undefined error
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-
   // (2025-refactor) browser refresh can reset settings
   if (request.type === 'browserRefresh' && sender.tab) {
-    tabSettings.delete(sender.tab.id);
-    sendResponse({ success: true });
-    return true;
+    chrome.storage.local.remove(`tab_${sender.tab.id}`);
   }
 
   if (request.type === 'applyCustomCursor') {
     (async () => {
       const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
-      if (activeTab) {
-        const currentSettings = tabSettings.get(activeTab.id) || {};
-       
-        tabSettings.set(activeTab.id, {
-          ...currentSettings,
-          applyCursorEffects: request.settings.applyCursorEffects
-        });
-       
-        await updateActiveTab();
-        sendResponse({ success: true });
-      }
+      if (!activeTab) return;
+     
+      const result = await chrome.storage.local.get(`tab_${activeTab.id}`);
+      const currentSettings = result[`tab_${activeTab.id}`] || {};
+     
+      await chrome.storage.local.set({[`tab_${activeTab.id}`]: {
+        ...currentSettings,
+        applyCursorEffects: request.settings.applyCursorEffects
+      }});
+     
+      await updateActiveTab();
+      sendResponse({ success: true });
+     
     })();
     return true;
   }
@@ -70,10 +73,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     (async () => {
       const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
       if (activeTab) {
-        const currentSettings = tabSettings.get(activeTab.id);
-        sendResponse(currentSettings || defaultSettings);
+        const result = await chrome.storage.local.get(`tab_${activeTab.id}`);
+        const settings = result[`tab_${activeTab.id}`] || defaultSettings;
+        sendResponse(settings);
       } else {
         sendResponse(defaultSettings);
+       
       }
     })();
     return true;
@@ -87,4 +92,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
   }
   return false;
+});
+
+// remove settings for the tab when it is closed
+chrome.tabs.onRemoved.addListener((tabId) => {
+  chrome.storage.local.remove(`tab_${tabId}`);
 });
