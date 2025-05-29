@@ -106,29 +106,24 @@ function isPointOverText(x, y) {
   return false;
 }
 
-let originalCursorType;
-function detectCursorType(event) {
-  const element = document.elementFromPoint(event.clientX, event.clientY);
- 
-  if (element) {
-    // Get the original cursor type by temporarily removing the custom cursor
-    const tempCursorType = element.style.cursor;
-    element.style.cursor = '';
-    const computedStyle = window.getComputedStyle(element);
-    let browserCursor = computedStyle.cursor;
-    // Restore the custom cursor
-    element.style.cursor = tempCursorType;
-   
-    if (originalCursorType !== browserCursor) {
-      originalCursorType = browserCursor;
+////////////////////////////////////////////////////////////////////
+// start of shadow root logic
+const HIDE_BROWSER_CURSOR_IN_SHADOW_ROOT = 'noCoffeeHideBrowserCursor';
+
+function hideBrowserCursorInShadowRoot(shadow) {
+  if (shadow[HIDE_BROWSER_CURSOR_IN_SHADOW_ROOT]) return;
+  const style = document.createElement('style');
+  style.textContent = `
+    *, *::before, *::after {
+      cursor: none !important;
     }
-   
-    updateCustomCursor(event);
-   
-    // Hide browser cursor. Not working for scrollbars
-    element.style.cursor = 'none';
-  }
+  `;
+  shadow.appendChild(style);
+  shadow[HIDE_BROWSER_CURSOR_IN_SHADOW_ROOT] = true;
 }
+
+// end of shadow root logic
+////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
 // start of text cursor color computation
@@ -182,6 +177,30 @@ function getInvertedBackgroundColor(el) {
 // end of text cursor color computation
 ////////////////////////////////////////////////////////////////////////////
 
+let originalCursorType;
+function detectCursorType(event) {
+  const element = document.elementFromPoint(event.clientX, event.clientY);
+ 
+  if (element) {
+    // Get the original cursor type by temporarily removing the custom cursor
+    const tempCursorType = element.style.cursor;
+    element.style.cursor = '';
+    const computedStyle = window.getComputedStyle(element);
+    let browserCursor = computedStyle.cursor;
+    // Restore the custom cursor
+    element.style.cursor = tempCursorType;
+   
+    if (originalCursorType !== browserCursor) {
+      originalCursorType = browserCursor;
+    }
+   
+    updateCustomCursor(event);
+   
+    // Hide browser cursor. Not working for scrollbars
+    element.style.cursor = 'none';
+  }
+}
+
 function updateCustomCursor(event) {
   const element = document.elementFromPoint(event.clientX, event.clientY);
   const existingCursor = document.querySelector('.' + kCursorContainerClassName);
@@ -197,9 +216,14 @@ function updateCustomCursor(event) {
                         element.closest('button') ||
                         element.closest('select');
 
+  const isText = element.tagName === 'INPUT' ||
+                  element.tagName === 'TEXTAREA' ||
+                  element.isContentEditable;
+
+
   if (originalCursorType.includes('pointer') || isInteractive) {
     svgType = 'pointer';
-  } else if (originalCursorType.includes('text') || isPointOverText(event.clientX, event.clientY)) {
+  } else if (originalCursorType.includes('text') || isPointOverText(event.clientX, event.clientY) || isText) {
     svgType = 'text';
   } else {
     svgType = 'default';
@@ -224,25 +248,6 @@ function updateCustomCursor(event) {
   }
 }
 
-////////////////////////////////////////////////////////////////////
-// start of shadow root logic
-const HIDE_BROWSER_CURSOR_IN_SHADOW_ROOT = 'noCoffeeHideBrowserCursor';
-
-function hideBrowserCursorInShadowRoot(shadow) {
-  if (shadow[HIDE_BROWSER_CURSOR_IN_SHADOW_ROOT]) return;
-  const style = document.createElement('style');
-  style.textContent = `
-    *, *::before, *::after {
-      cursor: none !important;
-    }
-  `;
-  shadow.appendChild(style);
-  shadow[HIDE_BROWSER_CURSOR_IN_SHADOW_ROOT] = true;
-}
-
-// end of shadow root logic
-////////////////////////////////////////////////////////////////////
-
 // works with browser zooming. NOT working when zooming via a trackpad
 function applyCustomCursor(viewData) {
   let existingCursor = document.querySelector('.' + kCursorContainerClassName);
@@ -253,12 +258,17 @@ function applyCustomCursor(viewData) {
  
   if (!viewData.applyCursorEffects) {
     document.body.style.cursor = '';
+    document.documentElement.style.cursor = '';
     const allElements = document.querySelectorAll('*');
     for (const element of allElements) {
       if (element.style.cursor === 'none') {
         element.style.cursor = '';
       }
     }
+
+    // remove the global stylesheet if it exists
+    const customCursorStyle = document.getElementById('noCoffeeCustomCursorStyle');
+    if (customCursorStyle) customCursorStyle.remove();
 
     // Undo the shadow DOM cursor hiding
     document.querySelectorAll('*').forEach(el => {
@@ -272,6 +282,7 @@ function applyCustomCursor(viewData) {
     });
     
     document.removeEventListener('mousemove', detectCursorType);
+    document.removeEventListener('pointerover', detectCursorType);
     return;
   }
 
@@ -283,6 +294,21 @@ function applyCustomCursor(viewData) {
       }
     });
 
+    // inject a global stylesheet to hide all native cursors
+    // this is necessary to prevent native cursors from showing up in some cases
+    const style = document.createElement('style');
+    style.id = 'noCoffeeCustomCursorStyle';
+    style.textContent = `
+      html, body, *, ::-webkit-scrollbar {
+        cursor: none !important;
+      }
+    `;
+
+    document.head.appendChild(style);
+
+    document.body.style.cursor = 'none';
+    document.documentElement.style.cursor = 'none';
+
     const cursor = document.createElement('div');
     cursor.className = kCursorContainerClassName;
     cursor.style.cssText = `
@@ -293,36 +319,39 @@ function applyCustomCursor(viewData) {
 
     document.body.appendChild(cursor);
 
-    let lastX = 0;
-    let lastY = 0;
-    let rafId = null;
-
-    const updatePosition = (e) => {
-      lastX = e.clientX;
-      lastY = e.clientY;
-
-      if (!rafId) {
-        rafId = requestAnimationFrame(() => {
-          const zoom = getZoom();
-          cursor.style.left = `${lastX + window.scrollX}px`;
-          cursor.style.top = `${lastY + window.scrollY}px`;
-          cursor.style.transform = `translate(-50%, -10%) scale(${1 / zoom})`;
-          cursor.style.transformOrigin = 'left top';
-          rafId = null;
-        });
-      }
-    };
-  
-    document.addEventListener('mousemove', updatePosition);
-    document.addEventListener('mousemove', detectCursorType);
- 
-    document.addEventListener('mouseenter', () => {
-      cursor.style.display = 'block';
-    });
- 
-    document.addEventListener('mouseleave', () => {
+    function hideCustomCursor() {
       cursor.style.display = 'none';
+    }
+
+    function showCustomCursor() {
+      cursor.style.display = 'block';
+    }
+
+    window.addEventListener('mouseout', e => {
+      if (!e.relatedTarget) hideCustomCursor();
     });
+
+    window.addEventListener('mouseover', e => {
+      if (!e.relatedTarget) showCustomCursor();
+    });
+
+    window.addEventListener('blur',  hideCustomCursor);
+    window.addEventListener('focus', showCustomCursor);
+
+    function updatePosition(e) {
+      const zoom = getZoom();
+      const x = e.clientX + window.scrollX;
+      const y = e.clientY + window.scrollY;
+
+      cursor.style.left = `${x}px`;
+      cursor.style.top = `${y}px`;
+      cursor.style.transform = `translate(-50%, -10%) scale(${1/zoom})`;
+      cursor.style.transformOrigin = '0 0';
+    }
+
+    document.addEventListener('mousemove', detectCursorType);
+    document.addEventListener('pointerover', detectCursorType);
+    document.addEventListener('mousemove', updatePosition);
   }
 }
 
@@ -905,11 +934,15 @@ function refresh(viewData) {
 
 browser.runtime.onMessage.addListener(
   function(request) {
+    if (request.type === 'applyCustomCursor') {
+      applyCustomCursor({ applyCursorEffects: request.settings.applyCursorEffects });
+    }
+
     if (request.type === 'refresh') {
       let viewData = getViewData(request.settings);
      
       // flag to determine if cursor effects should be applied
-      viewData.applyCursorEffects = request.settings.applyCursorEffects === true;
+      // viewData.applyCursorEffects = request.settings.applyCursorEffects === true;
      
       if (!deepEquals(viewData, oldViewData)) {
         refresh(viewData); // View data has changed -- re-render

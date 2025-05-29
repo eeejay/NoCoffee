@@ -126,8 +126,12 @@ document.addEventListener('DOMContentLoaded', async function() {
   });
   
   document.getElementById('cursor').addEventListener('change', async function(evt) {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tab) return;
+
     await browser.runtime.sendMessage({
       type: 'applyCustomCursor',
+      tabId: tab.id,
       settings: {
         applyCursorEffects: evt.target.checked
       }
