@@ -62,11 +62,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         applyCursorEffects: request.settings.applyCursorEffects
       }});
      
-      // await updateActiveTab();
-      chrome.tabs.sendMessage(request.tabId, {
-        type: 'applyCustomCursor',
-        settings: { applyCursorEffects: request.settings.applyCursorEffects }
-      });
+      await updateActiveTab();
+      
       sendResponse({ success: true });
      
     })();

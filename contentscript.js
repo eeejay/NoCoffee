@@ -48,6 +48,16 @@ const kCursorContainerClassName = 'noCoffeeCursorDiv';
 
 /////////////////////////////////////////////////////////////////////////////////////
 // start of custom cursor logic
+
+// global stylesheet to hide native cursors when the custom cursor is applied
+const customCursorStyle = document.createElement('style');
+customCursorStyle.id = 'noCoffeeCustomCursorStyle';
+customCursorStyle.textContent = `
+  html, body, *, ::-webkit-scrollbar {
+    cursor: none !important;
+  }
+`;
+
 const cursorSVGs = {
   default: `
     <svg width="32px" height="32px" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
@@ -267,8 +277,9 @@ function applyCustomCursor(viewData) {
     }
 
     // remove the global stylesheet if it exists
-    const customCursorStyle = document.getElementById('noCoffeeCustomCursorStyle');
-    if (customCursorStyle) customCursorStyle.remove();
+    if (document.head.contains(customCursorStyle)) {
+      document.head.removeChild(customCursorStyle);
+    }
 
     // Undo the shadow DOM cursor hiding
     document.querySelectorAll('*').forEach(el => {
@@ -294,17 +305,11 @@ function applyCustomCursor(viewData) {
       }
     });
 
-    // inject a global stylesheet to hide all native cursors
+    // inject the global stylesheet to hide native cursors
     // this is necessary to prevent native cursors from showing up in some cases
-    const style = document.createElement('style');
-    style.id = 'noCoffeeCustomCursorStyle';
-    style.textContent = `
-      html, body, *, ::-webkit-scrollbar {
-        cursor: none !important;
-      }
-    `;
-
-    document.head.appendChild(style);
+    if (!document.head.contains(customCursorStyle)) {
+      document.head.appendChild(customCursorStyle);
+    }
 
     document.body.style.cursor = 'none';
     document.documentElement.style.cursor = 'none';
@@ -942,7 +947,8 @@ browser.runtime.onMessage.addListener(
       let viewData = getViewData(request.settings);
      
       // flag to determine if cursor effects should be applied
-      // viewData.applyCursorEffects = request.settings.applyCursorEffects === true;
+      viewData.applyCursorEffects = request.settings.applyCursorEffects === true;
+      // applyCustomCursor({ applyCursorEffects: request.settings.applyCursorEffects });
      
       if (!deepEquals(viewData, oldViewData)) {
         refresh(viewData); // View data has changed -- re-render
