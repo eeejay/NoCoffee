@@ -127,7 +127,6 @@ function detectCursorType(event) {
    
     // Hide browser cursor. Not working for scrollbars
     element.style.cursor = 'none';
-   
   }
 }
 
@@ -631,24 +630,23 @@ function createSvgSnowOverlay(snow) {
       </defs>
       <rect width="100%" height="100%" filter="url(#noCoffeeSnowFilter)" />
     </svg>`;
-  
+
     const feTurb = snowOverlay.querySelector('feTurbulence');
     if (feTurb) {
-      let startTime = Date.now();
-      let animationId;
-      
-      const animate = () => {
-        const elapsed = Date.now() - startTime;
-        const progress = (elapsed % 70000) / 70000; 
-        const seed = Math.floor(500 - (499 * progress));
-        feTurb.setAttribute('seed', seed.toString());
-        animationId = requestAnimationFrame(animate);
-      };
-      
-      animationId = requestAnimationFrame(animate);
-      
-      // Store animation ID for cleanup in refresh(viewData)
-      snowOverlay.animationId = animationId;
+      const DURATION = 70000;
+      let startTime = null;
+
+      function animateSnow(timestamp) {
+        if (startTime === null) startTime = timestamp;
+
+        const progress = ((timestamp - startTime) % DURATION) / DURATION;
+        const seedValue = Math.floor(500 - 499 * progress);
+        feTurb.setAttribute('seed', seedValue);
+        // Store animation ID for cleanup in refresh(viewData)
+        snowOverlay.animationId = requestAnimationFrame(animateSnow);
+      }
+
+      snowOverlay.animationId = requestAnimationFrame(animateSnow);
     }
 
   return snowOverlay;
