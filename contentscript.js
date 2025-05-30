@@ -91,6 +91,7 @@ const cursorSVGs = {
 };
 
 // https://stackoverflow.com/questions/10389459/is-there-a-way-to-detect-if-im-hovering-over-text
+// one inconsistency: this func returns a text cursor when hovering over an input's label. the browser returns an arrow cursor
 function isPointOverText(x, y) {
   const element = document.elementFromPoint(x, y);
   if (element == null) return false;
@@ -223,28 +224,6 @@ function convertRgbToHex(el) {
 ////////////////////////////////////////////////////////////////////////////
 
 let originalCursorType;
-// function detectCursorType(event) {
-//   const element = document.elementFromPoint(event.clientX, event.clientY);
- 
-//   if (element) {
-//     // Get the original cursor type by temporarily removing the custom cursor
-//     const tempCursorType = element.style.cursor;
-//     element.style.cursor = '';
-//     const computedStyle = window.getComputedStyle(element);
-//     let browserCursor = computedStyle.cursor;
-//     // Restore the custom cursor
-//     element.style.cursor = tempCursorType;
-   
-//     if (originalCursorType !== browserCursor) {
-//       originalCursorType = browserCursor;
-//     }
-   
-//     updateCustomCursor(event);
-   
-//     // Hide browser cursor. Not working for scrollbars
-//     element.style.cursor = 'none';
-//   }
-// }
 
 function detectCursorType(event) {
   const element = document.elementFromPoint(event.clientX, event.clientY);
@@ -279,18 +258,13 @@ function updateCustomCursor(event) {
 
   let svgType;
 
+  // this is just so we don’t “lose” pointer status when hovering over nested elements (like a svg wrapped in a link)
   const isInteractive = element.tagName === 'A' ||
                         element.tagName === 'BUTTON' ||  
                         element.tagName === 'SELECT' ||
                         element.closest('a') ||
                         element.closest('button') ||
                         element.closest('select');
-
-  // const isText = element.tagName === 'INPUT' ||
-  //                element.tagName === 'TEXTAREA' ||
-  //                element.tagName === 'P' ||
-  //                element.tagName === 'HEADING' ||
-  //                element.isContentEditable;
 
   if (originalCursorType.includes('pointer') || isInteractive) {
     svgType = 'pointer';
