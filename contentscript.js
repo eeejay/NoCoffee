@@ -49,7 +49,7 @@ const kCursorContainerClassName = 'noCoffeeCursorDiv';
 /////////////////////////////////////////////////////////////////////////////////////
 // start of custom cursor logic
 
-// global stylesheet to hide native cursors when the custom cursor is applied
+// global stylesheet to hide the native cursor when the custom cursor is applied
 const customCursorStyle = document.createElement('style');
 customCursorStyle.id = 'noCoffeeCustomCursorStyle';
 customCursorStyle.textContent = `
@@ -138,23 +138,36 @@ function hideBrowserCursorInShadowRoot(shadow) {
 ///////////////////////////////////////////////////////////////////////////////
 // start of text cursor color computation
 
-function parseBackgroundColor(bgColor) {
-  const match = bgColor.match(/rgba?\(([\d.]+), ([\d.]+), ([\d.]+)(?:, ([\d.]+))?\)/);
-  if (match) {
-    let [_, r, g, b, a] = match;
-    return {
-      r: parseFloat(r),
-      g: parseFloat(g),
-      b: parseFloat(b),
-      a: a !== undefined ? parseFloat(a) : 1
-    };
-  }
-  return null;
+function parseBackgroundColor(color) {
+
+  let r, g, b, a;
+
+  const rgbMatch = color.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\s*\)$/i);
+
+  if (!rgbMatch) { return null; }
+
+  r = parseInt(rgbMatch[1], 10);
+  g = parseInt(rgbMatch[2], 10);
+  b = parseInt(rgbMatch[3], 10);
+  a = rgbMatch[4] ? parseFloat(rgbMatch[4]) : 1;
+
+  // Normalize RGB values to [0, 1] range
+  let normalR = r / 255;
+  let normalG = g / 255;
+  let normalB = b / 255;
+
+  // Apply inverse‐gamma to go from sRGB to linear light
+  // coefficients from https://www.w3.org/WAI/GL/wiki/Relative_luminance (different from https://en.wikipedia.org/wiki/SRGB)
+  r = normalR <= 0.03928 ? normalR / 12.92 : Math.pow((normalR + 0.055) / 1.055, 2.4);
+  g = normalG <= 0.03928 ? normalG / 12.92 : Math.pow((normalG + 0.055) / 1.055, 2.4);
+  b = normalB <= 0.03928 ? normalB / 12.92 : Math.pow((normalB + 0.055) / 1.055, 2.4);
+ 
+  return { r, g, b, a };
 }
 
-function getElementBackgroundColor(el) {
+function computeAlphaBlendedRgbValues(el) {
   if (!el) {
-    return { r: 255, g: 255, b: 255 };
+    return { r: 1, g: 1, b: 1 };
   }
 
   const bgColor = window.getComputedStyle(el).backgroundColor;
@@ -164,7 +177,7 @@ function getElementBackgroundColor(el) {
     if (parsed.a === 1) {
       return { r: parsed.r, g: parsed.g, b: parsed.b };
     } else if (parsed.a < 1) {
-      const parentColor = getElementBackgroundColor(el.parentElement);
+      const parentColor = computeAlphaBlendedRgbValues(el.parentElement);
       return {
         r: parsed.r * parsed.a + parentColor.r * (1 - parsed.a),
         g: parsed.g * parsed.a + parentColor.g * (1 - parsed.a),
@@ -172,42 +185,89 @@ function getElementBackgroundColor(el) {
       };
     }
   }
-
-  return getElementBackgroundColor(el.parentElement);
+  return computeAlphaBlendedRgbValues(el.parentElement);
 }
 
-function getInvertedBackgroundColor(el) {
-  const { r, g, b } = getElementBackgroundColor(el);
+function getRgbInvertedBackgroundColor(el) {
+  let { r, g, b } = computeAlphaBlendedRgbValues(el);
+
+  // Apply gamma‐correction to go from linear light back to sRGB
+  standardR = r <= 0.0031308 ? 12.92 * r : 1.055 * Math.pow(r, 1/2.4) - 0.055;
+  standardG = g <= 0.0031308 ? 12.92 * g : 1.055 * Math.pow(g, 1/2.4) - 0.055;
+  standardB = b <= 0.0031308 ? 12.92 * b : 1.055 * Math.pow(b, 1/2.4) - 0.055;
+
+  // Convert to 0-255 range
+  r = Math.max(0, Math.min(1, standardR)) * 255;
+  g = Math.max(0, Math.min(1, standardG)) * 255;
+  b = Math.max(0, Math.min(1, standardB)) * 255;
+
+  // Return inverted RGB values
   return {
-    r: 255 - Math.round(r),
-    g: 255 - Math.round(g),
-    b: 255 - Math.round(b)
+    invertedR: 255 - Math.round(r),
+    invertedG: 255 - Math.round(g),
+    invertedB: 255 - Math.round(b)
   };
 }
+
+function convertRgbToHex(el) {
+  const { invertedR: r, invertedG: g, invertedB: b } = getRgbInvertedBackgroundColor(el);
+  const hex = '#' +
+      r.toString(16).padStart(2, '0') +
+      g.toString(16).padStart(2, '0') +
+      b.toString(16).padStart(2, '0');
+
+  return hex;
+}
+
 // end of text cursor color computation
 ////////////////////////////////////////////////////////////////////////////
 
 let originalCursorType;
+// function detectCursorType(event) {
+//   const element = document.elementFromPoint(event.clientX, event.clientY);
+ 
+//   if (element) {
+//     // Get the original cursor type by temporarily removing the custom cursor
+//     const tempCursorType = element.style.cursor;
+//     element.style.cursor = '';
+//     const computedStyle = window.getComputedStyle(element);
+//     let browserCursor = computedStyle.cursor;
+//     // Restore the custom cursor
+//     element.style.cursor = tempCursorType;
+   
+//     if (originalCursorType !== browserCursor) {
+//       originalCursorType = browserCursor;
+//     }
+   
+//     updateCustomCursor(event);
+   
+//     // Hide browser cursor. Not working for scrollbars
+//     element.style.cursor = 'none';
+//   }
+// }
+
 function detectCursorType(event) {
   const element = document.elementFromPoint(event.clientX, event.clientY);
  
   if (element) {
     // Get the original cursor type by temporarily removing the custom cursor
     const tempCursorType = element.style.cursor;
+    customCursorStyle.disabled = true;
     element.style.cursor = '';
-    const computedStyle = window.getComputedStyle(element);
-    let browserCursor = computedStyle.cursor;
+
+    const browserCursor = window.getComputedStyle(element).cursor;
     // Restore the custom cursor
     element.style.cursor = tempCursorType;
+
+    // Hide browser cursor. Not working for scrollbars
+    element.style.cursor = 'none';
+    customCursorStyle.disabled = false;
    
     if (originalCursorType !== browserCursor) {
       originalCursorType = browserCursor;
     }
    
     updateCustomCursor(event);
-   
-    // Hide browser cursor. Not working for scrollbars
-    element.style.cursor = 'none';
   }
 }
 
@@ -226,14 +286,15 @@ function updateCustomCursor(event) {
                         element.closest('button') ||
                         element.closest('select');
 
-  const isText = element.tagName === 'INPUT' ||
-                  element.tagName === 'TEXTAREA' ||
-                  element.isContentEditable;
-
+  // const isText = element.tagName === 'INPUT' ||
+  //                element.tagName === 'TEXTAREA' ||
+  //                element.tagName === 'P' ||
+  //                element.tagName === 'HEADING' ||
+  //                element.isContentEditable;
 
   if (originalCursorType.includes('pointer') || isInteractive) {
     svgType = 'pointer';
-  } else if (originalCursorType.includes('text') || isPointOverText(event.clientX, event.clientY) || isText) {
+  } else if (originalCursorType.includes('text') || isPointOverText(event.clientX, event.clientY)) {
     svgType = 'text';
   } else {
     svgType = 'default';
@@ -241,11 +302,7 @@ function updateCustomCursor(event) {
 
   if (existingCursor) {
     if (svgType === 'text') {
-      const { r, g, b } = getInvertedBackgroundColor(element);
-      const hex = '#' + 
-          r.toString(16).padStart(2, '0') + 
-          g.toString(16).padStart(2, '0') + 
-          b.toString(16).padStart(2, '0');
+      const hex = convertRgbToHex(element);
 
       const updatedSVG = cursorSVGs[svgType]
         .replace(/fill="[^"]*"/g, `fill="${hex}"`)
@@ -306,7 +363,7 @@ function applyCustomCursor(viewData) {
     });
 
     // inject the global stylesheet to hide native cursors
-    // this is necessary to prevent native cursors from showing up in some cases
+    // this is necessary to prevent native cursors from showing up when a filter is applied (it could happen briefly when a filter is on)
     if (!document.head.contains(customCursorStyle)) {
       document.head.appendChild(customCursorStyle);
     }
