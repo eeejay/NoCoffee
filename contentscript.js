@@ -132,18 +132,17 @@ function hideBrowserCursorInShadowRoot(shadow) {
   shadow.appendChild(style);
   shadow[HIDE_BROWSER_CURSOR_IN_SHADOW_ROOT] = true;
 }
-
 // end of shadow root logic
 ////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
 // start of text cursor color computation
 
-function parseBackgroundColor(color) {
+function getLinearizedBgColor(color) {
 
   let r, g, b, a;
 
-  const rgbMatch = color.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\s*\)$/i);
+  const rgbMatch = color.match(/rgba?\(\s(\d+)\s,\s(\d+)\s,\s(\d+)\s(?:,\s([\d.]+))?\s\)$/i);
 
   if (!rgbMatch) { return null; }
 
@@ -158,65 +157,67 @@ function parseBackgroundColor(color) {
   let normalB = b / 255;
 
   // Convert from sRGB values to linear values
-  // coefficients from https://www.w3.org/WAI/GL/wiki/Relative_luminance (different from https://en.wikipedia.org/wiki/SRGB)
-  r = normalR <= 0.03928 ? normalR / 12.92 : Math.pow((normalR + 0.055) / 1.055, 2.4);
-  g = normalG <= 0.03928 ? normalG / 12.92 : Math.pow((normalG + 0.055) / 1.055, 2.4);
-  b = normalB <= 0.03928 ? normalB / 12.92 : Math.pow((normalB + 0.055) / 1.055, 2.4);
- 
-  return { r, g, b, a };
+  // coefficients from https://en.wikipedia.org/wiki/SRGB ( different from https://www.w3.org/WAI/GL/wiki/Relative_luminance )
+  r = normalR <= 0.04045 ? normalR / 12.92 : Math.pow((normalR + 0.055) / 1.055, 2.4);
+  g = normalG <= 0.04045 ? normalG / 12.92 : Math.pow((normalG + 0.055) / 1.055, 2.4);
+  b = normalB <= 0.04045 ? normalB / 12.92 : Math.pow((normalB + 0.055) / 1.055, 2.4);
+
+  return [r, g, b, a];
 }
 
 function computeAlphaBlendedRgbValues(el) {
   if (!el) {
-    return { r: 1, g: 1, b: 1 };
+    return [1, 1, 1];
   }
 
   const bgColor = window.getComputedStyle(el).backgroundColor;
-  const parsed = parseBackgroundColor(bgColor);
+  const parsed = getLinearizedBgColor(bgColor);
 
   if(!parsed) {
     return computeAlphaBlendedRgbValues(el.parentElement);
   }
 
-  if (parsed.a === 1) {
-    return { r: parsed.r, g: parsed.g, b: parsed.b };
+  let [r, g, b, a] = parsed;
+
+  if (a === 1) {
+    return [r, g, b];
   }
 
-  if (parsed.a === 0) {
+  if (a === 0) {
     return computeAlphaBlendedRgbValues(el.parentElement);
   }
 
-  const parentBgColor = computeAlphaBlendedRgbValues(el.parentElement);
-  return {
-    r: parsed.r * parsed.a + parentBgColor.r * (1 - parsed.a),
-    g: parsed.g * parsed.a + parentBgColor.g * (1 - parsed.a),
-    b: parsed.b * parsed.a + parentBgColor.b * (1 - parsed.a)
-  };
+  const [parentR, parentG, parentB] = computeAlphaBlendedRgbValues(el.parentElement);
+  r = r * a + parentR * (1 - a);
+  g = g * a + parentG * (1 - a);
+  b = b * a + parentB * (1 - a);
+
+  return [r, g, b];
 }
 
 function getRgbInvertedBackgroundColor(el) {
-  let { r, g, b } = computeAlphaBlendedRgbValues(el);
+  let [r, g, b] = computeAlphaBlendedRgbValues(el);
 
   // Convert from linear values back to sRGB values
-  let standardR = r <= 0.0031308 ? 12.92 * r : 1.055 * Math.pow(r, 1/2.4) - 0.055;
-  let standardG = g <= 0.0031308 ? 12.92 * g : 1.055 * Math.pow(g, 1/2.4) - 0.055;
-  let standardB = b <= 0.0031308 ? 12.92 * b : 1.055 * Math.pow(b, 1/2.4) - 0.055;
+  const gammaR = r <= 0.0031308 ? 12.92 * r : 1.055 * Math.pow(r, 1/2.4) - 0.055;
+  const gammaG = g <= 0.0031308 ? 12.92 * g : 1.055 * Math.pow(g, 1/2.4) - 0.055;
+  const gammaB = b <= 0.0031308 ? 12.92 * b : 1.055 * Math.pow(b, 1/2.4) - 0.055;
 
   // Convert to 0-255 range
-  r = Math.max(0, Math.min(1, standardR)) * 255;
-  g = Math.max(0, Math.min(1, standardG)) * 255;
-  b = Math.max(0, Math.min(1, standardB)) * 255;
+  r = Math.max(0, Math.min(1, gammaR)) * 255;
+  g = Math.max(0, Math.min(1, gammaG)) * 255;
+  b = Math.max(0, Math.min(1, gammaB)) * 255;
 
   // Return inverted RGB values
-  return {
-    invertedR: 255 - Math.round(r),
-    invertedG: 255 - Math.round(g),
-    invertedB: 255 - Math.round(b)
-  };
+  return [
+    255 - Math.round(r),
+    255 - Math.round(g),
+    255 - Math.round(b)
+  ];
 }
 
 function convertRgbToHex(el) {
-  const { invertedR: r, invertedG: g, invertedB: b } = getRgbInvertedBackgroundColor(el);
+  const [r, g, b] = getRgbInvertedBackgroundColor(el);
   const hex = '#' +
       r.toString(16).padStart(2, '0') +
       g.toString(16).padStart(2, '0') +
@@ -236,7 +237,6 @@ function detectCursorType(event) {
   if (element) {
     // Get the original cursor type by temporarily removing the custom cursor
     const tempCursorType = element.style.cursor;
-    customCursorStyle.disabled = true;
     element.style.cursor = '';
 
     const browserCursor = window.getComputedStyle(element).cursor;
@@ -245,8 +245,7 @@ function detectCursorType(event) {
 
     // Hide browser cursor. Not working for scrollbars
     element.style.cursor = 'none';
-    customCursorStyle.disabled = false;
-   
+
     if (originalCursorType !== browserCursor) {
       originalCursorType = browserCursor;
     }
