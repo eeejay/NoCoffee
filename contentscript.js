@@ -157,7 +157,7 @@ function parseBackgroundColor(color) {
   let normalG = g / 255;
   let normalB = b / 255;
 
-  // Apply inverse‐gamma to go from sRGB to linear light
+  // Convert from sRGB values to linear values
   // coefficients from https://www.w3.org/WAI/GL/wiki/Relative_luminance (different from https://en.wikipedia.org/wiki/SRGB)
   r = normalR <= 0.03928 ? normalR / 12.92 : Math.pow((normalR + 0.055) / 1.055, 2.4);
   g = normalG <= 0.03928 ? normalG / 12.92 : Math.pow((normalG + 0.055) / 1.055, 2.4);
@@ -174,28 +174,33 @@ function computeAlphaBlendedRgbValues(el) {
   const bgColor = window.getComputedStyle(el).backgroundColor;
   const parsed = parseBackgroundColor(bgColor);
 
-  if (parsed) {
-    if (parsed.a === 1) {
-      return { r: parsed.r, g: parsed.g, b: parsed.b };
-    } else if (parsed.a < 1) {
-      const parentColor = computeAlphaBlendedRgbValues(el.parentElement);
-      return {
-        r: parsed.r * parsed.a + parentColor.r * (1 - parsed.a),
-        g: parsed.g * parsed.a + parentColor.g * (1 - parsed.a),
-        b: parsed.b * parsed.a + parentColor.b * (1 - parsed.a)
-      };
-    }
+  if(!parsed) {
+    return computeAlphaBlendedRgbValues(el.parentElement);
   }
-  return computeAlphaBlendedRgbValues(el.parentElement);
+
+  if (parsed.a === 1) {
+    return { r: parsed.r, g: parsed.g, b: parsed.b };
+  }
+
+  if (parsed.a === 0) {
+    return computeAlphaBlendedRgbValues(el.parentElement);
+  }
+
+  const parentBgColor = computeAlphaBlendedRgbValues(el.parentElement);
+  return {
+    r: parsed.r * parsed.a + parentBgColor.r * (1 - parsed.a),
+    g: parsed.g * parsed.a + parentBgColor.g * (1 - parsed.a),
+    b: parsed.b * parsed.a + parentBgColor.b * (1 - parsed.a)
+  };
 }
 
 function getRgbInvertedBackgroundColor(el) {
   let { r, g, b } = computeAlphaBlendedRgbValues(el);
 
-  // Apply gamma‐correction to go from linear light back to sRGB
-  standardR = r <= 0.0031308 ? 12.92 * r : 1.055 * Math.pow(r, 1/2.4) - 0.055;
-  standardG = g <= 0.0031308 ? 12.92 * g : 1.055 * Math.pow(g, 1/2.4) - 0.055;
-  standardB = b <= 0.0031308 ? 12.92 * b : 1.055 * Math.pow(b, 1/2.4) - 0.055;
+  // Convert from linear values back to sRGB values
+  let standardR = r <= 0.0031308 ? 12.92 * r : 1.055 * Math.pow(r, 1/2.4) - 0.055;
+  let standardG = g <= 0.0031308 ? 12.92 * g : 1.055 * Math.pow(g, 1/2.4) - 0.055;
+  let standardB = b <= 0.0031308 ? 12.92 * b : 1.055 * Math.pow(b, 1/2.4) - 0.055;
 
   // Convert to 0-255 range
   r = Math.max(0, Math.min(1, standardR)) * 255;
