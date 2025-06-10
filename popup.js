@@ -52,8 +52,12 @@ function updateOneSetting(evt) {
   updateSettings();
 }
 
-async function visitLink() {
-  await browser.tabs.create({url: this.getAttribute('href')});
+function visitLink(evt) {
+  // (2025-refactor) necessary to prevent Firefox from opening two tabs at once
+  evt.preventDefault();
+  browser.tabs.create({url: evt.currentTarget.href}).catch(console.error);
+  // (2025-refactor) fix for firefox: prevent the popup from opening on the new page
+  window.close();
 }
 
 function createColorDeficiencyOptions(settings) {
@@ -70,12 +74,12 @@ function focusEventTarget(evt) {
   setTimeout(function() { evt.target.focus(); }, 0);
 }
 
-document.addEventListener('DOMContentLoaded', async function() { 
+document.addEventListener('DOMContentLoaded', async function() {
   let settings = await browser.runtime.sendMessage({ type: 'getSettings' }) || {};
 
   // (Focus is set in html); select helps voice users update the value of the input
   document.getElementById('blurValueText').select();
-  
+
   updateValue('blur', settings.blurLevel || 0);
   updateValue('contrast', settings.contrastLevel || 0);
   updateValue('brightness', settings.brightnessLevel || 0);
