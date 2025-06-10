@@ -540,23 +540,35 @@ browser.runtime.onMessage.addListener(
     }
   });
 
-let isInitialized = false;
+// (2025-refactor) it seems that CSS filters do not apply to the document canvas in Chrome.
+// inject a default background color so that the document canvas does not show through.
+function ensureDefaultBackground() {
+  const els = [document.documentElement, document.body];
+  const isTransparent = el => {
+    const { backgroundImage, backgroundColor } = getComputedStyle(el);
+    return backgroundImage === 'none' &&
+           (backgroundColor === 'transparent' || backgroundColor === 'none');
+  };
 
-// (feb-2025-refactor) it has to be a promise to avoid a no-matching-signature error on the extensions page
-async function initIfStillNecessaryAndBodyExists() {
-  if (document.body && !isInitialized) {
-    try {
-      await browser.runtime.sendMessage({type: 'getSettings'});
-      isInitialized = true;
-    } catch (error) {
-      console.error('Failed to initialize:', error);
-    }
+  if (els.every(isTransparent)) {
+    document.documentElement.style.backgroundColor = '#ffffff';
   }
 }
 
+let isInitialized = false;
+  
+// (feb-2025-refactor) it has to be a promise to avoid a no-matching-signature error on the extensions page
+async function initIfStillNecessaryAndBodyExists() {
+  if (document.body && !isInitialized) {
+    ensureDefaultBackground();
+    await browser.runtime.sendMessage({type: 'getSettings'});
+    isInitialized = true;
+  }
+}
+  
 setTimeout(initIfStillNecessaryAndBodyExists, 0);
 
 // Refresh once on first load
-document.addEventListener('readystatechange', function() {
+document.addEventListener('readystatechange', () => {
   initIfStillNecessaryAndBodyExists();
 });
