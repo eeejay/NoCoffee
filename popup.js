@@ -122,3 +122,15 @@ document.addEventListener('DOMContentLoaded', async function() {
   let sliders = document.querySelectorAll('input[type="range"]');
   for (let sliderNum = 0; sliderNum < sliders.length; sliderNum++) { sliders[sliderNum].addEventListener('mousedown', focusEventTarget); }
 });
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    window.close();
+  }
+});
+
+document.addEventListener('scroll', () => {
+  if (document.hidden) {
+    window.close();
+  }
+});
