@@ -17,9 +17,9 @@ window.flutterCount = 0;
 
 const kSvgDocClassName = 'noCoffeeSvgFilterDoc';
 const kSvgBodyClassName = 'noCoffeeSvgFilterBody';
-const kSvgOverlayClassName = 'noCoffeeSvgOverlay';
-const kBlockerClassName = 'noCoffeeVisionBlockingDiv';
-const kCloudyClassName = 'noCoffeeVisionCloudyDiv';
+const kSvgSnowOverlayClassName = 'noCoffeeSvgSnowOverlay';
+const kBlockerOverlayClassName = 'noCoffeeVisionBlockingOverlay';
+const kCloudyOverlayClassName = 'noCoffeeVisionCloudyOverlay';
 const kMaxFloaters = 15;
 const kMaxFloaterTravel = 10; // Percent of screen
 const kMinFloaterTravelTime = 3; // Seconds
@@ -32,14 +32,15 @@ const kMaxFloaterOpacity = 0.4;
 const kFlutterDist = 15;
 
 function createSvgFilter(filterMarkup, className) {
-  let svgMarkup =
-'<svg xmlns="http://www.w3.org/2000/svg" version="1.1">' +
-  '<defs>' +
- '<filter id="' + className + Date.now() + '" >' +
-   filterMarkup +
- '</filter>' +
-   '</defs>' +
-'</svg>';
+  const filterId = `${className}${Date.now()}`;
+  let svgMarkup = `
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+      <defs>
+        <filter id="${filterId}">
+          ${filterMarkup}
+        </filter>
+      </defs>
+    </svg>`;
 
   let containerElt = document.createElement('div');
   containerElt.style.visibility = 'hidden';
@@ -52,7 +53,7 @@ function getSvgColorMatrixFilter(colorMatrixValues) {
   if (!colorMatrixValues) {
     return '';
   }
-  let str = '<feColorMatrix type="matrix" values="' + colorMatrixValues + '" />';
+  let str = `<feColorMatrix type="matrix" values="${colorMatrixValues}" />`;
   return str;
 }
 
@@ -60,9 +61,10 @@ function getSvgGhostingFilter(ghostingLevel) {
   if (!ghostingLevel) {
     return '';
   }
-  let str =
-        '<feOffset result="offOut" in="SourceGraphic" dx="' + ghostingLevel + '" dy="0" />' +
-        '<feBlend in="SourceGraphic" in2="offOut" mode="multiply" />';
+  let str = `
+    <feOffset result="offOut" in="SourceGraphic" dx="${ghostingLevel}" dy="0" />
+    <feBlend in="SourceGraphic" in2="offOut" mode="multiply" />
+  `;
   return str;
 }
 
@@ -71,8 +73,7 @@ function getSvgFlutterFilter(flutter) {
     return '';
   }
   let horizMovement = kFlutterDist / flutter.zoom;
-  let str =
-        '<feOffset result="offOut" in="SourceGraphic" dx="' + horizMovement + '" dy="0" />';
+  let str = `<feOffset result="offOut" in="SourceGraphic" dx="${horizMovement}" dy="0" />`;
   return str;
 }
 
@@ -83,6 +84,13 @@ function oneFlutter(bodyCssFilter) {
   document.body.style.filter = document.body.style.filter ? '' : bodyCssFilter;
 }
 
+function startFluttering(flutter, bodyCssFilter) {
+  if (!window.flutterInterval) {
+    window.flutterCount = Math.random() * flutter.flutterLevel * 1.5 + 5;
+    window.flutterInterval = setInterval(function() { oneFlutter(bodyCssFilter); }, 10);
+  }
+}
+
 function stopFluttering() {
   if (document.body) {
     document.body.style.filter = '';
@@ -91,13 +99,6 @@ function stopFluttering() {
   if (window.flutterInterval) {
     clearInterval(window.flutterInterval);
     window.flutterInterval = 0;
-  }
-}
-
-function startFluttering(flutter, bodyCssFilter) {
-  if (!window.flutterInterval) {
-    window.flutterCount = Math.random() * flutter.flutterLevel * 1.5 + 5;
-    window.flutterInterval = setInterval(function() { oneFlutter(bodyCssFilter); }, 10);
   }
 }
 
@@ -123,6 +124,7 @@ function initFlutter(flutter, bodyCssFilter) {
   document.addEventListener('mousemove', window.flutterMouseListener, true);
 }
 
+
 function createFloater(floater) {
   let floaterImg = document.createElement('img');
   floaterImg.style.position = 'fixed';
@@ -139,7 +141,7 @@ function createFloater(floater) {
   return floaterImg;
 }
 
-function resetFloaters(blockerDiv, floaters) {
+function resetFloaters(blockerOverlayElt, floaters) {
   let floaterMix = [];
   let count;
   for (count = 0; count < kMaxFloaters; count++) {
@@ -158,7 +160,7 @@ function resetFloaters(blockerDiv, floaters) {
       rotation: Math.random() * 360
     };
     let floaterImg = createFloater(floater);
-    blockerDiv.appendChild(floaterImg);
+    blockerOverlayElt.appendChild(floaterImg);
     animateFloater(floater, floaterImg);
   }
 }
@@ -184,126 +186,155 @@ function animateFloater(floater, floaterImg) {
     let left = floater.x + Math.sin(direction) * distance;
     let top = floater.y + Math.cos(direction) * distance;
     let seconds = Math.random() * (kMaxFloaterTravelTime - kMinFloaterTravelTime) + kMinFloaterTravelTime;
-    floaterStyleElt.innerText = '#' + floaterImg.id + ' { ' +
-   'top: ' + top + '% !important; ' +
-   'left: ' + left + '% !important; ' +
-   'transform: rotate(' + newRotation + 'deg) !important;' +
-   'transition: all ' + seconds + 's;' +
-  '}';
-
+    floaterStyleElt.innerText = `
+      #${floaterImg.id} {
+        top: ${top}% !important;
+        left: ${left}% !important;
+        transform: rotate(${newRotation}deg) !important;
+        transition: all ${seconds}s;
+      }
+    `;
     floaterImg.parentNode.appendChild(floaterStyleElt);
   }, delay * 1000);
 }
 
-function createCloudyDiv(cloudy) {
+function createCloudyOverlay(cloudy) {
   if (!cloudy || !cloudy.cloudyLevel) {
     return null;
   }
-  let cloudyDiv = document.createElement('div');
-  cloudyDiv.className = kCloudyClassName;
+  let cloudyOverlay = document.createElement('div');
+  cloudyOverlay.className = kCloudyOverlayClassName;
   let size = 100 * cloudy.zoom;
 
-  let style =
-  'z-index:2147483646 !important; ' +
-  'transform: scale(' + (1 / cloudy.zoom) + '); ' +
-  'transform-origin: 0 0;' +
-  'pointer-events: none; ' +
-  'position: fixed; left: 0; top: 0; height: ' + size + '%; width: ' + size + '%; ' +
-    'background-image: url(' + browser.runtime.getURL('overlays/cataracts.png') + '); ' +
-  'background-repeat: no-repeat; background-size: 100% 100%; ' +
-  'background-position: 0 0; filter: opacity(' + cloudy.cloudyLevel + '%);';
+  let style = `
+    z-index: 2147483646 !important;
+    transform: scale(${1 / cloudy.zoom});
+    transform-origin: 0 0;
+    pointer-events: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: ${size}%;
+    width: ${size}%;
+    background-image: url(${browser.runtime.getURL('overlays/cataracts.png')});
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: 0 0;
+    filter: opacity(${cloudy.cloudyLevel}%);
+  `;
 
-  cloudyDiv.setAttribute('style', style);
-  return cloudyDiv;
+  cloudyOverlay.setAttribute('style', style);
+  return cloudyOverlay;
 }
 
-function createBlockerDiv(block) {
+function createBlockerOverlay(block) {
   if (!block) {
     return null;
   }
-  let blockerDiv = document.createElement('div');
-  blockerDiv.className = kBlockerClassName;
-  let style =
-    'z-index:2147483646 !important; ' +
-    'pointer-events: none; ' +
-    'position: fixed; ';
+  let blockerOverlay = document.createElement('div');
+  blockerOverlay.className = kBlockerOverlayClassName;
+  let style = `
+    z-index: 2147483646 !important;
+    pointer-events: none;
+    position: fixed;
+  `;
   if (block.image) {
-    style += "background-image: url('" + block.image + "'); " +
-      'background-repeat: no-repeat; background-size: 100% 100%; ' +
-      'left: ' + block.xPosition + '; top: ' + block.yPosition + '; filter: opacity(' + block.opacity + '%);';
-    // "-webkit-filter: url(#noCoffeeDisplacementFilter);
+    style += `
+      background-image: url('${block.image}');
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+      left: ${block.xPosition};
+      top: ${block.yPosition};
+      filter: opacity(${block.opacity}%);
+    `;
+    // "filter: url(#noCoffeeDisplacementFilter);
     if (block.displacement && false) { // Don't try to do this yet
-      blockerDiv.innerHTML =
-    '<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">' +
-     '<defs>' +
-  '<filter id="noCoffeeDisplacementFilter" filterUnits="userSpaceOnUse">' +
-      '<feImage xlink:href="' + block.image + '" result="noCoffeeSource"/>' +
-      '<feImage xlink:href="' + block.image + '" result="noCoffeeDisplacementMap"/>' +
-      '<feDisplacementMap scale="1" xChannelSelector="R" yChannelSelector="R"   in="noCoffeeSource" in2="noCoffeeDisplacementMap"/>' +
-  '</filter>' +
-     '</defs>' +
-     '<use filter="url(#noCoffeeDisplacementFilter)" />' +
-    '</svg>';
+      blockerOverlay.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <filter id="noCoffeeDisplacementFilter" filterUnits="userSpaceOnUse">
+              <feImage xlink:href="${block.image}" result="noCoffeeSource"/>
+              <feImage xlink:href="${block.image}" result="noCoffeeDisplacementMap"/>
+              <feDisplacementMap scale="1" xChannelSelector="R" yChannelSelector="R" in="noCoffeeSource" in2="noCoffeeDisplacementMap"/>
+            </filter>
+          </defs>
+          <use filter="url(#noCoffeeDisplacementFilter)" />
+        </svg>
+      `;
     }
   } else if (block.innerStrength) {
-    style += 'left: 0; top: 0; height: 100%; width: 100%;';
+    style += `
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 100%;
+    `;
     if (block.type === 'radial') {
-      style += 'background-image: radial-gradient(circle, ' +
-        block.innerColor + ' ' + block.innerStrength + '%, ' +
-        block.outerColor + ' ' + block.outerStrength + '%);';
+      style += `
+        background-image: radial-gradient(circle, ${block.innerColor} ${block.innerStrength}%, ${block.outerColor} ${block.outerStrength}%);
+      `;
     } else {
-      // side filter not working without -webkit in linear-gradient
-      style += 'background-image: -webkit-linear-gradient(left, ' +
-        block.innerColor + ' ' + block.innerStrength + '%, ' +
-        block.outerColor + ' ' + block.outerStrength + '%);';
+      style += `
+        background-image: linear-gradient(to right, ${block.innerColor} ${block.innerStrength}%, ${block.outerColor} ${block.outerStrength}%);
+      `;
     }
   }
 
   if (block.floaters) {
-    resetFloaters(blockerDiv, block.floaters);
+    resetFloaters(blockerOverlay, block.floaters);
   }
 
   if (block.zoom) {
     let size = 100 * block.zoom;
-    style += 'transform: scale(' + 1 / block.zoom + '); transform-origin: 0 0; ' +
-      'width: ' + size + '%; height: ' + size + '%; left: 0; top: 0;';
+    style += `
+      transform: scale(${1 / block.zoom});
+      transform-origin: 0 0;
+      width: ${size}%;
+      height: ${size}%;
+      left: 0;
+      top: 0;
+    `;
   }
 
-  blockerDiv.setAttribute('style', style);
+  blockerOverlay.setAttribute('style', style);
 
-  return blockerDiv;
+  return blockerOverlay;
 }
 
 function createSvgSnowOverlay(snow) {
   if (!snow || !snow.amount) {
     return null;
   }
-  let svgOverlay = document.createElement('div');
-  svgOverlay.className = kSvgOverlayClassName;
-  let size = 100 * snow.zoom;
-  let startPos = (100 - size) / 2;
-  svgOverlay.setAttribute('style',
-    'transform: scale(' + (1 / snow.zoom) + '); ' +
-  'z-index:2147483645 !important; ' +
-  'pointer-events: none; ' +
-  'position: fixed; left: ' + startPos + '%; top: ' + startPos + '%; height: ' + size + '%; width: ' + size + '%; ');
-  svgOverlay.innerHTML =
-  '<svg xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%" preserveAspectRatio="xMidYMid meet">' +
-   '<defs>' +
-  '<filter id="noCoffeeSnowFilter" filterUnits="userSpaceOnUse" x="0" y="0">' +
-    '<feTurbulence type="fractalNoise" baseFrequency=".25" numOctaves="1" seed="4" stitchTiles="noStitch" width="159" height="120">' +
-      '<animate attributeType="XML" attributeName="seed" from="500" to="1" dur="70s" repeatCount="indefinite" />' +
-    '</feTurbulence>' +
-    '<feComponentTransfer>' +
-      '<feFuncA type="discrete" tableValues="0 0 ' + snow.amount + ' 1"/>' +
-    '</feComponentTransfer>' +
-    '<feTile x="0" y="0" width="100%" height="100%" result="tiled"/>' +
-  '</filter>' +
-   '</defs>' +
-   '<use filter="url(#noCoffeeSnowFilter)" />' +
-  '</svg>';
+  let snowOverlay = document.createElement('div');
+  snowOverlay.className = kSvgSnowOverlayClassName;
+  const size = 100 * snow.zoom;
+  const startPos = (100 - size) / 2;
+  snowOverlay.style.cssText = `
+    transform: scale(${1 / snow.zoom}); 
+    z-index:2147483645 !important; 
+    pointer-events: none; 
+    position: fixed; 
+    left: ${startPos}%; 
+    top: ${startPos}%; 
+    width: ${size}%; 
+    height: ${size}%;`;
+  
+  snowOverlay.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%; height:100%">
+      <defs>
+        <filter id="noCoffeeSnowFilter" filterUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%">
+          <feTurbulence type="fractalNoise" baseFrequency=".25" numOctaves="1" seed="0" stitchTiles="noStitch" />
+            <animate attributeType="XML" attributeName="seed" from="500" to="1" dur="70s" repeatCount="indefinite" />
+          <feComponentTransfer>
+            <feFuncA type="discrete" tableValues="0 0 ${snow.amount} 1"/>
+          </feComponentTransfer>
+          <feTile result="tiled"/>
+        </filter>
+      </defs>
+      <rect width="100%" height="100%" filter="url(#noCoffeeSnowFilter)" />
+    </svg>`;
 
-  return svgOverlay;
+  return snowOverlay;
 }
 
 // Return style object
@@ -326,28 +357,31 @@ function getView(viewData) {
       cssFilter: '',
       svgFilterElt: undefined
     },
-    svgOverlayElt: undefined,
-    blockerDiv: undefined
+    svgSnowOverlayElt: undefined,
+    blockerOverlayElt: undefined,
+    cloudyOverlayElt: undefined
   };
 
   // Create new svg color filter -- old one will be removed
-  // (feb-2025 refactor: Needs to go on body element, otherwise color filters won't work in Firefox)
+  // (2025-refactor) svg color filter needs to go on body element otherwise the filter does not work in Firefox
   let svgColorFilterMarkup = getSvgColorMatrixFilter(viewData.colorMatrixValues);
   if (svgColorFilterMarkup) {
     view.body.svgFilterElt = createSvgFilter(svgColorFilterMarkup, kSvgBodyClassName);
     let id = view.body.svgFilterElt.querySelector('filter').id;
-    view.body.cssFilter += 'url(#' + id + ') ';
+    view.body.cssFilter += `url(#${id}) `;
   }
 
   // Create new svg ghosting filter -- old one will be removed
   // Ghosting filter needs to go on body -- learned through trial and error. Seems to be a bug in Chrome.
   let svgGhostingFilterMarkup = getSvgGhostingFilter(viewData.ghosting);
   let svgFlutterFilterMarkup = getSvgFlutterFilter(viewData.flutter);
+
   stopFluttering();
+  
   if (svgGhostingFilterMarkup || svgFlutterFilterMarkup) {
     view.body.svgFilterElt = createSvgFilter(svgFlutterFilterMarkup || svgGhostingFilterMarkup, kSvgBodyClassName);
     let id = view.body.svgFilterElt.querySelector('filter').id;
-    view.body.cssFilter += 'url(#' + id + ')';
+    view.body.cssFilter += `url(#${id}) `;
     if (svgFlutterFilterMarkup) {
       initFlutter(viewData.flutter, view.body.cssFilter);
     }
@@ -355,29 +389,28 @@ function getView(viewData) {
 
   // Create new svg overlay div -- old one will be removed
   if (!deepEquals(oldViewData.snow, viewData.snow)) {
-    view.svgOverlayElt = createSvgSnowOverlay(viewData.snow);
+    view.svgSnowOverlayElt = createSvgSnowOverlay(viewData.snow);
   }
 
   // Create new cloudy div -- old one will be removed
   if (!deepEquals(oldViewData.cloudy, viewData.cloudy)) {
-    view.cloudyDiv = createCloudyDiv(viewData.cloudy);
+    view.cloudyOverlayElt = createCloudyOverlay(viewData.cloudy);
   }
 
   // Create new blocker div -- old one will be removed
   if (!deepEquals(oldViewData.block, viewData.block)) {
-    view.blockerDiv = createBlockerDiv(viewData.block);
+    view.blockerOverlayElt = createBlockerOverlay(viewData.block);
   }
 
   if (viewData.blur) {
-    view.doc.cssFilter += 'blur(' + viewData.blur + 'px) ';
+    view.doc.cssFilter += `blur(${viewData.blur}px) `;
   }
   if (viewData.contrast != 100) {
-    view.doc.cssFilter += 'contrast(' + viewData.contrast + '%) ';
+    view.doc.cssFilter += `contrast(${viewData.contrast}%) `;
   }
   if (viewData.brightness) {
-    view.doc.cssFilter += 'brightness(' + viewData.brightness + '%) ';
+    view.doc.cssFilter += `brightness(${viewData.brightness}%) `;
   }
-
   return view;
 }
 
@@ -410,7 +443,7 @@ function getViewData(settings) {
           type: 'radial',
           innerStrength: settings.blockStrength / 2,
           outerStrength: settings.blockStrength + 10,
-          innerColor: 'rgba(150,150,150,' + (0.9 + settings.blockStrength / 1000) + ')',
+          innerColor: `rgba(150,150,150,${0.9 + settings.blockStrength / 1000})`,
           outerColor: 'transparent'
         };
         break;
@@ -505,12 +538,11 @@ function deepEquals(obj1, obj2) {
     }
     return true;
   }
-
   return obj1 === obj2;
 }
 
 function refresh(viewData) {
-  let view = getView(viewData);
+  const view = getView(viewData);
 
   // old doc/body filters must be removed unconditionally otherwise the flutter filter stays on after reset
   deleteNodeIfExists(document.querySelector('.' + kSvgDocClassName));
@@ -523,41 +555,48 @@ function refresh(viewData) {
     document.body.appendChild(view.body.svgFilterElt);
   }
 
-  if (typeof view.svgOverlayElt !== 'undefined') {
-    deleteNodeIfExists(document.querySelector('.' + kSvgOverlayClassName)); // Delete old one
-    if (view.svgOverlayElt) {
-      document.body.appendChild(view.svgOverlayElt);
+  if (typeof view.svgSnowOverlayElt !== 'undefined') {
+    const oldOverlay = document.querySelector('.' + kSvgSnowOverlayClassName);
+    if (oldOverlay && oldOverlay.animationId) {
+      cancelAnimationFrame(oldOverlay.animationId);
+    }
+    
+    deleteNodeIfExists(oldOverlay);
+    if (view.svgSnowOverlayElt) {
+      document.body.appendChild(view.svgSnowOverlayElt);
     }
   }
 
-  if (typeof view.cloudyDiv !== 'undefined') {
-    deleteNodeIfExists(document.querySelector('.' + kCloudyClassName)); // Delete old one
-    if (view.cloudyDiv) {
-      document.body.appendChild(view.cloudyDiv);
+  if (typeof view.cloudyOverlayElt !== 'undefined') {
+    deleteNodeIfExists(document.querySelector('.' + kCloudyOverlayClassName)); // Delete old one
+    if (view.cloudyOverlayElt) {
+      document.body.appendChild(view.cloudyOverlayElt);
     }
   }
 
-  if (typeof view.blockerDiv !== 'undefined') {
-    deleteNodeIfExists(document.querySelector('.' + kBlockerClassName)); // Delete old one
-    if (view.blockerDiv) {
-      document.body.appendChild(view.blockerDiv);
+  if (typeof view.blockerOverlayElt !== 'undefined') {
+    deleteNodeIfExists(document.querySelector('.' + kBlockerOverlayClassName)); // Delete old one
+    if (view.blockerOverlayElt) {
+      document.body.appendChild(view.blockerOverlayElt);
     }
   }
 
   document.documentElement.style.filter = view.doc.cssFilter;
   document.body.style.filter = view.body.cssFilter;
+
 }
 
-// Setup refresh listener
 browser.runtime.onMessage.addListener(
   function(request) {
+
     if (request.type === 'refresh') {
       let viewData = getViewData(request.settings);
+     
       if (!deepEquals(viewData, oldViewData)) {
         refresh(viewData); // View data has changed -- re-render
         oldViewData = viewData;
       }
-    }
+    } 
   });
 
 // (2025-refactor) it seems that CSS filters do not apply to the document canvas in Chrome.
@@ -567,7 +606,7 @@ function ensureDefaultBackground() {
   const isTransparent = el => {
     const { backgroundImage, backgroundColor } = getComputedStyle(el);
     return backgroundImage === 'none' &&
-           (backgroundColor === 'transparent' || backgroundColor === 'none');
+           (backgroundColor === 'transparent' || backgroundColor === 'none' || backgroundColor === '');
   };
 
   if (els.every(isTransparent)) {
