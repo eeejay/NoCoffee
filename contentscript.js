@@ -13,7 +13,7 @@
 browser.runtime.sendMessage({ type: 'browserRefresh' });
 
 let oldViewData = {};
-let flutterCount = 0;
+window.flutterCount = 0;
 
 const kSvgDocClassName = 'noCoffeeSvgFilterDoc';
 const kSvgBodyClassName = 'noCoffeeSvgFilterBody';
@@ -77,16 +77,21 @@ function getSvgFlutterFilter(flutter) {
 }
 
 function oneFlutter(bodyCssFilter) {
-  if (--flutterCount <= 0) {
+  if (--window.flutterCount <= 0) {
     stopFluttering();
   }
   document.body.style.filter = document.body.style.filter ? '' : bodyCssFilter;
 }
 
 function stopFluttering() {
-  document.body.style.filter = '';
-  clearInterval(window.flutterInterval);
-  window.flutterInterval = 0;
+  if (document.body) {
+    document.body.style.filter = '';
+  }
+
+  if (window.flutterInterval) {
+    clearInterval(window.flutterInterval);
+    window.flutterInterval = 0;
+  }
 }
 
 function startFluttering(flutter, bodyCssFilter) {
@@ -106,8 +111,16 @@ function maybeStartFluttering(flutter, bodyCssFilter) {
 function initFlutter(flutter, bodyCssFilter) {
   startFluttering(flutter, bodyCssFilter);
 
-  window.addEventListener('scroll', function() { maybeStartFluttering(flutter, bodyCssFilter); });
-  window.addEventListener('mousemove', function() { maybeStartFluttering(flutter, bodyCssFilter); });
+  window.flutterScrollListener = () => {
+    maybeStartFluttering(flutter, bodyCssFilter);
+  };
+
+  window.flutterMouseListener = () => {
+    maybeStartFluttering(flutter, bodyCssFilter);
+  };
+
+  document.addEventListener('scroll', window.flutterScrollListener, true);
+  document.addEventListener('mousemove', window.flutterMouseListener, true);
 }
 
 function createFloater(floater) {
@@ -295,6 +308,15 @@ function createSvgSnowOverlay(snow) {
 
 // Return style object
 function getView(viewData) {
+  if (window.flutterScrollListener) {
+    document.removeEventListener('scroll', window.flutterScrollListener, true);
+    window.flutterScrollListener = null;
+  }
+  if (window.flutterMouseListener) {
+    document.removeEventListener('mousemove', window.flutterMouseListener, true);
+    window.flutterMouseListener = null;
+  }
+
   let view = {
     doc: {
       cssFilter: '',
@@ -490,17 +512,15 @@ function deepEquals(obj1, obj2) {
 function refresh(viewData) {
   let view = getView(viewData);
 
-  if (typeof view.doc.svgFilterElt !== 'undefined') {
-    deleteNodeIfExists(document.querySelector('.' + kSvgDocClassName)); // Delete old one
-    if (view.doc.svgFilterElt) {
-      document.body.appendChild(view.doc.svgFilterElt);
-    }
+  // old doc/body filters must be removed unconditionally otherwise the flutter filter stays on after reset
+  deleteNodeIfExists(document.querySelector('.' + kSvgDocClassName));
+  if (view.doc.svgFilterElt) {
+    document.documentElement.appendChild(view.doc.svgFilterElt);
   }
-  if (typeof view.body.svgFilterElt !== 'undefined') {
-    deleteNodeIfExists(document.querySelector('.' + kSvgBodyClassName)); // Delete old one
-    if (view.body.svgFilterElt) {
-      document.body.appendChild(view.body.svgFilterElt);
-    }
+
+  deleteNodeIfExists(document.querySelector('.' + kSvgBodyClassName));
+  if (view.body.svgFilterElt) {
+    document.body.appendChild(view.body.svgFilterElt);
   }
 
   if (typeof view.svgOverlayElt !== 'undefined') {
