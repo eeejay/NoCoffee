@@ -55,6 +55,10 @@ function updateOneSetting(evt) {
     updateValue(evt.target.parentNode.className, evt.target.value);
   }
 
+  // (2025-refactor) reset blockStrength to default if Normal is selected
+  if (evt.target.name === 'blockType' && evt.target.id === 'noBlock') {
+    updateValue('blockStrength', kDefaultBlockStrength);
+  }
   updateSettings();
 }
 
