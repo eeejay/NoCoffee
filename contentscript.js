@@ -9,6 +9,9 @@
 // - Misshapen macular degenation blob, add blur to outside
 // - Stargardt's add brightness, some good holes in it, loss of contrast sensitivity
 
+// (2025-refactor) allows a browser refresh to reset the settings
+browser.runtime.sendMessage({ type: 'browserRefresh' });
+
 let oldViewData = {};
 let flutterCount = 0;
 

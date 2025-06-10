@@ -43,6 +43,11 @@ async function updateSettings(settings) {
 // Listen for messages
 // (2025-refactor) Must use chrome.runtime (not browser.runtime) to avoid undefined error
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  // (2025-refactor) browser refresh can reset settings
+  if (request.type === 'browserRefresh' && sender.tab) {
+    chrome.storage.local.remove(`tab_${sender.tab.id}`);
+  }
+  
   if (request.type === 'getSettings') {
     (async () => {
       const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
