@@ -11,21 +11,6 @@
 // (2025-refactor) allows a browser refresh to reset the settings
 browser.runtime.sendMessage({ type: 'browserRefresh' });
 
-const defaultSettings = {
-  blurLevel: 0,
-  contrastLevel: 0,
-  brightnessLevel: 0,
-  ghostingLevel: 0,
-  snowLevel: 0,
-  cloudyLevel: 0,
-  flutterLevel: 0,
-  colorDeficiencyTypeIndex: 0,
-  colorDeficiencyMatrixValues: null,
-  blockType: 'noBlock',
-  blockStrength: 40,
-  applyCursorEffects: false
-};
-
 let oldViewData = {};
 window.flutterCount = 0;
 
@@ -992,8 +977,8 @@ browser.runtime.onMessage.addListener(
     } 
   });
 
-// (2025-refactor) inject a default background color so that the document canvas does not show through.
-// it seems that CSS filters do not apply to it
+// (2025-refactor) it seems that CSS filters do not apply to the document canvas in Chrome.
+// inject a default background color so that the document canvas does not show through.
 function ensureDefaultBackground() {
   const els = [document.documentElement, document.body];
   const isTransparent = el => {
@@ -1020,7 +1005,7 @@ async function initIfStillNecessaryAndBodyExists() {
   
 setTimeout(initIfStillNecessaryAndBodyExists, 0);
 
-// Refresh on first load
+// Refresh once on first load
 document.addEventListener('readystatechange', () => {
   initIfStillNecessaryAndBodyExists();
 });
