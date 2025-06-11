@@ -127,7 +127,7 @@ function getLinearizedBgColor(color) {
 
   let r, g, b, a;
 
-  const rgbMatch = color.match(/rgba?\(\s(\d+)\s,\s(\d+)\s,\s(\d+)\s(?:,\s([\d.]+))?\s\)$/i);
+  const rgbMatch = color.match(/rgba?\(([\d.]+), ([\d.]+), ([\d.]+)(?:, ([\d.]+))?\)/);
 
   if (!rgbMatch) { return null; }
 
