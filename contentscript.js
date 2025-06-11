@@ -446,7 +446,7 @@ function getViewData(settings) {
     blur: (blurPlusExtra / zoom) / 2,
     contrast: settings.contrastLevel ? 60 - settings.contrastLevel : 100,
     colorMatrixValues: settings.colorDeficiencyMatrixValues,
-    brightness: settings.brightnessLevel * 1.2,
+    brightness: settings.brightnessLevel ? 100 - (settings.brightnessLevel * 1.9) : 100,
     ghosting: settings.ghostingLevel / zoom,
     snow: { zoom: zoom, amount: 0.03 * settings.snowLevel },
     cloudy: { zoom: zoom, cloudyLevel: settings.cloudyLevel * 6 },
