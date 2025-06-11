@@ -324,7 +324,6 @@ function createSvgSnowOverlay(snow) {
       <defs>
         <filter id="noCoffeeSnowFilter" filterUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%">
           <feTurbulence type="fractalNoise" baseFrequency=".25" numOctaves="1" seed="0" stitchTiles="noStitch" />
-            <animate attributeType="XML" attributeName="seed" from="500" to="1" dur="70s" repeatCount="indefinite" />
           <feComponentTransfer>
             <feFuncA type="discrete" tableValues="0 0 ${snow.amount} 1"/>
           </feComponentTransfer>
@@ -333,6 +332,24 @@ function createSvgSnowOverlay(snow) {
       </defs>
       <rect width="100%" height="100%" filter="url(#noCoffeeSnowFilter)" />
     </svg>`;
+
+    const feTurb = snowOverlay.querySelector('feTurbulence');
+    if (feTurb) {
+      const DURATION = 70000;
+      let startTime = null;
+
+      function animateSnow(timestamp) {
+        if (startTime === null) startTime = timestamp;
+
+        const progress = ((timestamp - startTime) % DURATION) / DURATION;
+        const seedValue = Math.floor(500 - 499 * progress);
+        feTurb.setAttribute('seed', seedValue);
+        // Store animation ID for cleanup in refresh(viewData)
+        snowOverlay.animationId = requestAnimationFrame(animateSnow);
+      }
+
+      snowOverlay.animationId = requestAnimationFrame(animateSnow);
+    }
 
   return snowOverlay;
 }
