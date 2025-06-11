@@ -247,7 +247,7 @@ function updateCustomCursor(event) {
 
   let svgType;
 
-  // this is just so we don’t “lose” pointer status when hovering over nested elements (like a svg wrapped in a link)
+  // this is just so we don’t lose pointer status when hovering over nested elements (like a svg wrapped in a link)
   const isInteractive = element.tagName === 'A' ||
                         element.tagName === 'BUTTON' ||  
                         element.tagName === 'SELECT' ||
@@ -255,9 +255,11 @@ function updateCustomCursor(event) {
                         element.closest('button') ||
                         element.closest('select');
 
+  const isText = element.tagName === 'INPUT' || element.tagName === 'TEXTAREA';
+
   if (originalCursorType.includes('pointer') || isInteractive) {
     svgType = 'pointer';
-  } else if (originalCursorType.includes('text') || isPointOverText(event.clientX, event.clientY)) {
+  } else if (originalCursorType.includes('text') || isPointOverText(event.clientX, event.clientY) || isText) {
     svgType = 'text';
   } else {
     svgType = 'default';
