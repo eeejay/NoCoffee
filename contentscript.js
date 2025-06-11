@@ -623,7 +623,7 @@ function ensureDefaultBackground() {
   const isTransparent = el => {
     const { backgroundImage, backgroundColor } = getComputedStyle(el);
     return backgroundImage === 'none' &&
-           (backgroundColor === 'transparent' || backgroundColor === 'none' || backgroundColor === '');
+           (backgroundColor === 'transparent' || backgroundColor === 'rgba(0, 0, 0, 0)');
   };
 
   if (els.every(isTransparent)) {
