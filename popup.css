@@ -1,148 +1,181 @@
-/*
-(feb-2025-refactor)
-to fix: contrast for number input & select when in focus
-check voice control for input type=number
-*/
-
 :root {
-  --color-dark: #151515;
-  --color-light: #f2f2f2;
-  --color-blue-lighter: #3c8cff;
-  --color-blue-darker: #2878ff;
-  --color-green: #226622;
-  --color-purple: #3c283c;
-  --color-gray: #282828;
-  --color-light-gray: rgba(200,200,200,.8);
-  --color-blue-gray: #203040;
-  --color-purple-gray: rgba(160,160,220,.6);
+    --color-dark: #151515; 
+    --color-light: #f2f2f2; 
+    --color-blue: #1c6cf5;
+    --color-green: #287728;
+    --color-purple: #3c283c;
+    --color-gray: #282828;
+    --color-light-gray: rgba(200,200,200,.8);
+    --color-blue-gray: #203040; 
+    --color-purple-gray: rgba(160,160,220,.4);
+
+    --color-focus-outline:var(--color-blue);
 }
 
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
-body {
-  background-color: var(--color-dark);
-  color: var(--color-light);
-  font-family: sans-serif;
-  font-size: 1rem;
-  padding-inline: 12px;
+body { 
+    background-color: var(--color-dark);
+    color: var(--color-light);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1rem;
+    padding-inline: 12px; 
 }
-
 
 /* **** HEADER **** */
-h1 {
-  font-size: 1.4rem;
-  margin-block: 0;
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* margin-inline: 2px; */
+    /* width: 100%; */
+}
+h1 { 
+    font-size: 1.4rem; 
+    margin-block: 0;
 }
 
 #reset {
-  background-color: var(--color-green);
-  border: 2px solid var(--color-dark);
-  border-radius: 6px;
-  color: var(--color-light);
-  font-size: 1rem;
-  margin-block: 0;
-  padding: 3px 11px;
+    background-color: var(--color-green);
+    border: 2px solid var(--color-dark);
+    border-radius: 6px;
+    color: var(--color-light);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.2px;
+    margin-block: 0;
+    padding: 4px 15px;
 }
 
+#reset:focus,
+#reset:hover {
+    /* border: 2px solid var(--color-light);
+    outline: none; */
+    outline: 2px solid var(--color-focus-outline);
+    outline-offset: 1px;
+}
 
 /* **** FORM **** */
-form {
-  margin-block: 10px;
+form { 
+    margin-block: 10px;
 }
 
-fieldset > legend {
-  background-color: var(--color-blue-gray);
-  border: 2px solid var(--color-light);
+fieldset > legend { 
+    background-color: var(--color-blue-gray);
+    border: 2px solid var(--color-light);
 }
 
 .line {
-  padding-block: 1px;
+    padding-block: 1px;
 }
 
 .line:has(input[type="radio"]) {
-  padding-block: 1.5px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 5px;
+    padding-block: 1.5px;
 }
 
-.pervasive .line,
+.pervasive .line, 
 .blocks .lineup .line {
-  align-items: center;
-  display: flex;
-  gap: 10px;
-  justify-content: space-between;
-  width: 100%;
+    align-items: center;
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    width: 100%;
 }
 
 .line span {
-  align-items: center;
-  display: flex;
-  justify-content: space-between;
-  width: 12rem;
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    width: 12rem;
 }
 
-.lineup label {
-  display: inline-block;
-  width: 10.5rem;
-}
-
-input[type="number"] {
-  background-color: var(--color-gray);
-  border: 2px solid var(--color-purple-gray);
-  border-radius: 6px;
-  color: var(--color-light);
-  display: inline-block;
-  font-size: 0.9rem;
-  height: auto;
-  padding: 1px 2px 0px;
-  width: 3rem;
+.lineup label { 
+    display: inline-block; 
+    width: 10.5rem; 
 }
 
 input[type="range"] {
-  -webkit-appearance: none;
-  appearance: none;
-  background-color: var(--color-gray);
-  border: 2px solid var(--color-light-gray);
-  cursor: pointer;
-  /* for Firefox */
-  height: 13px;
-  width: 8rem;
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: var(--color-gray);
+    border: 2px solid var(--color-light-gray);
+    cursor: pointer;
+    /* for Firefox */
+    height: 13px;
+    width: 8rem;
 }
  
 input[type="range"]::-webkit-slider-runnable-track {
-  height: 10px;  
+    height: 10px;  
 }
  
 input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  background-image: linear-gradient(
-      to bottom,
-      #ebf1f6 0%,
-      #abd3ee 50%,
-      #89c3eb 51%,
-      #d5ebfb 100%
-  );
-  -webkit-border-radius: 40px;
-  border-radius: 40px;
-  margin-top: -4px;
-  height: 18px;
-  width: 11px;
+   -webkit-appearance: none; 
+    appearance: none;
+    background-image: linear-gradient(
+        to bottom,
+        #ebf1f6 0%,
+        #abd3ee 50%,
+        #89c3eb 51%,
+        #d5ebfb 100%
+    );
+    -webkit-border-radius: 40px;
+    border-radius: 40px;
+    margin-top: -4px;
+    height: 18px;
+    width: 11px;
 }
 
 input[type="range"]::-moz-range-thumb {
-  background-image: linear-gradient(
-      to bottom,
-      #ebf1f6 0%,
-      #abd3ee 50%,
-      #89c3eb 51%,
-      #d5ebfb 100%
-  );
-  border: none;
-  border-radius: 40px;
-  margin-top: -4px;
-  height: 18px;
-  width: 11px;
+    background-image: linear-gradient(
+        to bottom,
+        #ebf1f6 0%,
+        #abd3ee 50%,
+        #89c3eb 51%,
+        #d5ebfb 100%
+    );
+    border: none; 
+    border-radius: 40px;
+    margin-top: -4px;
+    height: 18px;
+    width: 11px;
+}
+
+input[type="range"]:focus {
+    outline: none;
+    border-color: var(--color-focus-outline);
+}
+
+input[type="radio"] {
+    margin: 3px;
+}
+
+input[type="radio"]:focus {
+    outline: none;
+}
+
+input[type="radio"]:focus + label {
+    border-radius: 4px;
+    outline: 2px solid var(--color-focus-outline);
+    outline-offset: 2px;
+}
+
+input[type="number"] {
+    background-color: var(--color-gray);
+    border: 2px solid var(--color-purple-gray);
+    border-radius: 6px;
+    color: var(--color-light);
+    display: inline-block;
+    font-size: 0.9rem;
+    height: auto;
+    padding: 1px 2px 0px;
+    width: 3rem;
 }
  
 select {
@@ -155,66 +188,71 @@ select {
     width: 12rem;
 }
 
+select:focus, 
+input[type="number"]:focus {
+    color: white;
+    border-color:var(--color-focus-outline);
+    border-radius: 6px;
+    outline: none;
+}
 
 /* **** FOOTER **** */
-a.footerItem {
-  color: var(--color-light);
-  font-family: Arial, Helvetica, sans-serif;
-  padding: 2px;
+
+.footer {
+    display:flex;
+    justify-content:space-between;
+    align-items: center;
+    width: 100%;
 }
 
-
-/* **** FOCUS MODE **** */
-
-
-input[type="range"]:focus {
-  outline: none;
-  border-color: var(--color-blue-darker);
+.links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
 }
 
-
-/* the label already has an outline */
-input[type="radio"]:focus {
-  outline: none;
+a { 
+    color: var(--color-light);
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 2px;
+    text-underline-offset: 2px;
+    /* transition: text-decoration-thickness 0.3s ease; */
 }
 
-input[type="radio"]:focus + label {
-  border-radius: 4px;
-  outline: 2px solid var(--color-blue-lighter);
-  outline-offset: 2px;
-}
-
-/* to explore further: maybe a better solution for radio focus??? */
-/* .line:has(input[type="radio"]:focus-visible) {
-    border-radius: 4px;
-    outline: 2px solid rgba(60, 140, 255, 1);
-    outline-offset: 4px;
-} */
-
-select:focus,
-input[type="number"]:focus {
-  border-color:var(--color-blue-lighter);
-  border-radius: 6px;
-  outline: none;
-}
-
-button:focus,
 a:focus-visible {
-  border-radius: 6px;
-  outline: 2px solid var(--color-blue-lighter);
-  outline-offset: 1px;
+    border-radius: 4px;
+    outline: 2px solid var(--color-focus-outline);
+    outline-offset: 2px;
 }
 
+a:hover {
+    text-decoration-thickness: 5px;
+}
+
+.cursorEffects {
+    display: flex;
+    justify-content:flex-start;
+    align-items: center;
+    gap: 6px;
+}
+
+input[type="checkbox"] {
+    margin: 1px;
+}
+
+input[type="checkbox"]:focus {
+    outline: none;
+}
+
+input[type="checkbox"]:focus + label {
+    border-radius: 4px;
+    outline: 2px solid var(--color-focus-outline);
+    outline-offset: 2px;
+}
 
 /* **** UTILITIES **** */
+
 .margin-top-10 { margin-top: 10px; }
 
 .margin-top-15 { margin-top: 15px; }
-
-.flex {
-  display: flex;
-  justify-content: space-between;
-  align-items:self-start;
-  width: 100%;
-}
-

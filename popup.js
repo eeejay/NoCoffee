@@ -46,14 +46,28 @@ function updateValue(type, value) {
 }
 
 function updateOneSetting(evt) {
+  // (2025-refactor) prevent the slider value from changing when pressing Enter on an empty number input
+  if (evt.target.type === 'number' && evt.target.value === '') {
+    return;
+  }
+
   if (evt.target.localName === 'input' && evt.target.hasAttribute('value')) {
     updateValue(evt.target.parentNode.className, evt.target.value);
+  }
+
+  // (2025-refactor) reset blockStrength to default if Normal is selected
+  if (evt.target.name === 'blockType' && evt.target.id === 'noBlock') {
+    updateValue('blockStrength', kDefaultBlockStrength);
   }
   updateSettings();
 }
 
-async function visitLink() {
-  await browser.tabs.create({url: this.getAttribute('href')});
+function visitLink(evt) {
+  // (2025-refactor) necessary to prevent Firefox from opening two tabs at once
+  evt.preventDefault();
+  browser.tabs.create({url: evt.currentTarget.href}).catch(console.error);
+  // (2025-refactor) fix for firefox: prevent the popup from opening on the new page
+  window.close();
 }
 
 function createColorDeficiencyOptions(settings) {
@@ -70,9 +84,13 @@ function focusEventTarget(evt) {
   setTimeout(function() { evt.target.focus(); }, 0);
 }
 
-document.addEventListener('DOMContentLoaded', async function() { 
+document.addEventListener('DOMContentLoaded', async function() {
   let settings = await browser.runtime.sendMessage({ type: 'getSettings' }) || {};
-  document.getElementById('blurValueText').focus();
+  document.getElementById('cursor').checked = settings.applyCursorEffects === true;
+
+  // (Focus is set in html); select helps voice users update the value of the input
+  document.getElementById('blurValueText').select();
+
   updateValue('blur', settings.blurLevel || 0);
   updateValue('contrast', settings.contrastLevel || 0);
   updateValue('brightness', settings.brightnessLevel || 0);
@@ -95,7 +113,30 @@ document.addEventListener('DOMContentLoaded', async function() {
   // Add listeners
   document.visionSettings.addEventListener('change', updateOneSetting);
   document.visionSettings.addEventListener('select', updateSettings);
-  document.visionSettings.addEventListener('reset', updateSettings);
+  document.getElementById('reset').addEventListener('click', async function() {
+    document.getElementById('cursor').checked = false;
+    await browser.runtime.sendMessage({
+      type: 'applyCustomCursor',
+      settings: {
+        applyCursorEffects: false
+      }
+    });
+    
+    updateSettings();
+  });
+  
+  document.getElementById('cursor').addEventListener('change', async function(evt) {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tab) return;
+
+    await browser.runtime.sendMessage({
+      type: 'applyCustomCursor',
+      tabId: tab.id,
+      settings: {
+        applyCursorEffects: evt.target.checked
+      }
+    });
+  });
 
   // Make links work
   let links = document.querySelectorAll('a[href]');
@@ -104,4 +145,16 @@ document.addEventListener('DOMContentLoaded', async function() {
   // Make sliders focus on click
   let sliders = document.querySelectorAll('input[type="range"]');
   for (let sliderNum = 0; sliderNum < sliders.length; sliderNum++) { sliders[sliderNum].addEventListener('mousedown', focusEventTarget); }
+});
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    window.close();
+  }
+});
+
+document.addEventListener('scroll', () => {
+  if (document.hidden) {
+    window.close();
+  }
 });

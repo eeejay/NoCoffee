@@ -27,27 +27,29 @@
 
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
+      "matches": ["https://*/*"],
       "js": ["browser-polyfill.js", "contentscript.js"],
-      "run_at": "document_start",
+      "run_at": "document_idle",
       "all_frames": true
     }
   ],
 
   "permissions": [
-    "activeTab"
+    "activeTab",
+    "storage"
   ],
 
   "host_permissions": [
-    "<all_urls>"
+    "https://*/*"
   ],
 
   "web_accessible_resources": [
     {
       "resources": [
-        "overlays/*.png"
+        "overlays/*.png",
+        "popup.css"
       ],
-      "matches": ["<all_urls>"]
+      "matches": ["https://*/*"]
     }
   ]
 }

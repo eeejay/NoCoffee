@@ -3,11 +3,14 @@
 	<head>
 		<script src="popup.js"></script>
 		<script src="browser-polyfill.js"></script>
-		<link rel="stylesheet" href="./popup.css" />
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="./popup.css" />	
 	</head>
 	<body>
 		<form name="visionSettings">
-			<div class="flex">
+			<div class="header">
 				<h1>NoCoffee Vision Simulator</h1>
 				<button id="reset" type="reset">Reset all</button>
 			</div>
@@ -18,7 +21,7 @@
 						<label for="blurValueText">Blur (low acuity): </label>
 						<span class="blur">
 							<input id="blur" type="range" tabindex="-1" min="0" max="20" step="1" value="0">
-							<input type="number" id="blurValueText" min="0" max="20" step="1" value="0"/>
+							<input type="number" id="blurValueText" min="0" max="20" step="1" value="0" autofocus/>
 						</span>
 					</div>
 					<div class="line">
@@ -65,7 +68,8 @@
 					</div>
 					
 					<div class="line margin-top-10">
-						<label for="color">Color deficiency:</label> <select size="1" id="color"></select>
+						<label for="color">Color deficiency:</label> 
+						<select size="1" id="color"></select>
 					</div>
 				</div>
 			</fieldset>
@@ -92,8 +96,16 @@
 			</fieldset>
 		</form>
 		<div class="flex footer">
-			<a class="footerItem" href="http://accessgarage.wordpress.com/2013/02/09/458/">More info</a>
-			<a class="footerItem" href="https://chrome.google.com/webstore/support/jjeeggmbnhckmgdhmgdckeigabjfbddl?hl=en&gl=US#bug" id="feedback">Feedback</a>
-		</div>
+			<div class="cursorEffects">
+				<input type="checkbox" id="cursor"/>
+				<label for="cursor">
+					Cursor effects
+				</label>
+			</div>
+			<div class="links">
+				<a class="link" href="http://accessgarage.wordpress.com/2013/02/09/458/">More info</a>
+				<a class="link" href="https://chrome.google.com/webstore/support/jjeeggmbnhckmgdhmgdckeigabjfbddl?hl=en&gl=US#bug" id="feedback">Feedback</a>
+			</div>
+    </div>
 	</body>
 </html>
