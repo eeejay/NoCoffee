@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "NoCoffee",
   "description": "NoCoffee vision simulator",
-  "version": "0.5.0",
+  "version": "1.0.0",
   "homepage_url":"http://accessgarage.wordpress.com/2013/02/09/458/",
 
   "browser_specific_settings": {
