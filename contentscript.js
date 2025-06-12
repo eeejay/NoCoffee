@@ -1,12 +1,27 @@
-// TODO:
-// - Statistics, info panel
-// - Why did Equinox zoom box work ok?
-// - Simple vs advanced tab
-// - Also affect mouse cursor
-// - Option to follow mouse cursor
-// - Might be more starfish shaped:
-// - Misshapen macular degenation blob, add blur to outside
-// - Stargardt's add brightness, some good holes in it, loss of contrast sensitivity
+// TABLE OF CONTENTS:
+// 0.  Send browser refresh message ................... ~ Line 22
+// 1.  Constants/Variables ............................ ~ Line 24 
+// 2.  Custom Cursor Logic ............................ ~ Line 49
+//     - SVG Definitions .............................. ~ Line 58
+//     - isPointOverText function ..................... ~ Line 93
+//     - Shadow DOM Handling .......................... ~ Line 120
+//     - Text Cursor Color Computation ................ ~ Line 139
+//     - Custom Cursor Detection/Application .......... ~ Line 230
+// 3.  Create SVG Filter Functions .................... ~ Line 406
+// 4.  Flutter Effect Functions ....................... ~ Line 452
+// 5.  Floater Effect Functions ....................... ~ Line 499
+// 6.  Cloudy Effect Function ......................... ~ Line 572
+// 7.  Blocker Overlay Function ....................... ~ Line 601
+// 8.  Snow Overlay Function .......................... ~ Line 675
+// 9.  getView Function ............................... ~ Line 725
+// 10. getViewData Function ........................... ~ Line 802
+// 11. refresh Function ............................... ~ Line 895
+// 12. Browser message listener & Initialization ...... ~ Line 944
+// 13. Utility Functions .............................. ~ Line 984
+//     - getZoom
+//     - deleteNodeIfExists
+//     - deepEquals
+//     - ensureDefaultBackgroundColor
 
 // (2025-refactor) allows a browser refresh to reset the settings
 browser.runtime.sendMessage({ type: 'browserRefresh' });
@@ -31,8 +46,9 @@ const kMaxFloaterOpacity = 0.4;
 const kFlutterDist = 15;
 const kCursorContainerClassName = 'noCoffeeCursorDiv';
 
-/////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
 // start of custom cursor logic
+///////////////////////////////////////////////////////////////////
 
 // global stylesheet to hide the native cursor when the custom cursor is applied
 const customCursorStyle = document.createElement('style');
@@ -43,6 +59,7 @@ customCursorStyle.textContent = `
   }
 `;
 
+// SVG definitions for arrow (default), pointer, and text cursor types
 const cursorSVGs = {
   default: `
     <svg width="32px" height="32px" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
@@ -120,7 +137,7 @@ function hideBrowserCursorInShadowRoot(shadow) {
 // end of shadow root logic
 ////////////////////////////////////////////////////////////////////
 
-///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
 // start of text cursor color computation
 
 function getLinearizedBgColor(color) {
@@ -212,7 +229,7 @@ function convertRgbToHex(el) {
 }
 
 // end of text cursor color computation
-////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
 
 let originalCursorType;
 
@@ -255,6 +272,7 @@ function updateCustomCursor(event) {
                         element.closest('button') ||
                         element.closest('select');
 
+  // isPointOverText function does not detect text in inputs and textareas, so we need to check them separately
   const isText = element.tagName === 'INPUT' || element.tagName === 'TEXTAREA';
 
   if (originalCursorType.includes('pointer') || isInteractive) {
@@ -383,7 +401,7 @@ function applyCustomCursor(viewData) {
 }
 
 // end of custom cursor logic
-/////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
 
 function createSvgFilter(filterMarkup, className) {
   const filterId = `${className}${Date.now()}`;
@@ -477,7 +495,6 @@ function initFlutter(flutter, bodyCssFilter) {
   document.addEventListener('scroll', window.flutterScrollListener, true);
   document.addEventListener('mousemove', window.flutterMouseListener, true);
 }
-
 
 function createFloater(floater) {
   let floaterImg = document.createElement('img');
@@ -785,10 +802,6 @@ function getView(viewData) {
   return view;
 }
 
-function getZoom() {
-  return window.outerWidth / window.innerWidth; // Works in Chrome
-}
-
 // Computed values based on user settings
 function getViewData(settings) {
   let zoom = getZoom();
@@ -883,36 +896,6 @@ function getViewData(settings) {
   return viewData;
 }
 
-function deleteNodeIfExists(node) {
-  if (node) { node.parentNode.removeChild(node); }
-}
-
-function deepEquals(obj1, obj2) {
-  if (!obj1 || !obj2) {
-    return obj1 === obj2;
-  }
-
-  if (typeof obj1 !== typeof obj2) {
-    return false;
-  }
-
-  if (typeof obj1 === 'object') {
-    let item;
-    for (item in obj1) {
-      if (!deepEquals(obj1[item], obj2[item])) {
-        return false; // Recurse for sub-sobjects
-      }
-    }
-    for (let item2 in obj2) {
-      if (typeof obj1[item2] === 'undefined') {
-        return false;
-      }
-    }
-    return true;
-  }
-  return obj1 === obj2;
-}
-
 function refresh(viewData) {
   const view = getView(viewData);
 
@@ -979,27 +962,12 @@ browser.runtime.onMessage.addListener(
     } 
   });
 
-// (2025-refactor) it seems that CSS filters do not apply to the document canvas in Chrome.
-// inject a default background color so that the document canvas does not show through.
-function ensureDefaultBackground() {
-  const els = [document.documentElement, document.body];
-  const isTransparent = el => {
-    const { backgroundImage, backgroundColor } = getComputedStyle(el);
-    return backgroundImage === 'none' &&
-           (backgroundColor === 'transparent' || backgroundColor === 'rgba(0, 0, 0, 0)');
-  };
-
-  if (els.every(isTransparent)) {
-    document.documentElement.style.backgroundColor = '#ffffff';
-  }
-}
-
 let isInitialized = false;
   
 // (feb-2025-refactor) it has to be a promise to avoid a no-matching-signature error on the extensions page
 async function initIfStillNecessaryAndBodyExists() {
   if (document.body && !isInitialized) {
-    ensureDefaultBackground();
+    ensureDefaultBackgroundColor();
     await browser.runtime.sendMessage({type: 'getSettings'});
     isInitialized = true;
   }
@@ -1011,3 +979,56 @@ setTimeout(initIfStillNecessaryAndBodyExists, 0);
 document.addEventListener('readystatechange', () => {
   initIfStillNecessaryAndBodyExists();
 });
+
+//////////////////////////////////////////////////////////////////
+// utility functions
+//////////////////////////////////////////////////////////////////
+
+function getZoom() {
+  return window.outerWidth / window.innerWidth; // Works in Chrome
+}
+
+function deleteNodeIfExists(node) {
+  if (node) { node.parentNode.removeChild(node); }
+}
+
+function deepEquals(obj1, obj2) {
+  if (!obj1 || !obj2) {
+    return obj1 === obj2;
+  }
+
+  if (typeof obj1 !== typeof obj2) {
+    return false;
+  }
+
+  if (typeof obj1 === 'object') {
+    let item;
+    for (item in obj1) {
+      if (!deepEquals(obj1[item], obj2[item])) {
+        return false; // Recurse for sub-sobjects
+      }
+    }
+    for (let item2 in obj2) {
+      if (typeof obj1[item2] === 'undefined') {
+        return false;
+      }
+    }
+    return true;
+  }
+  return obj1 === obj2;
+}
+
+// (2025-refactor) it seems that CSS filters do not apply to the document canvas in Chrome.
+// inject a default background color so that the document canvas does not show through.
+function ensureDefaultBackgroundColor() {
+  const els = [document.documentElement, document.body];
+  const isTransparent = el => {
+    const { backgroundImage, backgroundColor } = getComputedStyle(el);
+    return backgroundImage === 'none' &&
+           (backgroundColor === 'transparent' || backgroundColor === 'rgba(0, 0, 0, 0)');
+  };
+
+  if (els.every(isTransparent)) {
+    document.documentElement.style.backgroundColor = '#ffffff';
+  }
+}

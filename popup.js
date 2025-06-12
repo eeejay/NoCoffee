@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   let settings = await browser.runtime.sendMessage({ type: 'getSettings' }) || {};
   document.getElementById('cursor').checked = settings.applyCursorEffects === true;
 
-  // (Focus is set in html); select helps voice users update the value of the input
+  // (Focus is set in html); using select helps voice users update the value of the input
   document.getElementById('blurValueText').select();
 
   updateValue('blur', settings.blurLevel || 0);
